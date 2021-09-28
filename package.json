@@ -1,0 +1,25 @@
+{
+  "name": "ideality-nuxt",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxt/content": "^1.14.0",
+    "@nuxtjs/auth-next": "5.0.0-1624817847.21691f1",
+    "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/pwa": "^3.3.5",
+    "bootstrap": "^5.0.0-beta3",
+    "bootstrap-vue": "^2.21.2",
+    "core-js": "^3.15.1",
+    "lodash": "^4.17.21",
+    "nuxt": "^2.15.7",
+    "vue-async-computed": "^3.9.0",
+    "vue-lodash": "^2.1.2",
+    "vue-textarea-autosize": "^1.1.1"
+  }
+}
