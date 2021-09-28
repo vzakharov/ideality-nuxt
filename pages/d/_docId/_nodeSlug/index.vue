@@ -15,6 +15,7 @@
       </div>
       <div>
         <thread 
+          v-if='nodes'
           :start='nodes[0]'
           :topLevel=true
           :d='vm' 
@@ -73,6 +74,7 @@ export default {
     // console.log({vm: this})
     let data = {
       vm: this,
+      centerNode: null,
       doc: {
         name:'Hello  world',
         id: params.docId,
@@ -80,7 +82,7 @@ export default {
       nodeSlug,
       node: null,
       editingDocName: false,
-      nodes: this.parseTree(tree),
+      nodes: null,//this.parseTree(tree),
       tree,
       treeJson: '',
       _: this._
@@ -89,7 +91,29 @@ export default {
     return data
   },
 
+  created() {
+    this.parseTree(this.tree)
+    let node = this.findNode(this.$route.params.nodeSlug)
+    if (node) {
+      this.centerNode = node
+      this.bump(node) 
+    }
+  },
+
+  mounted() {
+    window.vm = this
+    let node = this.findNode(location.hash.slice(1))
+    if (node)
+      this.goto(node)
+  },
+
   methods: {
+
+    bump(node) {
+      let bumped = now()
+      for ( let n of [node, ...node.ancestors] )
+        this.$set(n, 'bumped', bumped )
+    },
 
     changeName() {
       this.editingDocName = false
@@ -100,14 +124,27 @@ export default {
       this.$nextTick(() => this.$refs.docNameInput.focus())
     },
 
+    findNode(slug) {
+      return find(this.nodes, { slug })
+    },
+
     goto(node) {
-      // debugger
-      let bumped = now()
-      for ( let n of [node, ...node.ancestors] )
-        this.$set(n, 'bumped', bumped )
+      
+      // let sameThread = this.thread.includes(node)
+
+      // if ( sameThread )
+      //   history.replaceState(null, '', 
+      //     `${location.href.replace(/#.*/, '')}#${node.slug}`
+      //   )
+      // else
+      //   history.pushState(null, '',
+      //     `${location.origin}/d/${this.doc.id}/${node.slug}#${node.slug}`
+      //   )
+
+      this.bump(node)
 
       assign(this, { node })
-      
+
       this.$nextTick(() => {
         // debugger
         try {
@@ -177,21 +214,26 @@ export default {
       forEach(valueses, values =>
         forEach(values, (value, key) => {
           // console.log(key, value)
-          let wasEnumerable = object[key] && Object.getOwnPropertyDescriptor(object, key).enumerable
           console.log('\n\nSetting')
           console.log(key)
           console.log('for')
           console.log(object)
           console.log('to')
           console.log(value)
+          let current = Object.getOwnPropertyDescriptor(object, key)
+          console.log('(current):')
+          console.log(current)
           this.$set(object, key, value)
-          if ( !wasEnumerable )
+          if ( !current || !current.value ) {
+            console.log(object.__lookupSetter__(key))
+            console.log(object.__lookupGetter__(key))
             Object.defineProperty(object, key, {
               set: object.__lookupSetter__(key),
               get: object.__lookupGetter__(key),
               enumerable: false,
               configurable: true
             })
+          }
         })
       )
     }
@@ -199,6 +241,9 @@ export default {
   },
 
   computed: {
+    thread() { 
+      return this.nodes[0].tail()
+    }
     // the() {
     //   return {
     //     thread: getThread(this.tree),
@@ -209,20 +254,22 @@ export default {
 
   watch: {
 
-    nodeSlug: {
-      // immediate: true,
-      handler: function(slug) { 
-        console.log(map(this.nodes, 'slug'))
-        console.log(this.nodes)
-        let node = find(this.nodes, 'slug')
-        if (node)
-          this.goto(find(this.nodes, { slug })) 
-      }
-    },
+    // nodeSlug: {
+    //   // immediate: true,
+    //   handler: function(slug) { 
+    //     console.log(map(this.nodes, 'slug'))
+    //     console.log(this.nodes)
+    //     let node = find(this.nodes, 'slug')
+    //     if (node)
+    //       this.goto(find(this.nodes, { slug })) 
+    //   }
+    // },
 
     tree: {
-      deep: true, immediate: true,
-      handler: function(tree) { this.parseTree(tree) }
+      deep: true, //immediate: true,
+      handler: function(tree) { 
+        this.parseTree(tree) 
+      }
     }
 
   }

@@ -92,5 +92,7 @@ export default {
     //     config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'
     //   }
     // }
-  }
+  },
+  
+  ssr: true
 }
