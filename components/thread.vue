@@ -1,26 +1,28 @@
 <template>
-<div v-if="start.tail" :class="{ small: !topLevel, 'text-secondary': !topLevel }">
-  <span v-for='node in start.tail()' :key='node.slug'>
-    <span
+<div v-if="start.tail" :class="{ small: !topLevel }">
+<span v-for='node in start.tail()' :key='node.slug'>
+    <current-node 
+      v-if="node==d.node" 
+      :node='node'
+      @action="$emit('node-action', $event)"
+    />
+    <nuxt-link
+      :class="{'link-secondary': !topLevel, 'link-dark': topLevel, 'text-decoration-none': true}"
+      :to="`/d/${d.doc.id}/${
+        topLevel
+          ? `${d.centerNode.slug}?edit=${node.slug}`
+          : `${node.slug}?edit`
+      }`"
       v-if="node!=d.node && ( typeof node.body !== 'undefined' )"
-      @click="$emit('node-click', node)" 
       v-html='node.body ? escape(node.body).replace(/\n/g, "<br/>") : "[empty]"'
     />
-    <div v-if="node==d.node">
-      <textarea-autosize 
-        id='input' 
-        rows="1" 
-        style="min-height: 30px" 
-        v-model='node.body' 
-        class="form-control" 
-      />
-    </div>
-    <a
+    <span
       href='#'
       v-if="node.children && node.children.length > 1"
-      style="color: lightgray; font-size:small; vertical-align: bottom;"
+      style="color: lightgray; font-size:small; vertical-align: bottom; cursor: pointer"
       @click="toggle(node)"
-      >{{ node.expanded ? '⊟' : '⊞' }}</a>
+      v-text="node.expanded ? '⊟' : '⊞'"
+    />
     <ul v-if="node.expanded && node.branched">
       <li v-for="child in node.heirs().slice(1)" :key='child.slug'>
         <thread 
@@ -37,18 +39,20 @@
 <script>
 
 import { escape } from 'lodash'
+import CurrentNode from './currentNode.vue'
 
 let { log } = console
 
 export default {
+  components: { CurrentNode },
 
   
-  props: ['thread', 'd', 'topLevel', 'start', 'bumped'],
+  props: ['d', 'topLevel', 'start', 'bumped'],
 
   methods: {
     escape,
     log,
-    toggle (node) { this.$set(node, 'expanded', !node.expanded) }
+    toggle(node) { this.$set(node, 'expanded', !node.expanded) }
   }
 
 }

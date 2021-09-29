@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid p-0 bg-light vh-100 pt-4">
+  <div class="container-fluid p-0 bg-light vh-100 pt-5">
     <div class="container-sm w-auto p-3 shadow rounded mx-auto" style="max-width: 800px">
       <navbar @openDoc="openDoc"/>
       <div>
@@ -19,7 +19,7 @@
           :start='nodes[0]'
           :topLevel=true
           :d='vm' 
-          @node-click='goto($event)'
+          @node-action='goto($event.node[$event.action]())'
         />
       </div>
       <!-- <hr>
@@ -46,6 +46,18 @@ Vue.use(TextareaAutosize)
 export default {
   components: { navbar, Thread, Login, Tree },
 
+  head() {
+    return {
+      title: this.doc.name + ' 🔺 Ideality',
+      link: [
+        {
+          rel: 'canonical',
+          href: 'https://ideality.app' + this.$route.path
+        }
+      ]
+    }
+  },
+
   data() {
     let { params } = this.$route
     let { docId, nodeSlug } = params
@@ -71,18 +83,15 @@ export default {
         }]
       }]
     }
-    // console.log({vm: this})
     let data = {
       vm: this,
-      centerNode: null,
       doc: {
         name:'Hello  world',
         id: params.docId,
       },
       nodeSlug,
-      node: null,
       editingDocName: false,
-      nodes: null,//this.parseTree(tree),
+      nodesLoaded: null,
       tree,
       treeJson: '',
       _: this._
@@ -92,19 +101,12 @@ export default {
   },
 
   created() {
-    this.parseTree(this.tree)
-    let node = this.findNode(this.$route.params.nodeSlug)
-    if (node) {
-      this.centerNode = node
-      this.bump(node) 
-    }
+    this.nodes = this.parseTree(this.tree)
+
   },
 
   mounted() {
     window.vm = this
-    let node = this.findNode(location.hash.slice(1))
-    if (node)
-      this.goto(node)
   },
 
   methods: {
@@ -129,29 +131,9 @@ export default {
     },
 
     goto(node) {
-      
-      // let sameThread = this.thread.includes(node)
 
-      // if ( sameThread )
-      //   history.replaceState(null, '', 
-      //     `${location.href.replace(/#.*/, '')}#${node.slug}`
-      //   )
-      // else
-      //   history.pushState(null, '',
-      //     `${location.origin}/d/${this.doc.id}/${node.slug}#${node.slug}`
-      //   )
+      // this.$router.push()
 
-      this.bump(node)
-
-      assign(this, { node })
-
-      this.$nextTick(() => {
-        // debugger
-        try {
-          window.document.getElementById('input').focus()
-        } catch {}
-        // this.$refs.input[0].$el.focus()
-      })
     },
 
     openDoc(doc) {
@@ -161,12 +143,12 @@ export default {
 
     parseTree(tree) {
 
-      if ( this.treeJson && JSON.stringify(tree) == this.treeJson )
-        return this.nodes
+      // if ( this.treeJson && JSON.stringify(tree) == this.treeJson )
+      //   return this.nodes
 
       let slugs = []
       let index = 1
-      this.nodes = crawl(tree, (node, parent) => {
+      let nodes = crawl(tree, (node, parent) => {
         this.$set(node, 'bumped', node.bumped || index++)
         this.set(node, {
           
@@ -190,12 +172,13 @@ export default {
             siblings: without(parent.children, node),
 
           })
-
+        
+        node.split = () => console.log("Split requested")
 
         return node
       })
 
-      this.nodes.forEach(node => {
+      nodes.forEach(node => {
         if (node.hasChildren) {
           node.heirs = () => orderBy(node.children, ['bumped'], ['desc'])
         }
@@ -204,9 +187,12 @@ export default {
 
       })
 
-      this.treeJson = JSON.stringify(tree)
+      // this.treeJson = JSON.stringify(tree)
 
-      return this.nodes
+      if ( !this.nodesLoaded )
+        this.nodesLoaded = true
+
+      return nodes
     },
 
     set(object, ...valueses) {
@@ -241,6 +227,33 @@ export default {
   },
 
   computed: {
+    node() {
+      // debugger
+      if ( this.centerNode ) {
+        let { edit } = this.$route.query
+        if ( typeof edit !== 'undefined' ) {
+          let node = edit ? this.findNode(edit) : this.centerNode
+          if (node) {
+            // debugger
+            return node
+          }
+        }
+      }
+    },
+
+    // nodes() {
+    //   debugger
+    //   return this.parseTree(this.tree)
+    // },
+
+    centerNode() {
+      if ( this.nodesLoaded ) {
+        let node = this.findNode(this.$route.params.nodeSlug)
+        this.bump(node)
+        return node
+      }
+    },
+
     thread() { 
       return this.nodes[0].tail()
     }
@@ -254,23 +267,26 @@ export default {
 
   watch: {
 
-    // nodeSlug: {
-    //   // immediate: true,
-    //   handler: function(slug) { 
-    //     console.log(map(this.nodes, 'slug'))
-    //     console.log(this.nodes)
-    //     let node = find(this.nodes, 'slug')
-    //     if (node)
-    //       this.goto(find(this.nodes, { slug })) 
-    //   }
-    // },
+    node(node) {
+      this.bump(node)
+      this.$nextTick(() => {
+        try {
+          window.document.getElementById('input').focus()
+        } catch {}
+      })
 
-    tree: {
-      deep: true, //immediate: true,
-      handler: function(tree) { 
-        this.parseTree(tree) 
-      }
-    }
+    },
+
+    // tree: {
+    //   deep: true, immediate: true,
+    //   handler: function(tree) { 
+    //     if ( this.treeJson != JSON.stringify(tree) )
+    //     {
+    //       this.treeJson = JSON.stringify(tree)
+    //       debugger
+    //     }
+    //   }
+    // }
 
   }
 

@@ -78,6 +78,13 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    loaders: {
+      vue: {
+        compilerOptions: {
+          preserveWhitespace: false
+        }
+      }
+    }
     // extend(config, ctx) {
     //   if (ctx.isDev && ctx.isClient) {
     //     config.module.rules.push({
@@ -94,5 +101,5 @@ export default {
     // }
   },
   
-  ssr: true
+  ssr: false
 }
