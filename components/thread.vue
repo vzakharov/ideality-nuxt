@@ -8,11 +8,16 @@
     />
     <nuxt-link
       :class="{'link-secondary': !topLevel, 'link-dark': topLevel, 'text-decoration-none': true}"
-      :to="`/d/${d.doc.id}/${
-        topLevel
-          ? `${d.centerNode.slug}?edit=${node.slug}`
-          : `${node.slug}?edit`
-      }`"
+      :to="{
+        name: 'd-docId-nodeSlug',
+        params: { 
+          docId: d.doc.id,
+          nodeSlug: topLevel ? d.centerNode.slug : node.slug 
+        },
+        query: {
+          edit: topLevel ? node.slug : null
+        }
+      }"
       v-if="node!=d.node && ( typeof node.body !== 'undefined' )"
       v-html='node.body ? escape(node.body).replace(/\n/g, "<br/>") : "[empty]"'
     />

@@ -15,11 +15,11 @@
       </div>
       <div>
         <thread 
-          v-if='nodes'
+          v-if='centerNode'
           :start='nodes[0]'
           :topLevel=true
           :d='vm' 
-          @node-action='goto($event.node[$event.action]())'
+          @node-action='nodeAction($event.node, $event.action, $event.options)'
         />
       </div>
       <!-- <hr>
@@ -33,7 +33,7 @@ import navbar from '~/components/navbar.vue'
 import Vue from 'vue'
 import TextareaAutosize from 'vue-textarea-autosize'
 import _ from 'lodash'
-import { assign, filter, find, forEach, map, now, orderBy, without } from 'lodash'
+import { assign, filter, find, forEach, map, now, orderBy, pick, without } from 'lodash'
 import Thread from '~/components/thread.vue'
 import Login from '~/components/login.vue'
 import Tree from '~/components/tree.vue'
@@ -60,49 +60,30 @@ export default {
 
   data() {
     let { params } = this.$route
-    let { docId, nodeSlug } = params
-    let tree = {
-      children: [{ 
-        body: 'Hello world', children: [{
-          body: '! My name is', children: [{
-            body:' Vova', children: [{
-              body: '. Bye-bye!'
-            }]}, {
-              body: ' Jack.'
-            }
-          ]
-        }, {
-          body: '. How are you?',
-          children: [{
-            body: " I'm okay"
-          }]
-        }, {
-          body: '? Hmm...'
-        }, {
-          body: 'Test'
-        }]
-      }]
-    }
+    let tree = JSON.parse(JSON.stringify(this.$store.state.tree))
     let data = {
       vm: this,
+      centerNode: null,
       doc: {
         name:'Hello  world',
         id: params.docId,
       },
-      nodeSlug,
+      node: null,
+      nodes: [],
       editingDocName: false,
-      nodesLoaded: null,
+      route: null,
       tree,
       treeJson: '',
       _: this._
     }
+    data.nodes =
+    data.nodesLoaded = new Promise(resolve => data.resolveNodesLoaded = resolve)
     console.log('data prepared')
     return data
   },
 
   created() {
-    this.nodes = this.parseTree(this.tree)
-
+    // this.parseTree()
   },
 
   mounted() {
@@ -126,14 +107,28 @@ export default {
       this.$nextTick(() => this.$refs.docNameInput.focus())
     },
 
-    findNode(slug) {
+    findNode(slug, nodes = this.nodes) {
       return find(this.nodes, { slug })
     },
 
     goto(node) {
+      
+      let destination = {
+        name: 'd-docId-nodeSlug',
+        params: {
+          docId: this.doc.id,
+          nodeSlug: node.slug
+        },
+        query: { edit: null }
+      }
+      this.$router.push(destination)
 
-      // this.$router.push()
+    },
 
+    async nodeAction(node, action, options ) {
+      let nodeToGoto = await doAction[action](node, options, { rebuild: this.parseTree })
+      debugger
+      this.goto(nodeToGoto)
     },
 
     openDoc(doc) {
@@ -141,7 +136,7 @@ export default {
       console.log(this.tree)
     },
 
-    parseTree(tree) {
+    parseTree(tree = this.tree) {
 
       // if ( this.treeJson && JSON.stringify(tree) == this.treeJson )
       //   return this.nodes
@@ -149,6 +144,10 @@ export default {
       let slugs = []
       let index = 1
       let nodes = crawl(tree, (node, parent) => {
+
+        for ( let key in node ) {
+          this.$set(node, key, node[key])
+        }
         this.$set(node, 'bumped', node.bumped || index++)
         this.set(node, {
           
@@ -172,14 +171,14 @@ export default {
             siblings: without(parent.children, node),
 
           })
-        
-        node.split = () => console.log("Split requested")
 
         return node
+        
       })
 
       nodes.forEach(node => {
-        if (node.hasChildren) {
+
+        if ( node.hasChildren ) {
           node.heirs = () => orderBy(node.children, ['bumped'], ['desc'])
         }
 
@@ -189,9 +188,10 @@ export default {
 
       // this.treeJson = JSON.stringify(tree)
 
-      if ( !this.nodesLoaded )
-        this.nodesLoaded = true
+      this.resolveNodesLoaded()
 
+      assign(this, {nodes})
+      
       return nodes
     },
 
@@ -199,20 +199,9 @@ export default {
       console.log(valueses)
       forEach(valueses, values =>
         forEach(values, (value, key) => {
-          // console.log(key, value)
-          console.log('\n\nSetting')
-          console.log(key)
-          console.log('for')
-          console.log(object)
-          console.log('to')
-          console.log(value)
-          let current = Object.getOwnPropertyDescriptor(object, key)
-          console.log('(current):')
-          console.log(current)
           this.$set(object, key, value)
+          let current = Object.getOwnPropertyDescriptor(object, key)
           if ( !current || !current.value ) {
-            console.log(object.__lookupSetter__(key))
-            console.log(object.__lookupGetter__(key))
             Object.defineProperty(object, key, {
               set: object.__lookupSetter__(key),
               get: object.__lookupGetter__(key),
@@ -227,67 +216,76 @@ export default {
   },
 
   computed: {
-    node() {
-      // debugger
-      if ( this.centerNode ) {
-        let { edit } = this.$route.query
-        if ( typeof edit !== 'undefined' ) {
-          let node = edit ? this.findNode(edit) : this.centerNode
-          if (node) {
-            // debugger
-            return node
-          }
-        }
-      }
-    },
-
-    // nodes() {
-    //   debugger
-    //   return this.parseTree(this.tree)
+    // node() {
+    //   // debugger
+    //   if ( this.centerNode ) {
+    //     let { edit } = this.$route.query
+    //     if ( typeof edit !== 'undefined' ) {
+    //       let node = edit ? this.findNode(edit) : this.centerNode
+    //       if (node) {
+    //         this.bump(node)
+    //         this.$nextTick(() => {
+    //           try {
+    //             window.document.getElementById('input').focus()
+    //           } catch {}
+    //         })
+    //         // debugger
+    //         return node
+    //       }
+    //     }
+    //   }
     // },
 
-    centerNode() {
-      if ( this.nodesLoaded ) {
-        let node = this.findNode(this.$route.params.nodeSlug)
-        this.bump(node)
-        return node
-      }
-    },
+    // centerNode() {
+    //   if ( this.nodesLoaded ) {
+    //     let node = this.findNode(this.$route.params.nodeSlug)
+    //     if ( node ) {
+    //       this.bump(node)
+    //       return node
+    //     }
+    //   }
+    // },
 
     thread() { 
       return this.nodes[0].tail()
     }
-    // the() {
-    //   return {
-    //     thread: getThread(this.tree),
-    //     node: this.theNode
-    //   }
-    // }
+
   },
 
   watch: {
-
-    node(node) {
-      this.bump(node)
-      this.$nextTick(() => {
-        try {
-          window.document.getElementById('input').focus()
-        } catch {}
-      })
-
+    tree: {
+      deep: true,
+      handler() {
+        this.$store.commit('set', {tree: JSON.parse(JSON.stringify(this.tree))})
+      }
     },
+    $route: {
+      immediate: true,
+      handler(route, oldRoute) {
 
-    // tree: {
-    //   deep: true, immediate: true,
-    //   handler: function(tree) { 
-    //     if ( this.treeJson != JSON.stringify(tree) )
-    //     {
-    //       this.treeJson = JSON.stringify(tree)
-    //       debugger
-    //     }
-    //   }
-    // }
+        if ( oldRoute && route.fullPath == oldRoute.fullPath )
+          return
+        this.parseTree()
+        this.centerNode = this.findNode(route.params.nodeSlug)
+        if ( this.centerNode ) {
+          this.bump(this.centerNode)
+          let { edit } = route.query
+          if ( typeof edit !== 'undefined' ) {
+            let node = edit ? this.findNode(edit) : this.centerNode
+            if (node) {
+              this.bump(node)
+              assign(this, {node})
+              this.$nextTick(() => {
+                try {
+                  window.document.getElementById('input').focus()
+                } catch {}
+              })
+            }
+          }
+        }
 
+      }
+    }
   }
 
 }
@@ -344,6 +342,25 @@ function slugify(text, { keepTail, defaultText, slugs, mutateSlugs } = {} ) {
 
   return slug
 }
+
+const doAction = {
+
+  addChild: node => {
+    let child = {}
+    node.children.push(child)
+    return child
+  },
+
+  split: (node, { at }, { rebuild }) => {
+    let child = pick(node, 'children')
+    node.children = [ child ]
+    child.body = node.body.slice(at)
+    node.body = node.body.slice(0, at)
+    rebuild()
+    return child
+  }
+}
+
 
 </script>
 
