@@ -9,9 +9,9 @@
     <nuxt-link
       :class="{'link-secondary': !topLevel, 'link-dark': topLevel, 'text-decoration-none': true}"
       :to="{
-        name: 'd-docId-nodeSlug',
+        name: 'p-projectId-nodeSlug',
         params: { 
-          docId: d.doc.id,
+          projectId: d.doc.id,
           nodeSlug: topLevel ? d.centerNode.slug : node.slug 
         },
         query: {

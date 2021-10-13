@@ -19,7 +19,7 @@
           :start='nodes[0]'
           :topLevel=true
           :d='vm' 
-          @node-action='nodeAction($event.node, $event.action, $event.options)'
+          @node-action='doNodeAction($event.node, $event.action, $event.options)'
         />
       </div>
       <!-- <hr>
@@ -66,7 +66,7 @@ export default {
       centerNode: null,
       doc: {
         name:'Hello  world',
-        id: params.docId,
+        id: params.projectId,
       },
       node: null,
       nodes: [],
@@ -114,9 +114,9 @@ export default {
     goto(node) {
       
       let destination = {
-        name: 'd-docId-nodeSlug',
+        name: 'p-projectId-nodeSlug',
         params: {
-          docId: this.doc.id,
+          projectId: this.doc.id,
           nodeSlug: node.slug
         },
         query: { edit: null }
@@ -125,9 +125,11 @@ export default {
 
     },
 
-    async nodeAction(node, action, options ) {
-      let nodeToGoto = await doAction[action](node, options, { rebuild: this.parseTree })
-      debugger
+    async doNodeAction(node, action, options ) {
+      action = nodeAction[action]
+      let nodeToGoto = await action.run(node, options, { rebuild: this.parseTree })
+      if ( action.rebuild )
+        this.parseTree()
       this.goto(nodeToGoto)
     },
 
@@ -343,21 +345,23 @@ function slugify(text, { keepTail, defaultText, slugs, mutateSlugs } = {} ) {
   return slug
 }
 
-const doAction = {
+const nodeAction = {
 
-  addChild: node => {
-    let child = {}
-    node.children.push(child)
-    return child
+  split: {
+    run: (node, { at }) => {
+      let child = pick(node, 'children')
+      node.children = [ child ]
+      child.body = node.body.slice(at)
+      node.body = node.body.slice(0, at)
+      return child
+    },
+    rebuild: true
   },
 
-  split: (node, { at }, { rebuild }) => {
-    let child = pick(node, 'children')
-    node.children = [ child ]
-    child.body = node.body.slice(at)
-    node.body = node.body.slice(0, at)
-    rebuild()
-    return child
+  addSibling: {
+    run: node => {
+      node.siblings.push({})
+    }
   }
 }
 
