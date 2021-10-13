@@ -6,18 +6,10 @@
       :node='node'
       @action="$emit('node-action', $event)"
     />
-    <nuxt-link
+    <a
       :class="{'link-secondary': !topLevel, 'link-dark': topLevel, 'text-decoration-none': true}"
-      :to="{
-        name: 'p-projectId-nodeSlug',
-        params: { 
-          projectId: d.project.id,
-          nodeSlug: topLevel ? d.centerNode.slug : node.slug 
-        },
-        query: {
-          edit: topLevel ? node.slug : null
-        }
-      }"
+      :href="d.getNodeRoute(node).href"
+      @click.prevent="$emit('node-click', { node })"
       v-if="node!=d.node && ( typeof node.body !== 'undefined' )"
       v-html='node.body ? escape(node.body).replace(/\n/g, "<br/>") : "[empty]"'
     />

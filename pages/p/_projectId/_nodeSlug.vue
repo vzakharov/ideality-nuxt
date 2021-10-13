@@ -20,6 +20,7 @@
           :topLevel=true
           :d='vm' 
           @node-action='doNodeAction($event.node, $event.action, $event.options)'
+          @node-click='goto($event.node)'
         />
       </div>
       <!-- <hr>
@@ -76,9 +77,9 @@ export default {
       treeJson: '',
       _: this._
     }
-    data.nodes =
+    // data.nodes =
     data.nodesLoaded = new Promise(resolve => data.resolveNodesLoaded = resolve)
-    console.log('data prepared')
+    // console.log('data prepared')
     return data
   },
 
@@ -108,20 +109,37 @@ export default {
     },
 
     findNode(slug, nodes = this.nodes) {
-      return find(this.nodes, { slug })
+      if ( !slug ) 
+        return nodes[0]
+      let node = find(nodes, { slug })
+      if ( !node )
+        node = find(nodes, node => node.body && this.slugify(node.body, {keepTail: true}).includes(slug))
+      return node
     },
 
-    goto(node) {
-      
-      let destination = {
+    getNodeRoute(node) {
+
+      let { centerNode } = this
+      let switchCenterNode = centerNode != node && !centerNode.ancestors.includes(node) && !node.ancestors.includes(this.centerNode)
+      let location = {
         name: 'p-projectId-nodeSlug',
         params: {
           projectId: this.project.id,
-          nodeSlug: node.slug
+          nodeSlug: ( switchCenterNode ? node : this.centerNode ).slug
         },
-        query: { edit: null }
+        query: { edit: switchCenterNode ? null : node.slug }
       }
-      this.$router.push(destination)
+      return {...this.$router.resolve(location), location }
+    },
+
+    goto(node) {
+
+      let nodeRoute = this.getNodeRoute(node)
+
+      history.replaceState(null, null, nodeRoute.href)
+      if ( nodeRoute.switchCenterNode )
+        assign(this, { centerNode })
+      assign(this, { node })
 
     },
 
@@ -153,7 +171,7 @@ export default {
         this.$set(node, 'bumped', node.bumped || index++)
         this.set(node, {
           
-          slug: slugify(node.body, { defaultText: 'node', slugs, mutateSlugs: true }),
+          slug: this.slugify(node.body, { defaultText: 'node', mutateSlugs: true, slugs }),
 
           hasChildren: node.children && node.children.length > 0,
 
@@ -188,6 +206,7 @@ export default {
 
       })
 
+      nodes = orderBy(nodes, 'bumped', 'desc')
       // this.treeJson = JSON.stringify(tree)
 
       this.resolveNodesLoaded()
@@ -213,6 +232,41 @@ export default {
           }
         })
       )
+    },
+
+    slugify(text, { keepTail, defaultText, mutateSlugs, slugs, excludeNodes } = {} ) {
+      // debugger
+      if ( !slugs ) slugs = map(without(this.nodes, ...excludeNodes), 'slug')
+      let slug = (text || defaultText)
+
+      if ( !keepTail )
+        slug = slug
+          .replace(/(?<=^.{20}.*?)\W.+/s, '')
+      
+      slug = slug
+        .replace(/\W+/g, ' ')
+        .trim()
+        .replace(/ /g, '-')
+        .toLowerCase()
+        || defaultText
+
+      // if (slug=='world-applications') debugger
+
+      let numSlugsakes = filter(slugs, anotherSlug =>
+        anotherSlug.match(new RegExp(
+          `^${slug}(-\\d+)?$`)
+        )
+      ).length
+
+      if ( numSlugsakes ) {
+        // debugger
+        slug += '-' + numSlugsakes
+      }
+
+      if ( mutateSlugs )
+        slugs.push(slug)
+
+      return slug
     }
 
   },
@@ -255,12 +309,21 @@ export default {
   },
 
   watch: {
+    'node.body': function(body) {
+      let { node } = this
+      if ( !node ) return
+      node.slug = this.slugify(body, { defaultText: 'node', excludeNodes: [node] })
+      this.goto(node)
+    },
+
     tree: {
       deep: true,
       handler() {
         this.$store.commit('set', {tree: JSON.parse(JSON.stringify(this.tree))})
+        this.parseTree()
       }
     },
+
     $route: {
       immediate: true,
       handler(route, oldRoute) {
@@ -268,13 +331,17 @@ export default {
         if ( oldRoute && route.fullPath == oldRoute.fullPath )
           return
         this.parseTree()
-        this.centerNode = this.findNode(route.params.nodeSlug)
+
+        let { projectId, nodeSlug } = route.params
+
+        this.centerNode = this.findNode(nodeSlug)
+
         if ( this.centerNode ) {
           this.bump(this.centerNode)
           let { edit } = route.query
           if ( typeof edit !== 'undefined' ) {
             let node = edit ? this.findNode(edit) : this.centerNode
-            if (node) {
+            if ( node ) {
               this.bump(node)
               assign(this, {node})
               this.$nextTick(() => {
@@ -311,39 +378,6 @@ function crawl(node, callback, { parent } = {} ) {
   ].flat()
 }
 
-function slugify(text, { keepTail, defaultText, slugs, mutateSlugs } = {} ) {
-  // debugger
-  let slug = (text || defaultText)
-
-  if ( !keepTail )
-    slug = slug
-      .replace(/(?<=^.{20}.*?)\W.+/s, '')
-  
-  slug = slug
-    .replace(/\W+/g, ' ')
-    .trim()
-    .replace(/ /g, '-')
-    .toLowerCase()
-    || defaultText
-
-  // if (slug=='world-applications') debugger
-
-  let numSlugsakes = filter(slugs, anotherSlug => 
-    anotherSlug.match(new RegExp(
-      `^${slug}(-\\d+)?$`)
-    )
-  ).length
-
-  if ( numSlugsakes ) {
-    // debugger
-    slug += '-' + numSlugsakes
-  }
-
-  if ( mutateSlugs )
-    slugs.push(slug)
-
-  return slug
-}
 
 const nodeAction = {
 
