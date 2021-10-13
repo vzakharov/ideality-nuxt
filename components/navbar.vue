@@ -7,9 +7,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <b-dropdown v-if='$auth.loggedIn' variant='light' text="Documents">
-          <b-dropdown-item v-for='doc in userDocuments' :key='doc._id' @click="$emit('openDoc', doc)">
-            {{ doc.name || doc._id }}
+        <b-dropdown v-if='$auth.loggedIn' variant='light' text="Projects">
+          <b-dropdown-item v-for='project in userProjects' :key='project._id' @click="$emit('openProject', project)">
+            {{ project.name || project._id }}
           </b-dropdown-item>
         </b-dropdown>
         <li class="nav-item">
@@ -60,7 +60,7 @@ export default {
   },
 
   asyncComputed: {
-    async userDocuments() {
+    async userProjects() {
       // console.log('hello')
       if (!this.$auth.loggedIn)
         return false

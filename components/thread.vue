@@ -11,7 +11,7 @@
       :to="{
         name: 'p-projectId-nodeSlug',
         params: { 
-          projectId: d.doc.id,
+          projectId: d.project.id,
           nodeSlug: topLevel ? d.centerNode.slug : node.slug 
         },
         query: {

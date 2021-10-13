@@ -1,13 +1,13 @@
 <template>
   <div class="container-fluid p-0 bg-light vh-100 pt-5">
     <div class="container-sm w-auto p-3 shadow rounded mx-auto" style="max-width: 800px">
-      <navbar @openDoc="openDoc"/>
+      <navbar @openProject="openProject"/>
       <div>
-        <h1 v-if="!editingDocName" @click="editDocName()">{{ doc.name }}</h1>
+        <h1 v-if="!editingDocName" @click="editDocName()">{{ project.name }}</h1>
         <input
           ref="docNameInput"
           type="text"
-          v-model="doc.name"
+          v-model="project.name"
           v-if="editingDocName"
           @blur="changeName()"
           @keyup.enter="changeName()"
@@ -48,7 +48,7 @@ export default {
 
   head() {
     return {
-      title: this.doc.name + ' 🔺 Ideality',
+      title: this.project.name + ' 🔺 Ideality',
       link: [
         {
           rel: 'canonical',
@@ -64,7 +64,7 @@ export default {
     let data = {
       vm: this,
       centerNode: null,
-      doc: {
+      project: {
         name:'Hello  world',
         id: params.projectId,
       },
@@ -116,7 +116,7 @@ export default {
       let destination = {
         name: 'p-projectId-nodeSlug',
         params: {
-          projectId: this.doc.id,
+          projectId: this.project.id,
           nodeSlug: node.slug
         },
         query: { edit: null }
@@ -133,8 +133,8 @@ export default {
       this.goto(nodeToGoto)
     },
 
-    openDoc(doc) {
-      this.tree = JSON.parse(doc.tree)
+    openProject(project) {
+      this.tree = JSON.parse(project.tree)
       console.log(this.tree)
     },
 
