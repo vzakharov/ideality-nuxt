@@ -21,6 +21,7 @@
           :d='vm' 
           @node-action='doNodeAction($event.node, $event.action, $event.options)'
           @node-click='goto($event.node)'
+          @input-blur='goto(node)'
         />
       </div>
       <!-- <hr>
@@ -120,14 +121,14 @@ export default {
     getNodeRoute(node) {
 
       let { centerNode } = this
-      let switchCenterNode = centerNode != node && !centerNode.ancestors.includes(node) && !node.ancestors.includes(this.centerNode)
+      // let switchCenterNode = centerNode != node && !centerNode.ancestors.includes(node) && !node.ancestors.includes(this.centerNode)
       let location = {
         name: 'p-projectId-nodeSlug',
         params: {
           projectId: this.project.id,
-          nodeSlug: ( switchCenterNode ? node : this.centerNode ).slug
+          nodeSlug: node.slug
         },
-        query: { edit: switchCenterNode ? null : node.slug }
+        query: { edit: null }
       }
       return {...this.$router.resolve(location), location }
     },
@@ -137,9 +138,10 @@ export default {
       let nodeRoute = this.getNodeRoute(node)
 
       history.replaceState(null, null, nodeRoute.href)
-      if ( nodeRoute.switchCenterNode )
-        assign(this, { centerNode })
-      assign(this, { node })
+      if ( node != this.node ) {
+        assign(this, { node, centerNode: node })
+        this.bump(node)
+      }
 
     },
 
@@ -236,7 +238,8 @@ export default {
 
     slugify(text, { keepTail, defaultText, mutateSlugs, slugs, excludeNodes } = {} ) {
       // debugger
-      if ( !slugs ) slugs = map(without(this.nodes, ...excludeNodes), 'slug')
+      if ( !slugs ) 
+        slugs = map(without(this.nodes, ...excludeNodes || []), 'slug')
       let slug = (text || defaultText)
 
       if ( !keepTail )
@@ -252,19 +255,21 @@ export default {
 
       // if (slug=='world-applications') debugger
 
-      let numSlugsakes = filter(slugs, anotherSlug =>
-        anotherSlug.match(new RegExp(
-          `^${slug}(-\\d+)?$`)
-        )
-      ).length
+      if ( slugs ) {
+        let numSlugsakes = filter(slugs, anotherSlug =>
+          anotherSlug.match(new RegExp(
+            `^${slug}(-\\d+)?$`)
+          )
+        ).length
 
-      if ( numSlugsakes ) {
-        // debugger
-        slug += '-' + numSlugsakes
+        if ( numSlugsakes ) {
+          // debugger
+          slug += '-' + numSlugsakes
+        }
+
+        if ( mutateSlugs )
+          slugs.push(slug)
       }
-
-      if ( mutateSlugs )
-        slugs.push(slug)
 
       return slug
     }
@@ -313,16 +318,16 @@ export default {
       let { node } = this
       if ( !node ) return
       node.slug = this.slugify(body, { defaultText: 'node', excludeNodes: [node] })
-      this.goto(node)
+      // this.goto(node)
     },
 
-    tree: {
-      deep: true,
-      handler() {
-        this.$store.commit('set', {tree: JSON.parse(JSON.stringify(this.tree))})
-        this.parseTree()
-      }
-    },
+    // tree: {
+    //   deep: true,
+    //   handler() {
+    //     this.$store.commit('set', {tree: JSON.parse(JSON.stringify(this.tree))})
+    //     this.parseTree()
+    //   }
+    // },
 
     $route: {
       immediate: true,

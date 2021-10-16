@@ -1,5 +1,5 @@
 <template>
-  <b-form @submit.prevent="userLogin" style="width:240px;" class="p-2">
+  <div style="width:240px;" class="p-2">
     <div>
       <label>Email</label>
       <b-input type="email" v-model="login.email" />
@@ -9,9 +9,9 @@
       <b-input type="password" v-model="login.password" />
     </div>
     <div>
-      <button class="btn btn-primary mt-2" type="button">Submit</button>
+      <button @click.prevent="userLogin" class="btn btn-primary mt-2" type="button" v-text="'Submit'"/>
     </div>
-  </b-form>
+  </div>
 </template>
 
 <script>
@@ -25,13 +25,8 @@ export default {
     }
   },
   methods: {
-    async userLogin() {
-      try {
-        let response = await this.$auth.loginWith('local', { data: this.login })
-        console.log(this.$auth.user)
-      } catch (err) {
-        console.log(err)
-      }
+    userLogin() {
+      return this.$auth.loginWith('local', { data: this.login })
     }
   }
 }

@@ -1,0 +1,38 @@
+name: Tweet ideas
+apiKey: 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
+examples:
+  - input: A small startup that ships handmade jewelry from all over the world.
+    output: >-
+      - Pictures of the places where you ship your jewelry from to create a
+      sense of authenticity
+      - Behind-the-scenes content to show how your business works
+      - What inspires you to do what you do
+      - Stories about how customers react to receiving the jewelry
+  - input: I'm a freelance writer focusing on tech
+    output: >-
+      - Links to interesting news and updates about new and upcoming technology
+      - Copywriting tips and wisdom to build your reputation of being a master
+      of your craft
+      - Posts about what you have learned from your customers, for them to
+      learn from you
+      - Listicles on how tech people can be better marketers or how to best
+      tell a story about their products
+  - output: |-
+      - Advice for new mothers to navigate motherhood
+      - A behind-the-scenes peek into how your family does things
+      - Tips on how to keep your kids occupied during the day
+      - “A mom's perspective on what's happening in the world”
+    input: Stay-at-home mom with four kids
+  - output: >-
+      - New and innovative writing techniques, based on your interests and
+      preferences.
+      - Tips for how to transform your life through film and story telling.
+      - Interviews with influential people in the industry to get the inside
+      scoop.
+      - Controversial and thought-provoking ideas and theories on filmmaking.
+    input: I'm a writer and director with no formal training in the craft
+inputCaption: Tell us about your company or business
+inputPlaceholder: We develop a...
+outputCaption: Here are some cool things you can tweet about
+instruction: Suggest things to tweet about depending on the user’s description of themself.
+context: ''

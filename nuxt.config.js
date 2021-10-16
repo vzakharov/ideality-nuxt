@@ -60,7 +60,8 @@ export default {
           user: {url: 'https://ideality.app/version-test/api/1.1/wf/getUserInfo', method: 'post'}
         }
       }
-    }
+    },
+    redirect: false
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -101,5 +102,9 @@ export default {
     // }
   },
   
+  serverMiddleware: {
+    '/api': '~/api'
+  },
+
   ssr: false
 }
