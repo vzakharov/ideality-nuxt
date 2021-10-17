@@ -29,7 +29,7 @@ export default {
     inputProps() {
       let { object, _key, placeholder, disabled } = this
       return {
-        class: 'w-50 form-control',
+        class: 'form-control w-100',
         'v-model': object[_key],
         placeholder,
         disabled

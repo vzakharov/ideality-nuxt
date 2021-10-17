@@ -31,14 +31,14 @@
           }"
         />
         <button class="btn btn-light" @click="config.examples = without(config.examples, example)" v-text="'Delete'"/>
-        <hr class="w-50"/>
+        <hr/>
       </div>
       <button class="btn btn-primary" @click="config.examples = [...config.examples, {}]" v-text="'Add'"/>
     </div>
     <div v-else>
       <textarea-autosize
         style="font-family: monospace!important"
-        class="text-monospace w-50"
+        class="text-monospace"
         v-model="configYaml"
       />
     </div>
@@ -103,7 +103,7 @@ export default {
     configYaml: {
       get() { return yaml.dump(this.config) },
 
-      set(value) { this.$emit('loadYaml', { value }) }
+      set(value) { this.config =$emit('loadYaml', { value }) }
     },
     saveDisabled() { return !this.changed || this.saving }
   }

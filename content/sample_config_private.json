@@ -1,5 +1,4 @@
 {
-  "name": "Tweet ideas",
   "apiKey": "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",
   "examples": [
     {
@@ -19,9 +18,6 @@
       "input": "I'm a writer and director with no formal training in the craft"
     }
   ],
-  "inputCaption": "Tell us about your company or business",
-  "inputPlaceholder": "We develop a...",
-  "outputCaption": "Here are some cool things you can tweet about",
   "instruction": "Suggest things to tweet about depending on the user’s description of themself.",
   "context": ""
 }

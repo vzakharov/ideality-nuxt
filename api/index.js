@@ -1,6 +1,7 @@
 const express = require('express')
 const axios = require('axios')
 const yaml = require('js-yaml')
+const { stripIndent } = require('common-tags')
 
 const app = express()
 app.use(express.json())
@@ -17,27 +18,32 @@ app.post('/widget/generate', async (req, res, next) =>
     let output
   
     console.log({id, input})
-    let r = await axios.get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
-    console.log(r)
+
+    let r = await axios.get('https://ideality.app/version-test/api/1.1/obj/widget/' + id, { headers: {
+      'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
+    }})
   
-    let { data: { response: { config } } } = r
+    let { data: { response: { config, template } } } = r
     config = JSON.parse(config)
+    template = JSON.parse(template)
   
-    console.log(config)
-  
+    let { context, examples, inputPrefix, outputPrefix } = config
+    let { apiKey, instruction } = template
+
     let prompt = [
-      config.instruction,
-      config.context,
-      config.examples.map(example => [
-        "Input:\n" + example.input,
-        "Output:\n" + example.output
-      ].join("\n\n")),
-      "Input:"
-    ].filter(s=>s).join("\n\n")
-  
+      instruction,
+      context,
+      examples.map(example =>
+        `${inputPrefix}:\n${example.input}\n\n${outputPrefix}:${example.output}`
+      ).join('\n\n'),
+      inputPrefix+':\n'
+    ].filter(a=>a).join('\n\n')
+
     if ( input )
-      prompt += "\n" +input + "\n\nOutput:"
+      prompt += `${input}\n\n${outputPrefix}:\n`
   
+    console.log(prompt)
+
     let payload = {
       prompt,
       temperature: 0.75, 
@@ -45,7 +51,7 @@ app.post('/widget/generate', async (req, res, next) =>
       frequency_penalty: 1,
       presence_penalty: 1,
       n: 1,
-      stop: ["Input:"]
+      stop: [inputPrefix + ':']
     }
   
     let response = await axios.post(
@@ -53,7 +59,7 @@ app.post('/widget/generate', async (req, res, next) =>
       payload,
       {
         headers: {
-          Authorization: `Bearer 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`
+          Authorization: `Bearer ${apiKey}`
         }
       }
     )
@@ -64,10 +70,8 @@ app.post('/widget/generate', async (req, res, next) =>
   
     if ( input ) 
       output = text.trim()
-    else {
-      input = text.match(/[^\n]+/)[0].trim()
-      output = text.match(/(?<=Output:\n)[\s\S]*?(?=\n\n|$)/)[0].trim()
-    } 
+    else
+      [input, output] = text.split(outputPrefix+':').map(s=>s.trim())
   
     res.send({input, output})
   } catch(err) {
