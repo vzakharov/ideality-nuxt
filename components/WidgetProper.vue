@@ -5,8 +5,8 @@
         object: self,
         _key: 'input',
         id: 'user-input',
-        caption: config.inputCaption,
-        placeholder: config.inputPlaceholder,
+        caption: display.inputCaption,
+        placeholder: display.inputPlaceholder,
         labelTag: 'h3',
         disabled: generating
       }"
@@ -26,7 +26,7 @@
       object: self,
       _key: 'output',
       multiline: true,
-      caption: config.outputCaption
+      caption: display.outputCaption
     }"/>
   </div>
 </template>
@@ -65,6 +65,10 @@
 
       }
 
+    },
+
+    computed: {
+      display() { return this.config.display }
     }
 
   }

@@ -3,41 +3,65 @@
     <button :class="{ btn: true, 'btn-danger': !saveDisabled }" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
     <div class="form-check">
       <input class="form-check-input" type="checkbox" id="edit-yaml" v-model="editYaml"/>
-      <label for="edit-yaml" v-text="'Edit YAML'"/>
+      <label for="edit-yaml" v-text="'Edit as YAML'"/>
     </div>
     <div v-if="!editYaml">
-      <h3 v-text="'General settings'"/>
-      <TextInputs :object="config" :fields="{
+      <ul class="nav nav-tabs">
+        <li class="nav-item" 
+          v-for="item in [
+            { slug: 'setup', caption: 'Algo settings' },
+            { slug: 'display', caption: 'Display settings'},
+            { slug: 'template', caption: 'Template settings'}
+          ].filter(item=>vm[item.slug])"
+          :key="item.slug"
+        >
+          <a href="#"
+            :class="{
+              'nav-link': true,
+              active: section == item.slug
+            }"
+            v-text="item.caption"
+            @click="section = item.slug"
+          />
+        </li>
+      </ul>
+
+      <template v-if="section=='setup'">
+        <TextInputs :object="setup" :fields="{
+          context: { caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true },
+        }"/>
+        <h4 v-text="'Examples for AI to use'"/>
+        <div v-for="(example, i) in setup.examples" :key="i">
+          <TextInputs
+            :object="example" :fields="{
+              input: { caption: 'Input', placeholder: 'Something the user might input' },
+              output: { caption: 'Output', placeholder: 'Something the setup can output', multiline: true}
+            }"
+          />
+          <button class="btn btn-light" @click="setup.examples = without(setup.examples, example)" v-text="'Delete'"/>
+          <hr/>
+        </div>
+        <button class="btn btn-primary" @click="setup.examples = [...setup.examples, {}]" v-text="'Add'"/>
+      </template>
+
+      <TextInputs v-if="section=='display'" :object="display" :fields="{
         name: { caption: 'Widget name', placeholder: 'My new widget' },
-        apiKey: { caption: 'API key', placeholder: 'sk-...' },
-      }"/>
-      <h3 v-text="'Display settings'"/>
-      <TextInputs :object="config" :fields="{
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
       }"/>
-      <h3 v-text="'AI settings'"/>
-      <TextInputs :object="config" :fields="{
+
+      <TextInputs v-if="section=='template'" :object="template" :fields="{
+        apiKey: { caption: 'API key', placeholder: 'sk-...' },
         instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
-        context: { caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true },
       }"/>
-      <h4 v-text="'Examples for AI to use'"/>
-      <div v-for="(example, i) in config.examples" :key="i">
-        <TextInputs
-          :object="example" :fields="{
-            input: { caption: 'Input', placeholder: 'Something the user might input' },
-            output: { caption: 'Output', placeholder: 'Something the config can output', multiline: true}
-          }"
-        />
-        <button class="btn btn-light" @click="config.examples = without(config.examples, example)" v-text="'Delete'"/>
-        <hr/>
-      </div>
-      <button class="btn btn-primary" @click="config.examples = [...config.examples, {}]" v-text="'Add'"/>
+
     </div>
+
+    <!-- YAML editor -->
     <div v-else>
       <textarea-autosize
-        style="font-family: monospace!important"
+        style="font-family: monospace!important; font-size: smaller;"
         class="text-monospace"
         v-model="configYaml"
       />
@@ -49,16 +73,14 @@
 
 // import TextInputs from '@/components/TextInputs.vue'
 
-import { assign, without } from 'lodash'
+import { assign, pickBy, without } from 'lodash'
 import yaml from 'js-yaml'
 
 export default {
 
-  props: ['config', 'id'],
+  props: ['id', 'config'],
 
   data() { 
-
-    console.log(this.config.$data)
 
     assign(this, { without, yaml })
 
@@ -66,9 +88,9 @@ export default {
       changed: false,
       saving: false,
       saved: false,
-      editYaml: false
+      editYaml: false,
+      section: 'setup'
     }
-
   },
 
   methods: {
@@ -100,12 +122,19 @@ export default {
   },
 
   computed: {
+
     configYaml: {
       get() { return yaml.dump(this.config) },
 
-      set(value) { this.config =$emit('loadYaml', { value }) }
+      set(value) { this.$emit('loadFromYaml', value) }
     },
-    saveDisabled() { return !this.changed || this.saving }
+
+    saveDisabled() { return !this.changed || this.saving },
+
+    setup() { return this.config.setup },
+    display() { return this.config.display },
+    template() { return this.config.template },
+
   }
 
 }

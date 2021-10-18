@@ -23,11 +23,11 @@ app.post('/widget/generate', async (req, res, next) =>
       'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
     }})
   
-    let { data: { response: { config, template } } } = r
-    config = JSON.parse(config)
-    template = JSON.parse(template)
-  
-    let { context, examples, inputPrefix, outputPrefix } = config
+    let { data: { response: { setup, template } } } = r
+    setup = JSON.parse(setup)
+    let { context, examples, inputPrefix, outputPrefix } = setup
+
+    template = JSON.parse(template)  
     let { apiKey, instruction } = template
 
     let prompt = [

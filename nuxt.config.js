@@ -21,6 +21,7 @@ export default {
   plugins: [
     // '~/plugins/ideality.js',
     // '~/plugins/vue-lodash'
+    '~/plugins/mixin.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
