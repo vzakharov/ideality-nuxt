@@ -2,6 +2,10 @@
   "name": "ideality-nuxt",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "^14.7.6",
+    "npm": "^7.24.0"
+  },
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
@@ -24,6 +28,7 @@
     "nuxt": "^2.15.7",
     "vue-async-computed": "^3.9.0",
     "vue-lodash": "^2.1.2",
-    "vue-textarea-autosize": "^1.1.1"
+    "vue-textarea-autosize": "^1.1.1",
+    "watchpack-chokidar2": "^2.0.1"
   }
 }

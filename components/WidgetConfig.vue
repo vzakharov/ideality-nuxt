@@ -1,10 +1,5 @@
 <template>
   <div>
-    <button :class="{ btn: true, 'btn-danger': !saveDisabled }" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="edit-yaml" v-model="editYaml"/>
-      <label for="edit-yaml" v-text="'Edit as YAML'"/>
-    </div>
     <div v-if="!editYaml">
       <ul class="nav nav-tabs">
         <li class="nav-item" 
@@ -32,11 +27,19 @@
         }"/>
         <h4 v-text="'Examples for AI to use'"/>
         <div v-for="(example, i) in setup.examples" :key="i">
-          <TextInputs
+          <!-- <TextInputs
             :object="example" :fields="{
               input: { caption: display.inputCaption, placeholder: 'Something the user might input' },
               output: { caption: display.outputCaption, placeholder: 'Something the setup can output', multiline: true}
             }"
+          /> -->
+          <WidgetProper
+            v-bind="{
+              config, id,
+              startingInput: example.input,
+              startingOutput: example.output,
+            }"
+            @change="Object.assign(example, $event)"
           />
           <button class="btn btn-light" @click="setup.examples = without(setup.examples, example)" v-text="'Delete'"/>
           <hr/>
@@ -62,12 +65,23 @@
 
     <!-- YAML editor -->
     <div v-else>
-      <textarea-autosize
+      <textarea
         style="font-family: monospace!important; font-size: smaller;"
         class="text-monospace w-100"
-        v-model="configYaml"
+        rows="20"
+        v-model.lazy="configYaml"
       />
     </div>
+
+    <!-- Footer -->
+    <div class="d-flex flex-row py-2 fixed-bottom bg-light container-sm mx-auto" style="max-width: 800px">
+      <button :class="{ btn: true, 'btn-danger': !saveDisabled }" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
+      <div class="form-check align-self-center">
+        <input class="form-check-input" type="checkbox" id="edit-yaml" v-model="editYaml"/>
+        <label for="edit-yaml" v-text="'Edit as YAML'"/>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -128,7 +142,7 @@ export default {
     configYaml: {
       get() { return yaml.dump(this.config) },
 
-      set(value) { this.$emit('loadFromYaml', value) }
+      set(value) { assign(this.config, yaml.load(value)) }
     },
 
     saveDisabled() { return !this.changed || this.saving },

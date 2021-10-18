@@ -33,16 +33,16 @@
 
 <script>
 
-  import { assign } from 'lodash'
+  import { assign, pick} from 'lodash'
 
   export default {
 
-    props: ['config', 'id'],
+    props: ['config', 'id', 'startingInput', 'startingOutput'],
 
     data() { return {
       self: this,
-      output: null,
-      input: null,
+      input: this.startingInput,
+      output: this.startingOutput,
       generating: false
     }},
 
@@ -69,6 +69,11 @@
 
     computed: {
       display() { return this.config.display }
+    },
+
+    watch: {
+      input() { this.$emit('change', {input: this.input, output: this.output })},
+      output() { this.$emit('change', {input: this.input, output: this.output })},
     }
 
   }
