@@ -16,7 +16,7 @@
       <b-button variant="primary" v-text="'Suggest'" :disabled="!input"
         @click="generate"
       />
-      <b-button variant="light" v-text="'Show me how'"
+      <b-button variant="light" v-text="'Give me an example'"
         @click="input=''; generate()"
       />
     </div>

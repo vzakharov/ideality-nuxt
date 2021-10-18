@@ -25,16 +25,16 @@ app.post('/widget/generate', async (req, res, next) =>
   
     let { data: { response: { setup, template } } } = r
     setup = JSON.parse(setup)
-    let { context, examples, inputPrefix, outputPrefix } = setup
+    let { context, examples } = setup
 
     template = JSON.parse(template)  
-    let { apiKey, instruction } = template
+    let { apiKey, instruction, inputPrefix, outputPrefix } = template
 
     let prompt = [
       instruction,
       context,
       examples.map(example =>
-        `${inputPrefix}:\n${example.input}\n\n${outputPrefix}:${example.output}`
+        `${inputPrefix}:\n${example.input}\n\n${outputPrefix}:\n${example.output}`
       ).join('\n\n'),
       inputPrefix+':\n'
     ].filter(a=>a).join('\n\n')

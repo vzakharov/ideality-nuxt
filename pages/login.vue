@@ -1,9 +1,10 @@
 <template>
-  <div>
-    <Login v-if="!$auth.loggedIn"/>
-    <div v-else>
-      Already logged in as {{ $auth.user.Slug }}. <a href="#" @click.prevent="$auth.logout()">Log out?</a>
+  <div class="p-2">
+    <div v-if="$auth.loggedIn">
+      <p>Already logged in as {{ $auth.user.Slug }}. <a href="#" @click.prevent="$auth.logout()">Log out?</a></p>
+      <p>Or log in as someone else:</p>
     </div>
+    <Login/>
   </div>
 </template>
 

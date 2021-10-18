@@ -34,8 +34,8 @@
         <div v-for="(example, i) in setup.examples" :key="i">
           <TextInputs
             :object="example" :fields="{
-              input: { caption: 'Input', placeholder: 'Something the user might input' },
-              output: { caption: 'Output', placeholder: 'Something the setup can output', multiline: true}
+              input: { caption: display.inputCaption, placeholder: 'Something the user might input' },
+              output: { caption: display.outputCaption, placeholder: 'Something the setup can output', multiline: true}
             }"
           />
           <button class="btn btn-light" @click="setup.examples = without(setup.examples, example)" v-text="'Delete'"/>
@@ -54,6 +54,8 @@
       <TextInputs v-if="section=='template'" :object="template" :fields="{
         apiKey: { caption: 'API key', placeholder: 'sk-...' },
         instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
+        inputPrefix: { caption: 'Prefix for input' },
+        outputPrefix: { caption: 'Prefix for output' }
       }"/>
 
     </div>
@@ -62,7 +64,7 @@
     <div v-else>
       <textarea-autosize
         style="font-family: monospace!important; font-size: smaller;"
-        class="text-monospace"
+        class="text-monospace w-100"
         v-model="configYaml"
       />
     </div>
@@ -73,7 +75,7 @@
 
 // import TextInputs from '@/components/TextInputs.vue'
 
-import { assign, pickBy, without } from 'lodash'
+import { assign, mapValues, pickBy, without } from 'lodash'
 import yaml from 'js-yaml'
 
 export default {
@@ -98,7 +100,7 @@ export default {
       try {
         this.saving = true
         await this.$axios.$patch('https://ideality.app/version-test/api/1.1/obj/widget/' + this.id, {
-          config: JSON.stringify(this.config)
+          ...mapValues(this.config, JSON.stringify)
         }, {
           headers: {
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'

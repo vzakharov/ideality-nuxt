@@ -1,8 +1,8 @@
 <template>
   <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
+    <h1 class="ideality-widget-heading" v-text="config.display.name"/>
     <template v-if="admin">
       <Navbar/>
-      <h1 class="ideality-widget-heading" v-text="config.display.name"/>
       <ul class="nav nav-tabs">
         <li class="nav-item" v-for="item in [
           { caption: 'Configure', editing: true },
