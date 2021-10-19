@@ -1,8 +1,13 @@
 <template>
   <div>
-    <b-dropdown-item v-for='project in projects' :key='project._id' @click="$emit('openProject', project)">
-      {{ project.name || project._id }}
-    </b-dropdown-item>
+    <div v-if="projects">
+      <b-dropdown-item v-for='project in projects' :key='project._id' @click="$emit('openProject', project)">
+        {{ project.name || project._id }}
+      </b-dropdown-item>
+    </div>
+    <div v-else class="m-2">
+      Loading projects... <b-spinner small/> 
+    </div>
   </div>
 </template>
 
@@ -11,7 +16,7 @@
   export default {
 
     data () { return {
-      projects: []
+      projects: null
     }},
 
     async fetch() {

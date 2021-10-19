@@ -8,9 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <b-dropdown v-if='$auth.loggedIn && $auth.user.projects.length' variant='light' text="Projects" lazy>
-          <b-dropdown-item v-for='project in userProjects' :key='project._id' @click="$emit('openProject', project)">
-            {{ project.name || project._id }}
-          </b-dropdown-item>
+          <Projects/>
         </b-dropdown>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -37,6 +35,7 @@
 import Vue from 'vue'
 import AsyncComputed from 'vue-async-computed'
 import login from './login.vue'
+import Projects from './Projects.vue'
 
 Vue.use (AsyncComputed)
 
@@ -56,22 +55,22 @@ export default {
   },
 
   asyncComputed: {
-    userProjects: {
-      async get () {
-        if (!this.$auth.loggedIn)
-          return false
-        let response = await (
-          await fetch(`https://ideality.app/version-test/api/1.1/obj/project/`, {
-            headers: {
-              'Authorization': this.$auth.strategy.token.get(),
-              'Content-Type': 'application/json'
-            }
-          })
-        ).json()
-        return response.response.results
-      },
-      lazy: true
-    }
+    // userProjects: {
+    //   async get () {
+    //     if (!this.$auth.loggedIn)
+    //       return false
+    //     let response = await (
+    //       await fetch(`https://ideality.app/version-test/api/1.1/obj/project/`, {
+    //         headers: {
+    //           'Authorization': this.$auth.strategy.token.get(),
+    //           'Content-Type': 'application/json'
+    //         }
+    //       })
+    //     ).json()
+    //     return response.response.results
+    //   },
+    //   lazy: true
+    // }
   }
 }
 </script>
