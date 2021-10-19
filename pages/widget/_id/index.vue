@@ -1,18 +1,16 @@
 <template>
   <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
-    <template v-if="admin">
-      <div class="sticky-top bg-light">
-        <Navbar/>
-        <h2 class="ideality-widget-heading" v-text="config.display.name"/>
-        <ul class="nav nav-tabs">
-          <li class="nav-item" v-for="item in [
-            { caption: 'Configure', editing: true },
-            { caption: 'Try it out!', editing: false },
-          ]" :key="item.caption">
-            <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
-          </li>
-        </ul>
-      </div>
+    <Navbar v-if="admin"/>
+    <template v-if="canAdmin">
+      <h2 class="ideality-widget-heading" v-text="config.display.name"/>
+      <ul class="nav nav-tabs">
+        <li class="nav-item" v-for="item in [
+          { caption: 'Configure', editing: true },
+          { caption: 'Try it out!', editing: false },
+        ]" :key="item.caption">
+          <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
+        </li>
+      </ul>
       <WidgetConfig v-if="editing" v-bind="{config, id}"
         v-on="{loadFromYaml}"
       />
@@ -48,8 +46,8 @@ export default {
     let { admin } = query
     admin = typeof admin !== 'undefined'
     let { response } = await $axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
-    let { owner } = response
-    admin = admin && owner
+    let { owner, maker } = response
+    let canAdmin = admin && ( owner || maker )
     
     console.log(parseKids)
     let config = mapValues(
@@ -59,7 +57,7 @@ export default {
       JSON.parse
     )
 
-    return { config, id, admin }
+    return { config, id, admin, canAdmin }
   },
 
   methods: {

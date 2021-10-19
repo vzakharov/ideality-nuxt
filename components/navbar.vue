@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar navbar-expand-lg navbar-light">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,7 +7,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <b-dropdown v-if='$auth.loggedIn' variant='light' text="Projects">
+        <b-dropdown v-if='$auth.loggedIn && $auth.user.projects.length' variant='light' text="Projects" lazy>
           <b-dropdown-item v-for='project in userProjects' :key='project._id' @click="$emit('openProject', project)">
             {{ project.name || project._id }}
           </b-dropdown-item>
@@ -27,10 +27,6 @@
       <b-dropdown v-if="!$auth.loggedIn" variant="light" text="Log in" right>
         <login/>
       </b-dropdown>
-      <!-- <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form> -->
     </div>
   </div>
 </nav>
@@ -60,19 +56,21 @@ export default {
   },
 
   asyncComputed: {
-    async userProjects() {
-      // console.log('hello')
-      if (!this.$auth.loggedIn)
-        return false
-      let response = await (
-        await fetch(`https://ideality.app/version-test/api/1.1/obj/document/`, {
-          headers: {
-            'Authorization': this.$auth.strategy.token.get(),
-            'Content-Type': 'application/json'
-          }
-        })
-      ).json()
-      return response.response.results
+    userProjects: {
+      async get () {
+        if (!this.$auth.loggedIn)
+          return false
+        let response = await (
+          await fetch(`https://ideality.app/version-test/api/1.1/obj/project/`, {
+            headers: {
+              'Authorization': this.$auth.strategy.token.get(),
+              'Content-Type': 'application/json'
+            }
+          })
+        ).json()
+        return response.response.results
+      },
+      lazy: true
     }
   }
 }
