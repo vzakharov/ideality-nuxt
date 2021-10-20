@@ -14,6 +14,7 @@
       <textarea-autosize v-if="multiline" type="text" v-model="object[_key]"
         v-bind="inputProps"
       />
+      <input v-else-if="(typeof value !=='undefined')" v-bind="inputProps" @input="$emit('input', $event)"/>
       <input v-else v-bind="inputProps" v-model="object[_key]"/>
     </template>
   </div>
@@ -31,24 +32,24 @@ export default {
 
   
   props: [
-    'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 'disabled', 'choices'
+    'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 'disabled', 'choices', 'value'
   ],
   
-  data() { return {
-    value: null
-  }},
+  // data() { return {
+  // }},
 
   computed: {
     _id() {
       return 'input-' + (this.id || this.caption).toLowerCase().replace(/[\W]/g, '-')
     },
     inputProps() {
-      let { object, _key, placeholder, disabled } = this
+      let { object, _key, placeholder, disabled, value } = this
       return {
         class: 'form-control w-100',
-        'v-model': object[_key],
+        // 'v-model': object[_key],
         placeholder,
-        disabled
+        disabled,
+        value
       }
     },
     // value() { return this.object[this._key] }

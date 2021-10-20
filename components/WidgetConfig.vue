@@ -84,9 +84,9 @@
             v-bind="{
               caption: 'Choices',
               placeholder: 'Enter choices separated by commas',
-              object: parameter,
-              _key: 'choices'
+              value: (parameter.choices || []).join()
             }"
+            @input="parameter.choices = $event.target.value.split(',')"
           />
           <button v-text="'Delete parameter'" class="mx-2 btn btn-outline-danger align-right" 
             @click="$set(template, 'parameters', without(parameters, parameter))"
