@@ -80,27 +80,15 @@
             title: 'Title',
             type: { caption: 'Type', choices: ['text', 'choices'] }
           }"/>
-          <div v-if="parameter.type == 'choices'" class="row">
-            <div class="w-25"
-              v-for="(choice, i) in getChoices(parameter)" :key="i" 
-            >
-              <div class="row mb-2 pr-0">
-                <div class="col-10">
-                  <input type="text" class="form-control"
-                    v-model="choice.name"
-                    :placeholder="`Choice #${i+1}`"
-                  />
-                </div>
-                <b-button v-text="'×'" variant="light" class="col-1 p-0"
-                  @click="$set(parameter, 'choices', without(parameter.choices, choice))"
-                />
-              </div>
-            </div>
-            <b-link class="col" variant="secondary" v-text="'Add choice'" 
-              @click="parameter.choices = [...parameter.choices, {name: ''}]; config = {...config}"
-            />
-          </div>
-          <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
+          <TextInput v-if="parameter.type=='choices'"
+            v-bind="{
+              caption: 'Choices',
+              placeholder: 'Enter choices separated by commas',
+              object: parameter,
+              _key: 'choices'
+            }"
+          />
+          <button v-text="'Delete parameter'" class="mx-2 btn btn-outline-danger align-right" 
             @click="$set(template, 'parameters', without(parameters, parameter))"
           />
           <hr/>
