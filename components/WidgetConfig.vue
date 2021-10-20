@@ -75,18 +75,38 @@
 
         <h4>Parameters</h4>
 
-        <div v-for="parameter in template.parameters" :key="parameter.name">
+        <div v-for="parameter in parameters" :key="parameter.name">
           <TextInputs :object="parameter" :fields="{
-            name: 'Name',
-            type: 'Type'
+            title: 'Title',
+            type: { caption: 'Type', choices: ['text', 'choices'] }
           }"/>
+          <div v-if="parameter.type == 'choices'" class="row">
+            <div class="w-25"
+              v-for="(choice, i) in getChoices(parameter)" :key="i" 
+            >
+              <div class="row mb-2 pr-0">
+                <div class="col-10">
+                  <input type="text" class="form-control"
+                    v-model="choice.name"
+                    :placeholder="`Choice #${i+1}`"
+                  />
+                </div>
+                <b-button v-text="'×'" variant="light" class="col-1 p-0"
+                  @click="$set(parameter, 'choices', without(parameter.choices, choice))"
+                />
+              </div>
+            </div>
+            <b-link class="col" variant="secondary" v-text="'Add choice'" 
+              @click="parameter.choices = [...parameter.choices, {name: ''}]; config = {...config}"
+            />
+          </div>
           <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
-            @click="$set(template, 'parameters', without(template.parameters, parameter))"
+            @click="$set(template, 'parameters', without(parameters, parameter))"
           />
           <hr/>
         </div>
-        <button v-text="'Add parameter'" :class="`mx-2 btn ${template.parameters.length ? 'btn-outline-secondary' : 'btn-primary'}`" 
-          @click="$set(template, 'parameters', [...template.parameters, {}])"
+        <button v-text="'Add parameter'" :class="'mx-2 btn btn-outline-secondary'" 
+          @click="$set(template, 'parameters', [...parameters, {}])"
         />
         </template>
 
@@ -137,56 +157,27 @@ export default {
       editYaml: false,
       deleteRequested: false,
       example: get(this, 'config.setup.examples[0]'),
+      oldConfig: null,
       section: 'setup'
-    }
-  },
-
-  methods: {
-    async clone() {
-      let { id } = this
-      let { response: { newWidget }} = await this.$axios.$post('https://ideality.app/version-test/api/1.1/wf/cloneWidget', { id })
-      console.log(newWidget)
-      this.$router.push({...this.$route, name: 'widget-id', params: { id: newWidget._id }})
-    },
-
-     deleteExample() {
-      debugger
-      let {example, exampleIndex} = this
-      this.examples = without(this.examples, example);
-
-      let {examples} = this
-      this.example = exampleIndex < examples.length ? examples[exampleIndex] : examples.length ? last(examples) : null
-    },
-
-    async save() {
-      try {
-        this.saving = true
-        await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(this.config, JSON.stringify), name: this.config.name
-        }, {
-          headers: {
-            'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
-          }
-        })
-        this.changed = false
-        this.saved = true
-      } finally {
-        this.saving = false
-      }
     }
   },
 
   watch: {
 
     changed() {
-      window.onbeforeunload = this.changed ? () => { return "" } : undefined
+      // window.onbeforeunload = this.changed ? () => { return "" } : undefined
     },
 
     config: {
       deep: true,
-      handler() {
+      handler(config, old) {
+        if ( old == this.oldConfig )
+          return
         this.changed = true
+        this.oldConfig = this.config
+        this.config = {...config}
       }
+
     }
   },
 
@@ -219,7 +210,48 @@ export default {
     }
 
 
-  }
+  },
+
+  
+  methods: {
+
+    async clone() {
+      let { id } = this
+      let { response: { newWidget }} = await this.$axios.$post('https://ideality.app/version-test/api/1.1/wf/cloneWidget', { id })
+      console.log(newWidget)
+      this.$router.push({...this.$route, name: 'widget-id', params: { id: newWidget._id }})
+    },
+    
+    deleteExample() {
+      debugger
+      let {example, exampleIndex} = this
+      this.examples = without(this.examples, example);
+
+      let {examples} = this
+      this.example = exampleIndex < examples.length ? examples[exampleIndex] : examples.length ? last(examples) : null
+    },
+
+    getChoices: parameter => parameter.choices || (parameter.choices = [{
+      name: ''
+    }]),
+
+    async save() {
+      try {
+        this.saving = true
+        await this.$axios.$patch(this.apiUrl, {
+          ...mapValues(this.config, JSON.stringify), name: this.config.name
+        }, {
+          headers: {
+            'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
+          }
+        })
+        this.changed = false
+        this.saved = true
+      } finally {
+        this.saving = false
+      }
+    }
+  },
 
 }
 

@@ -1,11 +1,13 @@
 <template>
   <div>
     <TextInput 
-      v-for="field in fieldArray" :key="field.key"
-      :caption="field.caption" 
-      :placeholder="field.placeholder"
-      :multiline="field.multiline"
-      :object="field.object || object" :_key="field.key"
+      v-for="field in fieldArray" 
+      :key="field.key"
+      v-bind="{
+        object,
+        ...field,
+        _key: field.key
+      }"
     />
   </div>
 </template>
