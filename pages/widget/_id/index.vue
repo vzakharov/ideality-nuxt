@@ -49,7 +49,7 @@ export default {
     assign(this, { yaml })
 
     return {
-      editing: false
+      editing: true
     }
     
   },

@@ -76,14 +76,19 @@
         <h4>Parameters</h4>
 
         <div v-for="parameter in template.parameters" :key="parameter.name">
-          <hr/>
           <TextInputs :object="parameter" :fields="{
             name: 'Name',
             type: 'Type'
           }"/>
+          <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
+            @click="$set(template, 'parameters', without(template.parameters, parameter))"
+          />
+          <hr/>
         </div>
-
-      </template>
+        <button v-text="'Add parameter'" :class="`mx-2 btn ${template.parameters.length ? 'btn-outline-secondary' : 'btn-primary'}`" 
+          @click="$set(template, 'parameters', [...template.parameters, {}])"
+        />
+        </template>
 
 
     </div>
@@ -99,7 +104,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="d-flex flex-row py-2 bg-light container-sm mx-auto" style="max-width: 800px">
+    <div class="d-flex flex-row pt-4 container-sm mx-auto" style="max-width: 800px">
       <b-button :variant="editYaml ? 'secondary' : 'outline-secondary'" v-text="'Edit as YAML'" @click="editYaml = !editYaml"/>
       <b-button variant="outline-secondary" v-text="'Clone'" @click="clone"/>
       <b-button v-if="saved || changed" :variant="!saveDisabled ? 'primary' : 'light'" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
@@ -204,8 +209,13 @@ export default {
     template() { return this.config.template },
 
     examples: {
-      get() { return this.setup.examples },
+      get() { return this.setup.examples || [] },
       set(value) { this.setup.examples = value }
+    },
+
+    parameters: {
+      get() { return this.template.parameters || []},
+      set(value) { this.template.parameters = value }
     }
 
 
