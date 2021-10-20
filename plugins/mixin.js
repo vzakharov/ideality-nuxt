@@ -12,11 +12,21 @@ Vue.mixin({
     this.debug = () => { debugger }
   },
 
-  mounted () { 
+  mounted () {
+
     Object.assign(this, {
       window,
       console: window.console
     })
+
+    if (!window.vms)
+      window.vms = {}
+    
+    if (!window.vms[this._name])
+      window.vms[this._name] = []
+    
+    window.vms[this._name].push(this)
+    
   },
 
   computed: {

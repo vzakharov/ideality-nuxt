@@ -8,10 +8,10 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <b-dropdown v-if='$auth.loggedIn' variant='light' text="Projects" lazy>
-          <Items type="project"/>
+          <FetchableItems type="project"/>
         </b-dropdown>
         <b-dropdown v-if='$auth.loggedIn' variant='light' text="Widgets" lazy>
-          <Items type="widget"/>
+          <FetchableItems type="widget"/>
         </b-dropdown>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -38,7 +38,6 @@
 import Vue from 'vue'
 import AsyncComputed from 'vue-async-computed'
 import login from './login.vue'
-import Projects from './Items.vue'
 
 Vue.use (AsyncComputed)
 

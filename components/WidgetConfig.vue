@@ -72,6 +72,23 @@
           outputPrefix: { caption: 'Prefix for output' }
         }"/>
 
+        <!-- <TemplateParts v-model="template.parts"/> -->
+        <ListOfComponents 
+          v-model="template.parts"
+          component="TemplatePart"
+          title="part"
+          :defaultItem="{
+            prompt: ''
+          }"
+          :context="{parameters}"
+        />
+
+        <!-- <div v-for="part in template.parts" :key="part.prompt">
+          <TextInput v-model="part.prompt"/>
+        </div>
+        <button v-text="'Add part'" :class="'mx-2 btn btn-outline-secondary'" 
+          @click="template.parts = [{}];"
+        /> -->
 
         <h4>Parameters</h4>
 
@@ -86,7 +103,7 @@
               placeholder: 'Enter choices separated by commas',
               value: (parameter.choices || []).join()
             }"
-            @input="parameter.choices = $event.target.value.split(',')"
+            @input="parameter.choices = $event.split(',')"
           />
           <button v-text="'Delete parameter'" class="mx-2 btn btn-outline-danger align-right" 
             @click="$set(template, 'parameters', without(parameters, parameter))"
