@@ -1,4 +1,8 @@
-import { filter, pick } from 'lodash'
+import { filter, pick, get } from 'lodash'
+
+function canRunWidget(user = get(this, '$auth.user')) {
+  return !user.temporary || user.widgetRuns < 10
+}
 
 function parseKids(parent, keys) {
   console.log(parent, keys)
@@ -10,8 +14,10 @@ function parseKids(parent, keys) {
   return parent
 }
 
+
 export {
 
+  canRunWidget,
   parseKids
 
 }

@@ -12,7 +12,7 @@
       }"
     />
 
-    <div v-if="!generating">
+    <div v-if="!generating && canRunWidget">
       <b-button variant="primary" v-text="'Suggest'" :disabled="!input"
         @click="generate"
       />

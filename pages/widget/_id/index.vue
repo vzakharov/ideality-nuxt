@@ -1,8 +1,11 @@
 <template>
   <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
-    <Navbar v-if="admin"/>
+    <div v-if="admin && !canAdmin">
+      Log in to access the admin dashboard.
+      <Login/>
+    </div>
     <template v-if="canAdmin">
-      <h2 class="ideality-widget-heading" v-text="config.display.name"/>
+      <h2 class="ideality-widget-heading" v-text="config.name"/>
       <ul class="nav nav-tabs">
         <li class="nav-item" v-for="item in [
           { caption: 'Configure', editing: true },
@@ -30,42 +33,57 @@ import { parseKids } from '~/plugins/helpers'
 
 export default {
 
+  head() { return {
+    title: `${this.config.name} 🔺 Ideality widget`
+  }},
+
   data() { 
   
     assign(this, { yaml })
 
     return {
-      widget: this,
       editing: false
     }
     
   },
 
-  async asyncData({ $axios, query, params }) {
+  async asyncData({ $axios, query, params, $auth }) {
     let { id } = params
     let { admin } = query
     admin = typeof admin !== 'undefined'
-    let { response } = await $axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
-    let { owner, maker } = response
-    let canAdmin = admin && ( owner || maker )
-    
-    console.log(parseKids)
-    let config = mapValues(
-      pickBy(pick(response, 
-        ['setup', 'display', 'template']
-      )), 
-      JSON.parse
-    )
+    let token
 
-    return { config, id, admin, canAdmin }
+    let { response } = await $axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
+    let { owner, maker, name } = response
+    let canAdmin = admin && ( owner || maker )
+
+    if ( !canAdmin )
+      await $auth.loginWith('local', {data: {tmp: true}})
+
+    console.log(parseKids)
+    let config = {
+      ... mapValues(
+        pickBy(pick(response, 
+          ['setup', 'display', 'template']
+        )), 
+        JSON.parse
+      ),
+      name
+    }
+
+    return { config, id, admin, canAdmin, token }
   },
 
   methods: {
     loadFromYaml() { console.log(arguments) }
   },
 
-  mounted() {
-    window.vm = this
+  asyncComputed: {
+    async widget() {
+      return (
+        await this.$axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
+      ).response
+    }
   }
 
 }

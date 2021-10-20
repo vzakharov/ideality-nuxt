@@ -24,10 +24,12 @@ export default {
       }
     }
   },
+
   methods: {
     userLogin() {
-      return this.$auth.loginWith('local', { data: this.login })
+      this.$auth.loginWith('local', { data: this.login })
     }
   }
+
 }
 </script>

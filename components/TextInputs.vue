@@ -5,7 +5,7 @@
       :caption="field.caption" 
       :placeholder="field.placeholder"
       :multiline="field.multiline"
-      :object="object" :_key="field.key"
+      :object="field.object || object" :_key="field.key"
     />
   </div>
 </template>

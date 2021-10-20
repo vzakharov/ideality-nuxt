@@ -2,6 +2,8 @@ const express = require('express')
 const axios = require('axios')
 const yaml = require('js-yaml')
 const { stripIndent } = require('common-tags')
+const { parse } = JSON
+const { canRunWidget } = require ('../plugins/helpers')
 
 const app = express()
 app.use(express.json())
@@ -11,23 +13,43 @@ app.get('/test', function (req, res) {
   res.send('Test successful')
 })
 
+const baseURL = 'https://ideality.app/version-test/api/1.1/'
+
+const backendAdmin = axios.create({ 
+  baseURL,
+  headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
+})
+
 app.post('/widget/generate', async (req, res, next) =>
 {
   try {
     let { id, input } = req.body
     let output
-  
-    console.log({id, input})
 
-    let r = await axios.get('https://ideality.app/version-test/api/1.1/obj/widget/' + id, { headers: {
-      'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
-    }})
+    console.log(id, req.headers)
   
-    let { data: { response: { setup, template } } } = r
-    setup = JSON.parse(setup)
+    let backend = axios.create({baseURL, headers: {Authorization: req.headers.authorization}})
+
+    let [
+      { data: { response: { user }}},
+      { data: { response: { setup, template }}}
+    ] = await Promise.all([
+      backend.post('wf/getUserInfo/'),
+      backendAdmin.get('obj/widget/' + id)
+    ])
+    
+    if ( !canRunWidget(user) )
+      return res.status(403).send({ error: {
+        cause: 'dailyLimit', 
+        message: `Too many widget runs; please try again after ${new Date(user['Created Date'] + 24*3600).toUTCString()}`
+      }})
+    else
+      backend.post('wf/incWidgetRuns')
+
+    setup = parse(setup)
     let { context, examples } = setup
 
-    template = JSON.parse(template)  
+    template = parse(template)  
     let { apiKey, instruction, inputPrefix, outputPrefix } = template
 
     let prompt = [

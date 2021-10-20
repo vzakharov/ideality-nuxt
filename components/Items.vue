@@ -1,12 +1,14 @@
 <template>
   <div>
-    <div v-if="projects">
-      <b-dropdown-item v-for='project in projects' :key='project._id' @click="$emit('openProject', project)">
-        {{ project.name || project._id }}
+    <div v-if="items">
+      <b-dropdown-item v-for='item in items' :key='item._id'>
+        <nuxt-link class="text-decoration-none text-body" :to="{...$route, name: `${type}-id`, params: {id: item._id}}">
+          {{ item.name || item._id }}
+        </nuxt-link>
       </b-dropdown-item>
     </div>
     <div v-else class="m-2">
-      Loading projects... <b-spinner small/> 
+      Loading {{ type }}s... <b-spinner small/> 
     </div>
   </div>
 </template>
@@ -15,22 +17,24 @@
 
   export default {
 
+    props: ['type'],
+
     data () { return {
-      projects: null
+      items: null
     }},
 
     async fetch() {
       if (!this.$auth.loggedIn)
       return false
       let response = await (
-        await fetch(`https://ideality.app/version-test/api/1.1/obj/project/`, {
+        await fetch(`https://ideality.app/version-test/api/1.1/obj/${this.type}/`, {
           headers: {
             'Authorization': this.$auth.strategy.token.get(),
             'Content-Type': 'application/json'
           }
         })
       ).json()
-      this.projects = response.response.results
+      this.items = response.response.results
     }
 
   }

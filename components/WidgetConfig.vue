@@ -48,7 +48,7 @@
       </template>
 
       <TextInputs v-if="section=='display'" :object="display" :fields="{
-        name: { caption: 'Widget name', placeholder: 'My new widget' },
+        name: { object: config, caption: 'Widget name', placeholder: 'My new widget' },
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
@@ -68,18 +68,16 @@
       <textarea
         style="font-family: monospace!important; font-size: smaller;"
         class="text-monospace w-100"
-        rows="20"
+        rows="25"
         v-model.lazy="configYaml"
       />
     </div>
 
     <!-- Footer -->
     <div class="d-flex flex-row py-2 fixed-bottom bg-light container-sm mx-auto" style="max-width: 800px">
-      <button :class="{ btn: true, 'btn-danger': !saveDisabled }" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
-      <div class="form-check align-self-center">
-        <input class="form-check-input" type="checkbox" id="edit-yaml" v-model="editYaml"/>
-        <label for="edit-yaml" v-text="'Edit as YAML'"/>
-      </div>
+      <b-button :variant="editYaml ? 'secondary' : 'outline-secondary'" v-text="'Edit as YAML'" @click="editYaml = !editYaml"/>
+      <b-button variant="outline-secondary" v-text="'Clone'" @click="clone"/>
+      <b-button v-if="saved || changed" :variant="!saveDisabled ? 'danger' : 'light'" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
     </div>
 
   </div>
@@ -110,11 +108,18 @@ export default {
   },
 
   methods: {
+    async clone() {
+      let { id } = this
+      let { response: { newWidget }} = await this.$axios.$post('https://ideality.app/version-test/api/1.1/wf/cloneWidget', { id })
+      console.log(newWidget)
+      this.$router.push({...this.$route, name: 'widget-id', params: { id: newWidget._id }})
+    },
+
     async save() {
       try {
         this.saving = true
         await this.$axios.$patch('https://ideality.app/version-test/api/1.1/obj/widget/' + this.id, {
-          ...mapValues(this.config, JSON.stringify)
+          ...mapValues(this.config, JSON.stringify), name: this.config.name
         }, {
           headers: {
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
@@ -129,6 +134,11 @@ export default {
   },
 
   watch: {
+
+    changed() {
+      window.onbeforeunload = this.changed ? () => {} : undefined
+    },
+
     config: {
       deep: true,
       handler() {
