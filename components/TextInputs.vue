@@ -19,9 +19,12 @@ export default {
 
   computed: {
     fieldArray() { 
-      return Object.getOwnPropertyNames(this.fields).map(key =>
-        ({ key, ...this.fields[key] })
-      )
+      return Object.getOwnPropertyNames(this.fields).map(key => {
+        let value = this.fields[key]
+        if ( typeof value === 'string' )
+          value = { caption: value }
+        return { key, ...value }
+      })
     }
   }
 }

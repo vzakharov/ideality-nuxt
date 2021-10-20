@@ -13,10 +13,12 @@ Vue.mixin({
   },
 
   mounted () { 
-    window.vm = this 
-    this.console = window.console
+    Object.assign(this, {
+      window,
+      console: window.console
+    })
   },
-  
+
   computed: {
     canRunWidget
   }

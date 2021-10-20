@@ -37,14 +37,16 @@
 
   export default {
 
-    props: ['config', 'id', 'startingInput', 'startingOutput'],
+    props: ['config', 'id', 'prefill'],
 
-    data() { return {
-      self: this,
-      input: this.startingInput,
-      output: this.startingOutput,
-      generating: false
-    }},
+    data() { 
+      let data = {
+        self: this,
+        generating: false
+      }
+      assign(data, this.prefill)
+      return data
+    },
 
     methods: {
 

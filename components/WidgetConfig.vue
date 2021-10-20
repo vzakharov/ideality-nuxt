@@ -26,25 +26,34 @@
           context: { caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true },
         }"/>
         <h4 v-text="'Examples for AI to use'"/>
-        <div v-for="(example, i) in setup.examples" :key="i">
-          <!-- <TextInputs
-            :object="example" :fields="{
-              input: { caption: display.inputCaption, placeholder: 'Something the user might input' },
-              output: { caption: display.outputCaption, placeholder: 'Something the setup can output', multiline: true}
-            }"
-          /> -->
+        <ul class="nav nav-pills">
+          <li v-for="(e, i) in examples" :key="i" class="nav-item">
+            <a href="#"
+              :class="{'nav-link':true, active: e == example }"
+              v-text="i+1"
+              @click="example=e"
+            />
+          </li>
+          <button v-text="'Add'" :class="`mx-2 btn ${examples.length ? 'btn-outline-secondary' : 'btn-primary'}`" 
+            @click="
+              examples = [...examples, {}];
+              example = examples[examples.length-1]
+            "/>
+          <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
+            @click="deleteExample"
+          />
+        </ul>
+        <div v-if="example">
           <WidgetProper
             v-bind="{
               config, id,
-              startingInput: example.input,
-              startingOutput: example.output,
+              prefill: example
             }"
+            :key="example.input"
             @change="Object.assign(example, $event)"
           />
-          <button class="btn btn-light" @click="setup.examples = without(setup.examples, example)" v-text="'Delete'"/>
           <hr/>
         </div>
-        <button class="btn btn-primary" @click="setup.examples = [...setup.examples, {}]" v-text="'Add'"/>
       </template>
 
       <TextInputs v-if="section=='display'" :object="display" :fields="{
@@ -54,12 +63,28 @@
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
       }"/>
 
-      <TextInputs v-if="section=='template'" :object="template" :fields="{
-        apiKey: { caption: 'API key', placeholder: 'sk-...' },
-        instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
-        inputPrefix: { caption: 'Prefix for input' },
-        outputPrefix: { caption: 'Prefix for output' }
-      }"/>
+      <template v-if="section=='template'">
+
+        <TextInputs :object="template" :fields="{
+          apiKey: { caption: 'API key', placeholder: 'sk-...' },
+          instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
+          inputPrefix: { caption: 'Prefix for input' },
+          outputPrefix: { caption: 'Prefix for output' }
+        }"/>
+
+
+        <h4>Parameters</h4>
+
+        <div v-for="parameter in template.parameters" :key="parameter.name">
+          <hr/>
+          <TextInputs :object="parameter" :fields="{
+            name: 'Name',
+            type: 'Type'
+          }"/>
+        </div>
+
+      </template>
+
 
     </div>
 
@@ -74,10 +99,12 @@
     </div>
 
     <!-- Footer -->
-    <div class="d-flex flex-row py-2 fixed-bottom bg-light container-sm mx-auto" style="max-width: 800px">
+    <div class="d-flex flex-row py-2 bg-light container-sm mx-auto" style="max-width: 800px">
       <b-button :variant="editYaml ? 'secondary' : 'outline-secondary'" v-text="'Edit as YAML'" @click="editYaml = !editYaml"/>
       <b-button variant="outline-secondary" v-text="'Clone'" @click="clone"/>
-      <b-button v-if="saved || changed" :variant="!saveDisabled ? 'danger' : 'light'" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
+      <b-button v-if="saved || changed" :variant="!saveDisabled ? 'primary' : 'light'" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
+      <b-button v-if="!deleteRequested" variant="outline-danger" v-text="'Delete'" @click="deleteRequested=true; window.setTimeout(() => {deleteRequested = false}, 3000)"/>
+      <b-button v-else variant="danger" v-text="'Are you sure? This cannot be undone!'" @click="$axios.delete(apiUrl); $emit('deleted')"/>
     </div>
 
   </div>
@@ -87,7 +114,7 @@
 
 // import TextInputs from '@/components/TextInputs.vue'
 
-import { assign, mapValues, pickBy, without } from 'lodash'
+import { assign, findIndex, get, last, mapValues, pickBy, without } from 'lodash'
 import yaml from 'js-yaml'
 
 export default {
@@ -103,6 +130,8 @@ export default {
       saving: false,
       saved: false,
       editYaml: false,
+      deleteRequested: false,
+      example: get(this, 'config.setup.examples[0]'),
       section: 'setup'
     }
   },
@@ -115,10 +144,19 @@ export default {
       this.$router.push({...this.$route, name: 'widget-id', params: { id: newWidget._id }})
     },
 
+     deleteExample() {
+      debugger
+      let {example, exampleIndex} = this
+      this.examples = without(this.examples, example);
+
+      let {examples} = this
+      this.example = exampleIndex < examples.length ? examples[exampleIndex] : examples.length ? last(examples) : null
+    },
+
     async save() {
       try {
         this.saving = true
-        await this.$axios.$patch('https://ideality.app/version-test/api/1.1/obj/widget/' + this.id, {
+        await this.$axios.$patch(this.apiUrl, {
           ...mapValues(this.config, JSON.stringify), name: this.config.name
         }, {
           headers: {
@@ -136,7 +174,7 @@ export default {
   watch: {
 
     changed() {
-      window.onbeforeunload = this.changed ? () => {} : undefined
+      window.onbeforeunload = this.changed ? () => { return "" } : undefined
     },
 
     config: {
@@ -155,11 +193,21 @@ export default {
       set(value) { assign(this.config, yaml.load(value)) }
     },
 
+    exampleIndex() { return findIndex(this.examples, this.example) },
+
     saveDisabled() { return !this.changed || this.saving },
+
+    apiUrl() { return 'https://ideality.app/version-test/api/1.1/obj/widget/' + this.id },
 
     setup() { return this.config.setup },
     display() { return this.config.display },
     template() { return this.config.template },
+
+    examples: {
+      get() { return this.setup.examples },
+      set(value) { this.setup.examples = value }
+    }
+
 
   }
 
