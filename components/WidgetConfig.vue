@@ -113,7 +113,7 @@
         <button v-text="'Add parameter'" :class="'mx-2 btn btn-outline-secondary'" 
           @click="$set(template, 'parameters', [...parameters, {}])"
         />
-        </template>
+      </template>
 
 
     </div>
