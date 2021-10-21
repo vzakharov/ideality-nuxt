@@ -1,20 +1,32 @@
 <template>
   <div>
-    <TextInputs :object="parameter" :fields="{
-      name: 'Name',
-      type: 'Type'
-    }"/>
-    <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
-      @click="$emit('delete')"
-    />
-    <hr/>
+      <ObjectConfig v-model="parameter" :fields="{
+        title: 'Title',
+        type: { caption: 'Type', choices: ['text', 'choices'] }
+      }"/>
+      <InputWithLabel v-if="type=='choices'"
+        v-bind="{
+          caption: 'Choices',
+          placeholder: 'Enter choices separated by commas',
+          value: (parameter.choices || []).join()
+        }"
+        @input="parameter.choices = $event.split(',')"
+      />
   </div>
 </template>
 
 <script>
-export default {
-  props: ['parameter']
-}
+
+  export default {
+
+    props: ['value'],
+
+    data() { return {
+      parameter: this.value 
+    }}
+
+  }
+
 </script>
 
 <style>

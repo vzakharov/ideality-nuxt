@@ -1,9 +1,8 @@
 <template>
   <div>
-    <TextInput
+    <InputWithLabel
+      v-model="vm.input"
       v-bind="{
-        object: self,
-        _key: 'input',
         id: 'user-input',
         caption: display.inputCaption,
         placeholder: display.inputPlaceholder,
@@ -22,12 +21,13 @@
     </div>
     <b-spinner v-else class="spinner-grow text-danger"/>
 
-    <TextInput v-if="output" v-bind="{
-      object: self,
-      _key: 'output',
-      multiline: true,
-      caption: display.outputCaption
-    }"/>
+    <InputWithLabel v-if="output" 
+      v-model="vm.output"
+      v-bind="{
+        multiline: true,
+        caption: display.outputCaption
+      }"
+    />
   </div>
 </template>
 
@@ -41,7 +41,6 @@
 
     data() { 
       let data = {
-        self: this,
         generating: false
       }
       assign(data, this.prefill)

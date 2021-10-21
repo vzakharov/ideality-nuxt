@@ -1,26 +1,26 @@
 <template>
   <div>
-    <TextInput 
+    <InputWithLabel 
       v-for="field in fieldArray" 
       :key="field.key"
-      v-bind="{
-        object,
-        ...field,
-        _key: field.key
-      }"
+      v-bind="field"
+      v-model="vm[field.key]"
     />
   </div>
 </template>
 
 <script>
 
-// import TextInput from '@/components/TextInput.vue'
+// import InputWithLabel from '@/components/InputWithLabel.vue'
 
 export default {
-  props: ['object', 'fields'],
+  props: ['fields', 'value'],
+
+  data() { return this.value || {}},
 
   computed: {
     fieldArray() { 
+      console.log(this.vm)
       return Object.getOwnPropertyNames(this.fields).map(key => {
         let value = this.fields[key]
         if ( typeof value === 'string' )

@@ -22,8 +22,8 @@
       </ul>
 
       <template v-if="section=='setup'">
-        <TextInputs :object="setup" :fields="{
-          context: { caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true },
+        <InputWithLabel v-model="setup.context" v-bind="{
+          caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true,
         }"/>
         <h4 v-text="'Examples for AI to use'"/>
         <ul class="nav nav-pills">
@@ -56,8 +56,8 @@
         </div>
       </template>
 
-      <TextInputs v-if="section=='display'" :object="display" :fields="{
-        name: { object: config, caption: 'Widget name', placeholder: 'My new widget' },
+      <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
+        name: { caption: 'Display name', placeholder: 'My new widget' },
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
@@ -92,7 +92,7 @@
 
 <script>
 
-// import TextInputs from '@/components/TextInputs.vue'
+// import ObjectConfig from '@/components/ObjectConfig.vue'
 
 import { assign, findIndex, get, last, mapValues, pickBy, without } from 'lodash'
 import yaml from 'js-yaml'

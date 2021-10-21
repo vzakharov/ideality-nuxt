@@ -36,13 +36,10 @@
 <script>
 
 import Vue from 'vue'
-import AsyncComputed from 'vue-async-computed'
 import login from './login.vue'
 
-Vue.use (AsyncComputed)
-
 export default {
-  components: { login },
+
   data() { return {
     email: '',
     password: '',
@@ -50,30 +47,6 @@ export default {
     user: {}
   }},
 
-  methods: {
-  },
-
-  computed: {
-  },
-
-  asyncComputed: {
-    // userProjects: {
-    //   async get () {
-    //     if (!this.$auth.loggedIn)
-    //       return false
-    //     let response = await (
-    //       await fetch(`https://ideality.app/version-test/api/1.1/obj/project/`, {
-    //         headers: {
-    //           'Authorization': this.$auth.strategy.token.get(),
-    //           'Content-Type': 'application/json'
-    //         }
-    //       })
-    //     ).json()
-    //     return response.response.results
-    //   },
-    //   lazy: true
-    // }
-  }
 }
 </script>
 

@@ -1,16 +1,22 @@
 <template>
   <div>
 
-    <TextInputs :object="vm" :fields="{
+    <!-- Basic settings (to be deleted probably) -->
+
+    <ObjectConfig v-model="vm" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
       inputPrefix: { caption: 'Prefix for input' },
       outputPrefix: { caption: 'Prefix for output' }
     }"/>
 
+    <!-- Prompt parts -->
+
+    <h4 v-text="'Prompt parts'"/>
+    
     <ListOfComponents 
       v-model="parts"
-      component="TemplatePart"
+      component="PromptPart"
       title="part"
       :defaultItem="{
         prompt: ''
@@ -18,29 +24,19 @@
       :context="{parameters}"
     />
 
-    <h4>Parameters</h4>
+    <!-- Parameters (switch with prompt parts?) -->
 
-    <div v-for="parameter in parameters" :key="parameter.name">
-      <TextInputs :object="parameter" :fields="{
-        title: 'Title',
-        type: { caption: 'Type', choices: ['text', 'choices'] }
-      }"/>
-      <TextInput v-if="parameter.type=='choices'"
-        v-bind="{
-          caption: 'Choices',
-          placeholder: 'Enter choices separated by commas',
-          value: (parameter.choices || []).join()
-        }"
-        @input="parameter.choices = $event.split(',')"
-      />
-      <button v-text="'Delete parameter'" class="mx-2 btn btn-outline-danger align-right" 
-        @click="parameters=without(parameters, parameter)"
-      />
-      <hr/>
-    </div>
-    <button v-text="'Add parameter'" :class="'mx-2 btn btn-outline-secondary'" 
-      @click="parameters = [...parameters, {}]"
+    <h4>Parameters</h4>
+    
+    <ListOfComponents
+      v-model="parameters"
+      component="TemplateParameter"
+      title="parameter"
+      :defaultItem="{
+        type: 'text'
+      }"
     />
+
   </div>
 </template>
 
