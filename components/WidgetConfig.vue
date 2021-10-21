@@ -132,7 +132,7 @@ export default {
         this.changed = true
         this.oldConfig = this.config
         this.config = {...config}
-        this.$emit('input', this.config)
+        // this.$emit('input', this.config)
       }
 
     }
