@@ -9,6 +9,7 @@
           context
         }"
       />
+      <hr/>
     </div>
     <b-button v-text="`Add ${title}`" variant="outline-secondary" size="sm" :class="'mx-2'" 
       @click="add"

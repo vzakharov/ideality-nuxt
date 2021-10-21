@@ -1,5 +1,9 @@
 <template>
-    <b-dropdown variant="outline-secondary" :text="upperFirst(value) || 'Please choose'">
+    <b-dropdown :variant="value ? 'outline-dark' : 'outline-secondary'" :text="upperFirst(value) || 'Please choose'">
+      <b-dropdown-item
+        :active="!value"
+        @click="$emit('input')"
+      ><em>None</em></b-dropdown-item>
       <b-dropdown-item 
         v-for="choice in choices" :key="choice" 
         :active="choice==value"

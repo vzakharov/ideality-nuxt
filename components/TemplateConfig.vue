@@ -5,6 +5,7 @@
 
     <ObjectConfig v-model="vm" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
+      instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...' },
       inputPrefix: { caption: 'Prefix for input' },
       outputPrefix: { caption: 'Prefix for output' }
     }"/>
@@ -13,7 +14,7 @@
 
     <h4 v-text="'Prompt parts'"/>
     
-    <ListOfComponents 
+    <!-- <ListOfComponents 
       v-model="parts"
       component="PromptPart"
       title="part"
@@ -21,7 +22,7 @@
         prompt: ''
       }"
       :context="{parameters}"
-    />
+    /> -->
 
     <!-- Parameters (switch with prompt parts?) -->
 
@@ -29,6 +30,7 @@
     
     <ListOfComponents
       v-model="parameters"
+      :context="{template: vm}"
       component="TemplateParameter"
       title="parameter"
       :defaultItem="{
@@ -41,11 +43,16 @@
 
 <script>
 
+
   export default {
 
     props: ['value'],
 
-    data() { return this.value }
+    data() { 
+      return this.setDefaults(this.value, {
+        apiKey: '', instruction: '', inputPrefix: 'Input', outputPrefix: 'Output'
+      })
+    }
 
   }
 

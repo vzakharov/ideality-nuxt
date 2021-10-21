@@ -1,17 +1,21 @@
 <template>
   <div>
       <ObjectConfig v-model="parameter" :fields="{
-        title: { caption: 'Title' },
-        type: { caption: 'Type', choices: ['text', 'choices'] }
+        name: { caption: 'Name' },
+        type: { caption: 'Type', choices: ['text', 'choices'] },
+        choices: { hide: parameter.type!='choices', caption: 'Choices', placeholder: 'Comma-separated list', commaSeparated: true},
+        recital: { caption: 'Recital', type: 'boolean' },
+        requires: { caption: 'Requires', choices: context.template.parameters.map(p=>p.name) },
+        regex: { hide: !parameter.requires, caption: 'To match...', placeholder: 'Regular expression or empty (then requires to be defined)'}
       }"/>
-      <LabeledInput v-if="parameter.type=='choices'"
+      <!-- <LabeledInput v-if="parameter.type=='choices'"
         v-model="parameter.choices"
         v-bind="{
           caption: 'Choices',
           placeholder: 'Enter choices separated by commas',
           commaSeparated: true
         }"
-      />
+      /> -->
   </div>
 </template>
 
@@ -19,14 +23,18 @@
 
   export default {
 
-    props: ['value'],
+    props: ['value', 'context'],
 
     data() {
       let parameter = this.setDefaults(this.value, {
-        title: '',
+        name: '',
         type: 'text',
-        choices: undefined
+        choices: undefined,
+        recital: undefined,
+        requires: undefined,
+        regex: undefined
       })
+      debugger
       return { parameter }
     }
 

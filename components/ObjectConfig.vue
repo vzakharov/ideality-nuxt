@@ -1,7 +1,7 @@
 <template>
   <div>
     <LabeledInput 
-      v-for="field in fieldArray" 
+      v-for="field in fieldArray.filter(f=>!f.hide)" 
       :key="field.key"
       v-bind="field"
       v-model="vm[field.key]"

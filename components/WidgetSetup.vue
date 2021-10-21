@@ -3,9 +3,9 @@
 
     <!-- <LabeledInput
       v-for="parameter in filteredParameters"
-      :key="parameter.title"
-      v-model="setup.parameterValues[parameter.title]"
-      :caption="parameter.title"
+      :key="parameter.name"
+      v-model="setup.parameterValues[parameter.name]"
+      :caption="parameter.name"
       :choices="parameter.choices"
     /> -->
 
