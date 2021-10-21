@@ -1,11 +1,11 @@
 <template>
   <div class="form-group my-2">
-    <label v-if="caption" v-text="caption" class="my-1"/><br/>
-    <b-dropdown v-if="choices" variant="outline-secondary" :text="upperFirst(object[_key]) || 'Please choose'">
+    <label v-if="caption" v-text="caption" class="my-1 fw-bold"/><br/>
+    <b-dropdown v-if="choices" variant="outline-secondary" :text="upperFirst(value) || 'Please choose'">
       <b-dropdown-item 
         v-for="choice in choices" :key="choice" 
-        :active="choice==object[_key]"
-        @click="$set(object, _key, choice)"
+        :active="choice==value"
+        @click="$emit('input', choice)"
       >
         {{ upperFirst(choice) }}
       </b-dropdown-item>
