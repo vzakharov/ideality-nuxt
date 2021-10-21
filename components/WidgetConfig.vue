@@ -149,7 +149,7 @@ import yaml from 'js-yaml'
 
 export default {
 
-  props: ['id', 'config'],
+  props: ['id', 'value'],
 
   data() { 
 
@@ -157,6 +157,7 @@ export default {
 
     return {
       changed: false,
+      config: this.value,
       saving: false,
       saved: false,
       editYaml: false,
@@ -181,6 +182,7 @@ export default {
         this.changed = true
         this.oldConfig = this.config
         this.config = {...config}
+        this.$emit('input', this.config)
       }
 
     }

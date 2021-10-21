@@ -16,7 +16,7 @@
             <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
           </li>
         </ul>
-        <WidgetConfig v-if="editing" v-bind="{config, id}"
+        <WidgetConfig v-if="editing" v-model="config" v-bind="{id}"
           v-on="{
             loadFromYaml,
             deleted: () => { $router.push({name: 'dashboard'}) }
