@@ -63,57 +63,7 @@
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
       }"/>
 
-      <template v-if="section=='template'">
-
-        <TextInputs :object="template" :fields="{
-          apiKey: { caption: 'API key', placeholder: 'sk-...' },
-          instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
-          inputPrefix: { caption: 'Prefix for input' },
-          outputPrefix: { caption: 'Prefix for output' }
-        }"/>
-
-        <!-- <TemplateParts v-model="template.parts"/> -->
-        <ListOfComponents 
-          v-model="template.parts"
-          component="TemplatePart"
-          title="part"
-          :defaultItem="{
-            prompt: ''
-          }"
-          :context="{parameters}"
-        />
-
-        <!-- <div v-for="part in template.parts" :key="part.prompt">
-          <TextInput v-model="part.prompt"/>
-        </div>
-        <button v-text="'Add part'" :class="'mx-2 btn btn-outline-secondary'" 
-          @click="template.parts = [{}];"
-        /> -->
-
-        <h4>Parameters</h4>
-
-        <div v-for="parameter in parameters" :key="parameter.name">
-          <TextInputs :object="parameter" :fields="{
-            title: 'Title',
-            type: { caption: 'Type', choices: ['text', 'choices'] }
-          }"/>
-          <TextInput v-if="parameter.type=='choices'"
-            v-bind="{
-              caption: 'Choices',
-              placeholder: 'Enter choices separated by commas',
-              value: (parameter.choices || []).join()
-            }"
-            @input="parameter.choices = $event.split(',')"
-          />
-          <button v-text="'Delete parameter'" class="mx-2 btn btn-outline-danger align-right" 
-            @click="$set(template, 'parameters', without(parameters, parameter))"
-          />
-          <hr/>
-        </div>
-        <button v-text="'Add parameter'" :class="'mx-2 btn btn-outline-secondary'" 
-          @click="$set(template, 'parameters', [...parameters, {}])"
-        />
-      </template>
+      <TemplateConfig v-if="section=='template'" v-model="config.template"/>
 
 
     </div>
