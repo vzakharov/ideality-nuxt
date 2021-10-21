@@ -1,13 +1,13 @@
 <template>
   <div>
 
-    <!-- <LabeledInput
+    <LabeledInput
       v-for="parameter in filteredParameters"
       :key="parameter.name"
       v-model="setup.parameterValues[parameter.name]"
       :caption="parameter.name"
       :choices="parameter.choices"
-    /> -->
+    />
 
     <h4 v-text="'Examples for AI to use'"/>
     <WidgetSetupExamples v-model="setup.examples" v-bind="{config}"/>
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+
+  import { find } from 'lodash'
 
   export default {
 
@@ -32,7 +34,16 @@
     computed: {
 
       filteredParameters() {
-        return this.config.parameters
+        let { parameterValues } = this.setup
+        return this.config.template.parameters.filter(({ requires, regex }) => {
+          let value = parameterValues[requires]
+          console.log(requires, value, regex)
+          return !requires || ( 
+            !regex && value
+          ) || (
+            value && value.match(new RegExp(regex))
+          )
+        })
       }
 
     }
