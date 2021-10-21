@@ -5,7 +5,6 @@
 
     <ObjectConfig v-model="vm" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
-      instruction: { caption: 'Instruction for AI', placeholder: 'e.g. “Suggest uses for a product based on a product description and user personas”', multiline: true},
       inputPrefix: { caption: 'Prefix for input' },
       outputPrefix: { caption: 'Prefix for output' }
     }"/>

@@ -91,7 +91,6 @@ async function loadWidget({ $axios, $auth, $route }) {
   let { owner, maker, name } = response
   let canAdmin = admin && ( owner || maker )
 
-
   console.log(parseKids)
   let config = {
     ... mapValues(

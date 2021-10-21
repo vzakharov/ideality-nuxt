@@ -1,9 +1,20 @@
 import Vue from 'vue'
-import { get } from 'lodash'
+import { get, keys } from 'lodash'
+
 
 function canRunWidget(user = get(this, '$auth.user')) {
   return user && ( !user.temporary || user.widgetRuns < 10 )
 }
+
+function setDefaults(object, defaults) {
+  for (let key of keys(defaults)) {
+    if (typeof object[key] == 'undefined') {
+      this.$set(object, key, defaults[key])
+    }
+  }
+  return object
+}
+
 
 Vue.mixin({
 
@@ -26,11 +37,15 @@ Vue.mixin({
       window.vms[this._name] = []
     
     window.vms[this._name].push(this)
-    
+
   },
 
   computed: {
     canRunWidget
+  },
+  
+  methods: {
+    setDefaults
   }
 
 })

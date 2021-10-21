@@ -1,8 +1,8 @@
 <template>
   <div>
-    <InputWithLabel :multiline="true" v-model="part.text" caption="Prompt"/>
-    <InputWithLabel caption="Include if..." v-model="part.includeIf" :choices="map(context.parameters, 'title')"/>
-    <InputWithLabel caption="equals..." v-if="part.includeIf" v-model="part.equals" placeholder="Separate with commas"/>
+    <LabeledInput :multiline="true" v-model="part.text" caption="Prompt"/>
+    <LabeledInput caption="Include if..." v-model="part.includeIf" :choices="map(context.parameters, 'title')"/>
+    <LabeledInput caption="is one of..." v-if="part.includeIf" v-model="part.isIn" :commaSeparated="true" placeholder="Separate with commas"/>
   </div>
 </template>
 

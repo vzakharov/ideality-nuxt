@@ -1,6 +1,6 @@
 <template>
   <div>
-    <InputWithLabel 
+    <LabeledInput 
       v-for="field in fieldArray" 
       :key="field.key"
       v-bind="field"
@@ -11,7 +11,7 @@
 
 <script>
 
-// import InputWithLabel from '@/components/InputWithLabel.vue'
+// import LabeledInput from '@/components/LabeledInput.vue'
 
 export default {
   props: ['fields', 'value'],
@@ -23,8 +23,9 @@ export default {
       console.log(this.vm)
       return Object.getOwnPropertyNames(this.fields).map(key => {
         let value = this.fields[key]
-        if ( typeof value === 'string' )
+        if ( typeof value === 'string' ) {
           value = { caption: value }
+        }
         return { key, ...value }
       })
     }

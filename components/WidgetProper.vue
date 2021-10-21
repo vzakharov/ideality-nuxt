@@ -1,7 +1,7 @@
 <template>
   <div>
-    <InputWithLabel
-      v-model="vm.input"
+    <LabeledInput
+      v-model="content.input"
       v-bind="{
         id: 'user-input',
         caption: display.inputCaption,
@@ -21,8 +21,8 @@
     </div>
     <b-spinner v-else class="spinner-grow text-danger"/>
 
-    <InputWithLabel v-if="output" 
-      v-model="vm.output"
+    <LabeledInput v-if="content.output" 
+      v-model="content.output"
       v-bind="{
         multiline: true,
         caption: display.outputCaption
@@ -37,13 +37,16 @@
 
   export default {
 
-    props: ['config', 'id', 'prefill'],
+    props: ['config', 'id', 'value'],
 
     data() { 
+      let { input, output } = this.value || {}
+      let { display } = this.config
       let data = {
-        generating: false
+        generating: false,
+        content: { input, output },
+        display
       }
-      assign(data, this.prefill)
       return data
     },
 
@@ -55,11 +58,12 @@
         this.output = ''
 
         try {
-          let { id, input} = this
+          let { id } = this
+          let { input } = this.content
 
-          assign(this, ( 
+          this.content = ( 
             await this.$axios.post('api/widget/generate', { id, input } ) 
-          ).data)
+          ).data
         } finally {
           this.generating = false
         }
@@ -68,13 +72,11 @@
 
     },
 
-    computed: {
-      display() { return this.config.display }
-    },
-
     watch: {
-      input() { this.$emit('change', {input: this.input, output: this.output })},
-      output() { this.$emit('change', {input: this.input, output: this.output })},
+      content: {
+        deep: true, 
+        handler () { this.$emit('input', this.content )}
+      }
     }
 
   }

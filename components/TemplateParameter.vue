@@ -1,16 +1,16 @@
 <template>
   <div>
       <ObjectConfig v-model="parameter" :fields="{
-        title: 'Title',
+        title: { caption: 'Title' },
         type: { caption: 'Type', choices: ['text', 'choices'] }
       }"/>
-      <InputWithLabel v-if="type=='choices'"
+      <LabeledInput v-if="parameter.type=='choices'"
+        v-model="parameter.choices"
         v-bind="{
           caption: 'Choices',
           placeholder: 'Enter choices separated by commas',
-          value: (parameter.choices || []).join()
+          commaSeparated: true
         }"
-        @input="parameter.choices = $event.split(',')"
       />
   </div>
 </template>
@@ -21,9 +21,14 @@
 
     props: ['value'],
 
-    data() { return {
-      parameter: this.value 
-    }}
+    data() {
+      let parameter = this.setDefaults(this.value, {
+        title: '',
+        type: 'text',
+        choices: undefined
+      })
+      return { parameter }
+    }
 
   }
 

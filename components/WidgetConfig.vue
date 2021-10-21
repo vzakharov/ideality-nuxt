@@ -21,40 +21,7 @@
         </li>
       </ul>
 
-      <template v-if="section=='setup'">
-        <InputWithLabel v-model="setup.context" v-bind="{
-          caption: 'Context for AI', placeholder: 'e.g. “Product description: ...”', multiline: true,
-        }"/>
-        <h4 v-text="'Examples for AI to use'"/>
-        <ul class="nav nav-pills">
-          <li v-for="(e, i) in examples" :key="i" class="nav-item">
-            <a href="#"
-              :class="{'nav-link':true, active: e == example }"
-              v-text="i+1"
-              @click="example=e"
-            />
-          </li>
-          <button v-text="'Add'" :class="`mx-2 btn ${examples.length ? 'btn-outline-secondary' : 'btn-primary'}`" 
-            @click="
-              examples = [...examples, {}];
-              example = examples[examples.length-1]
-            "/>
-          <button v-text="'Delete'" class="mx-2 btn btn-outline-danger align-right" 
-            @click="deleteExample"
-          />
-        </ul>
-        <div v-if="example">
-          <WidgetProper
-            v-bind="{
-              config, id,
-              prefill: example
-            }"
-            :key="example.input"
-            @change="Object.assign(example, $event)"
-          />
-          <hr/>
-        </div>
-      </template>
+      <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{config}"/>
 
       <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
         name: { caption: 'Display name', placeholder: 'My new widget' },
@@ -114,7 +81,7 @@ export default {
       deleteRequested: false,
       example: get(this, 'config.setup.examples[0]'),
       oldConfig: null,
-      section: 'setup'
+      section: this.$route.query['subsection'] || 'setup'
     }
   },
 
@@ -179,15 +146,6 @@ export default {
       this.$router.push({...this.$route, name: 'widget-id', params: { id: newWidget._id }})
     },
     
-    deleteExample() {
-      debugger
-      let {example, exampleIndex} = this
-      this.examples = without(this.examples, example);
-
-      let {examples} = this
-      this.example = exampleIndex < examples.length ? examples[exampleIndex] : examples.length ? last(examples) : null
-    },
-
     getChoices: parameter => parameter.choices || (parameter.choices = [{
       name: ''
     }]),
