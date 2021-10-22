@@ -3,6 +3,7 @@
       <ObjectConfig v-model="parameter" :fields="{
         name: { caption: 'Name' },
         type: { caption: 'Type', choices: ['text', 'choices'] },
+        multiline: { hide: parameter.type!='text', caption: 'Multiline', type: 'boolean'},
         choices: { hide: parameter.type!='choices', caption: 'Choices', placeholder: 'Comma-separated list', commaSeparated: true},
         recital: { caption: 'Recital', type: 'boolean' },
         requires: { caption: 'Requires', choices: context.template.parameters.map(p=>p.name) },
@@ -32,9 +33,10 @@
         choices: undefined,
         recital: undefined,
         requires: undefined,
-        regex: undefined
+        regex: undefined,
+        multiline: undefined
       })
-      debugger
+      // debugger
       return { parameter }
     }
 

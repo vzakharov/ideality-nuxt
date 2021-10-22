@@ -3,8 +3,11 @@
     <LabeledInput 
       v-for="field in fieldArray.filter(f=>!f.hide)" 
       :key="field.key"
-      v-bind="field"
-      v-model="vm[field.key]"
+      v-bind="{
+        ...field,
+        value: object[field.key]
+      }"
+      @input="$set(object, field.key, $event)"
     />
   </div>
 </template>
@@ -16,11 +19,12 @@
 export default {
   props: ['fields', 'value'],
 
-  data() { return this.value || {}},
+  data() { 
+    return { object: this.value }
+  },
 
   computed: {
     fieldArray() { 
-      console.log(this.vm)
       return Object.getOwnPropertyNames(this.fields).map(key => {
         let value = this.fields[key]
         if ( typeof value === 'string' ) {

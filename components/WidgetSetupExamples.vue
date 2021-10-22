@@ -5,7 +5,7 @@
         <a href="#"
           :class="{'nav-link':true, active: i == index }"
           v-text="i+1"
-          @click="index = i"
+          @click.prevent="index = i"
         />
       </li>
       <button v-text="'Add'" :class="`mx-2 btn ${examples.length ? 'btn-outline-secondary' : 'btn-primary'}`" 
@@ -20,10 +20,9 @@
     <div v-if="examples.length">
       <WidgetProper
         v-model="examples[index]"
-        v-bind="{
-          config, id
-        }"
+        v-bind="{config}"
         :key="index"
+        :duringSetup="true"
       />
       <hr/>
     </div>
@@ -43,12 +42,16 @@
       index: 0
     }},
 
+    watch: {
+      examples(examples) { Object.assign(this.config.setup, {examples}) }
+    },
+
     methods: {
 
       del() {
-        this.examples = without(this.examples, example);
-        if ( this.index > this.examples.length )
-          this.index = this.examples.length
+        this.examples = without(this.examples, this.examples[this.index]);
+        if ( this.index >= this.examples.length )
+          this.index = this.examples.length - 1
       }
 
     }

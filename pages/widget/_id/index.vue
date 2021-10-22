@@ -7,7 +7,7 @@
     <template v-if="canAdmin">
       <Navbar/>
       <template v-if="config">
-        <h2 class="ideality-widget-heading" v-text="config.name"/>
+        <h2 class="ideality-widget-heading" v-text="config.display.name"/>
         <ul class="nav nav-tabs">
           <li class="nav-item" v-for="item in [
             { caption: 'Configure', editing: true },
@@ -25,7 +25,7 @@
       </template>
       <div v-else v-text="'Please select a widget from the menu above.'"/>
     </template>
-    <WidgetProper v-if="!editing" v-bind="{config, id}"/>
+    <WidgetProper v-if="!admin || !editing" v-bind="{config}"/>
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import { parseKids } from '~/plugins/helpers'
 export default {
 
   head() { return {
-    title: `${get(this, 'config.name') } 🔺 Ideality widget`
+    title: `${get(this, 'config.display.name') } 🔺 Ideality widget`
   }},
 
   data() { 
@@ -99,7 +99,7 @@ async function loadWidget({ $axios, $auth, $route }) {
       )), 
       JSON.parse
     ),
-    name
+    name, id
   }
 
   return { config, id, admin, canAdmin }

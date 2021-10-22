@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import { get, keys } from 'lodash'
-
-
-function canRunWidget(user = get(this, '$auth.user')) {
-  return user && ( !user.temporary || user.widgetRuns < 10 )
-}
+import { canRunWidget } from '@/plugins/helpers'
 
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
@@ -40,11 +36,8 @@ Vue.mixin({
 
   },
 
-  computed: {
-    canRunWidget
-  },
-  
   methods: {
+    canRunWidget,
     setDefaults
   }
 

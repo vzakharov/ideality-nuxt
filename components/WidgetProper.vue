@@ -11,40 +11,58 @@
       }"
     />
 
-    <div v-if="!generating && canRunWidget">
-      <b-button variant="primary" v-text="'Suggest'" :disabled="!input"
-        @click="generate"
-      />
-      <b-button variant="light" v-text="'Give me an example'"
-        @click="input=''; generate()"
-      />
-    </div>
-    <b-spinner v-else class="spinner-grow text-danger"/>
+    <template v-if="canRunWidget()">
+      <div v-if="!generating">
+        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" :disabled="!content.input"
+          @click="generate"
+        />
+        <b-button :variant="!generated ? 'light' : 'text-secondary'" v-html="!generated ? 'Show me how' : '<small>Show another example</small>'"
+          @click="content={}; generate()"
+        />
+      </div>
+      <b-spinner v-else class="spinner-grow text-danger"/>
+    </template>
 
-    <LabeledInput v-if="content.output" 
+    <LabeledInput v-if="content.output || duringSetup" 
       v-model="content.output"
       v-bind="{
         multiline: true,
-        caption: display.outputCaption
+        caption: display.outputCaption,
+        disabled: generating
       }"
     />
+
+    <template v-if="false && generated && content.output && !duringSetup">
+      <div v-if="showOutro" class="shadow rounded-3 bg-white m-3 mt-5 p-3">
+        <h4 v-text="display.leadgenTitle" class="mt-3"/>
+        <p v-text="display.leadgenLine1"/>
+        <p class="fw-bold" v-text="display.leadgenLine2"/>
+        <button class="btn btn-primary" 
+          :href="`mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
+          target="_blank" v-text="display.leadgenCTA"
+        />
+      </div>
+    </template>
+
   </div>
 </template>
 
 <script>
 
-  import { assign, pick} from 'lodash'
+  import { assign, last, pick} from 'lodash'
 
   export default {
 
-    props: ['config', 'id', 'value'],
+    props: ['config', 'value', 'duringSetup'],
 
     data() { 
-      let { input, output } = this.value || {}
+      let content = this.value || {}
       let { display } = this.config
       let data = {
         generating: false,
-        content: { input, output },
+        generated: false,
+        showOutro: true,
+        content,
         display
       }
       return data
@@ -55,15 +73,32 @@
       async generate() {
 
         this.generating = true
-        this.output = ''
+        
 
         try {
-          let { id } = this
-          let { input } = this.content
+          let { id, setup, template } = this.config
+          let { duringSetup } = this
+          let { input, output } = this.content
+
+          const append = what => last(what) == '$'
+          const cut = what => what.slice(0, -1)
+          
+          const appendInput = append(input) || undefined
+
+          if ( appendInput )
+            input = cut(input)
+
+          output = (
+            !appendInput && append(output)
+          ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, config: { setup, template } } ) 
           ).data
+          console.log(this.content)
+          this.generated = true
+        } catch(err) {
+          console.log(err)
         } finally {
           this.generating = false
         }

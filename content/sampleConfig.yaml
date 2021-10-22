@@ -1,38 +1,69 @@
-name: Tweet ideas
-apiKey: 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
-examples:
-  - input: A small startup that ships handmade jewelry from all over the world.
-    output: >-
-      - Pictures of the places where you ship your jewelry from to create a
-      sense of authenticity
-      - Behind-the-scenes content to show how your business works
-      - What inspires you to do what you do
-      - Stories about how customers react to receiving the jewelry
-  - input: I'm a freelance writer focusing on tech
-    output: >-
-      - Links to interesting news and updates about new and upcoming technology
-      - Copywriting tips and wisdom to build your reputation of being a master
-      of your craft
-      - Posts about what you have learned from your customers, for them to
-      learn from you
-      - Listicles on how tech people can be better marketers or how to best
-      tell a story about their products
-  - output: |-
-      - Advice for new mothers to navigate motherhood
-      - A behind-the-scenes peek into how your family does things
-      - Tips on how to keep your kids occupied during the day
-      - “A mom's perspective on what's happening in the world”
-    input: Stay-at-home mom with four kids
-  - output: >-
-      - New and innovative writing techniques, based on your interests and
-      preferences.
-      - Tips for how to transform your life through film and story telling.
-      - Interviews with influential people in the industry to get the inside
-      scoop.
-      - Controversial and thought-provoking ideas and theories on filmmaking.
-    input: I'm a writer and director with no formal training in the craft
-inputCaption: Tell us about your company or business
-inputPlaceholder: We develop a...
-outputCaption: Here are some cool things you can tweet about
-instruction: Suggest things to tweet about depending on the user’s description of themself.
-context: ''
+setup:
+  examples:
+    - input: We develop chips for the automotive industry, such as$
+      output: ''
+  context: ''
+  parameterValues:
+    Offering type: Product
+    Product: >-
+      An IP core that can be deployed on any chip, thus giving AI
+      functionalities to any device. Unlike 90% of competitors, our product has
+      already been tested in silicon (not just simulations) and has shown some
+      impressive results. Here’s an excerpt about us from the respectable Linley
+      Group’s Microprocessor Report: “In the market segments Edged.AI is
+      targeting, we expect standalone-DLA [deap learning accelerator] chips will
+      quickly give way to SoCs [systems on chip] that integrate a DLA. But
+      developing the latter consumes more time and money, putting it beyond the
+      reach of many startups, particularly new entrants coming late to the game.
+      Edged wisely abandoned its early ambitions as a chip vendor, instead using
+      IP to serve SoC vendors and others needing DLAs for internal chip
+      designs.”
+    Business: >-
+      We are Edged.ai, a small startup that designs AI cores for tensor
+      processing units.
+    Service: ''
+    Feature: ''
+display:
+  name: Edged.ai
+  inputCaption: Tell a few words about yourself
+  inputPlaceholder: I am a … who does … and loves … — or anything else you can come up with.
+  outputCaption: Here’s what you can do
+template:
+  apiKey: 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
+  inputPrefix: Customer profile
+  outputPrefix: Suggestions
+  parameters:
+    - type: text
+      name: Business
+      recital: true
+      multiline: true
+    - type: choices
+      caption: Offering type
+      name: Offering type
+      choices:
+        - Product
+        - Feature
+        - Service
+    - name: Product
+      type: text
+      recital: true
+      requires: Offering type
+      regex: ^Product|Feature$
+      multiline: true
+    - type: text
+      name: Feature
+      requires: Offering type
+      recital: true
+      regex: ^Feature$
+      multiline: true
+    - type: text
+      name: Service
+      recital: true
+      requires: Offering type
+      regex: ^Service$
+      multiline: true
+  instruction: >-
+    Suggest uses for an offering based on its description and a customer
+    profile.
+name: Edged.ai
+id: 1634843315317x809437390242563100

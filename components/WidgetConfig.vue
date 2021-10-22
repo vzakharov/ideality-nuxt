@@ -27,7 +27,12 @@
         name: { caption: 'Display name', placeholder: 'My new widget' },
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
-        outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'}
+        outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},
+        leadgenTitle: { caption: 'Lead generation box title' },
+        leadgenLine1: { caption: 'Leadgen box paragraph 1', multiline: true },
+        leadgenLine2: { caption: 'Leadgen box line before CTA' },
+        leadgenCTA: { caption: 'Leadgen box CTA' },
+        leadgenEmail: { caption: 'Leadgen email'}
       }"/>
 
       <TemplateConfig v-if="section=='template'" v-model="config.template"/>
@@ -61,7 +66,7 @@
 
 // import ObjectConfig from '@/components/ObjectConfig.vue'
 
-import { assign, findIndex, get, last, mapValues, pickBy, without } from 'lodash'
+import { assign, findIndex, get, last, mapValues, pick, without } from 'lodash'
 import yaml from 'js-yaml'
 
 export default {
@@ -154,7 +159,7 @@ export default {
       try {
         this.saving = true
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(this.config, JSON.stringify), name: this.config.name
+          ...mapValues(pick(this.config, ['setup', 'display', 'template']), JSON.stringify), name: this.config.display.name || 'Unnamed widget'
         }, {
           headers: {
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
