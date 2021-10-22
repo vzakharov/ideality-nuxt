@@ -73,7 +73,7 @@ app.post('/widget/generate', async (req, res, next) =>
       examples.pop()
 
 
-    // console.log(setup, template)
+    console.log(setup, template)
 
     let prompt = [
       instruction,

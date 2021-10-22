@@ -6,7 +6,7 @@ function canRunWidget(user = get(this, '$auth.user')) {
 
 function filteredParameters({setup, template, duringGeneration}) {
   if ( !template.parameters )
-    return
+    return []
   let { parameterValues } = setup
   return template.parameters.filter(({ name, requires, regex }) => {
     let value = parameterValues[name]
