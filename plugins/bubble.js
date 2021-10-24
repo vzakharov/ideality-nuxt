@@ -65,19 +65,18 @@ function Bubble({token, admin } = {}) {
 
       return id || isSlug ? things[0] : things
 
-    },
-
-    async load(type) { 
-      return async ({ $auth, params: { id }}) => {
-        let result = {}
-        let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-        result[type] = await bubble.get(type, id)    
-        return result
-      }
     }
   
   })
 
 }
+
+Bubble.load = type => 
+  async ({ $auth, params: { id }}) => {
+    let result = {}
+    let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
+    result[type] = await bubble.get(type, id)    
+    return result
+  }
 
 export default Bubble

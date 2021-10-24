@@ -54,7 +54,7 @@ export default {
     
   },
 
-  asyncData: loadWidget,
+  asyncData: Bubble.load('widget'),
 
   computed: {
     canAdmin() { return this.widget.owner || this.widget.maker }
@@ -71,17 +71,10 @@ export default {
   watch: {
     async '$auth.id'(id) {
       if (id)
-        assign(this, await loadWidget(this))
+        assign(this, Bubble.load('widget'))
     }
   }
 
-}
-
-async function loadWidget({ $auth, params: { id } }) {
-  let bubble = new Bubble({ token: $auth.strategy.token.get() })
-  let widget = await bubble.get('widget', id)
-
-  return { widget }
 }
 
 </script>

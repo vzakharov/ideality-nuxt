@@ -7,14 +7,14 @@
 <script>
 
   import Bubble from '@/plugins/bubble'
+  import { get } from 'lodash'
 
   export default {
+    head() { return {
+      title: `${get(this, 'widget.display.name') } 🔺 Ideality widget`
+    }},
 
-    async asyncData({ params: { id }}) {
-      let bubble = new Bubble()
-      let widget = await bubble.get('widget', id)
-      return { widget }
-    }
+    asyncData: Bubble.load('widget')
 
   }
 
