@@ -54,7 +54,7 @@ export default {
           global: true
         },
         user: {
-          property: 'response.user'
+          property: 'response.id'
         },
         endpoints: {
           login: {url: 'https://ideality.app/version-test/api/1.1/wf/login', method: 'post'},

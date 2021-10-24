@@ -1,13 +1,19 @@
 <template>
-  <div>
-    Hello
-  </div>
+  <WidgetProper v-bind="{widget}"/>
 </template>
 
 <script>
-export default {
 
-}
+  import Bubble from '@/plugins/bubble'
+
+  export default {
+
+    asyncData({ params: { id }}) { 
+      return new Bubble().get('widget', id)
+    }
+
+  }
+
 </script>
 
 <style>

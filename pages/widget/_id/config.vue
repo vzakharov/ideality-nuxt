@@ -65,7 +65,7 @@ export default {
   },
 
   watch: {
-    async '$auth.user._id'(id) {
+    async '$auth.id'(id) {
       if (id)
         assign(this, await loadWidget(this))
     }

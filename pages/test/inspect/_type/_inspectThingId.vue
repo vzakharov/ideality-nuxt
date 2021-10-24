@@ -6,13 +6,16 @@
 
 <script>
 
+  import { get } from 'lodash'
+
   import Bubble from '@/plugins/bubble'
 
   export default {
 
-    async asyncData({ route: { query: { expandAll }, params: { type, inspectThingId }}}) {
+    async asyncData({ $auth, route: { query: { expandAll }, params: { type, inspectThingId }}}) {
 
-      const bubble = Bubble()
+
+      const bubble = new Bubble({ token: $auth && $auth.strategy.token.get() })
       
       if ( typeof expandAll === 'undefined' )
         expandAll = true

@@ -58,20 +58,20 @@ app.post('/widget/generate', async (req, res, next) =>
       let backend = axios.create({baseURL, headers: {Authorization: req.headers.authorization}})
 
       let [
-        { data: { response: { user }}},
+        // { data: { response: { user }}},
         { data: { response }}
       ] = await Promise.all([
-        backend.post('wf/getUserInfo'),
+        // backend.post('wf/getUserInfo'),
         admin.get('obj/widget/' + id)
       ])
 
-      if ( !canRunWidget(user) )
-        return res.status(403).send({ error: {
-          cause: 'dailyLimit', 
-          message: `Too many widget runs; please try again after ${new Date(user['Created Date'] + 24*3600).toUTCString()}`
-        }})
-      else
-        backend.post('wf/incWidgetRuns')
+      // if ( !canRunWidget(user) )
+      //   return res.status(403).send({ error: {
+      //     cause: 'dailyLimit', 
+      //     message: `Too many widget runs; please try again after ${new Date(user['Created Date'] + 24*3600).toUTCString()}`
+      //   }})
+      // else
+      //   backend.post('wf/incWidgetRuns')
       
       console.log(response)
       ;['setup', 'template'].forEach(what =>

@@ -1,18 +1,21 @@
-import axios from 'axios'
+import Axios from 'axios'
 import { camelCase, mapKeys, mapValues } from 'lodash'
 
-function Bubble() {
+function Bubble({token, admin } = {}) {
 
-  const baseURL = 'https://ideality.app/version-test/api/1.1/'
-
-  const bubble = axios.create({ 
-    baseURL,
-    headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
+  const axios = Axios.create({ 
+    baseURL: 'https://ideality.app/version-test/api/1.1/',
+    ...( token || admin ? {
+      headers: {'Authorization': token || ( admin && 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20' )}
+    } : {})
   })
 
-  return {
+  
+  Object.assign(this, {
+
 
     async get( type, idOrQuery ) {
+      console.log(arguments)
       let id = typeof idOrQuery === 'string' && idOrQuery
       let query = !id && idOrQuery
       let isSlug = id && !id.match(/^\d/)
@@ -23,8 +26,8 @@ function Bubble() {
 
       let { data: { response }} = await (
         ( id && !isSlug ) ? 
-          bubble.get(url + id) : 
-          bubble.get(url, { params: { constraints: JSON.stringify(
+          axios.get(url + id) : 
+          axios.get(url, { params: { constraints: JSON.stringify(
             isSlug ?
               [{
                 key: 'Slug', value: id, constraint_type
@@ -59,12 +62,11 @@ function Bubble() {
           )
       )
 
-      return response.results ? things[0] : things
+      return id || isSlug ? things[0] : things
 
     }
   
-
-  }
+  })
 
 }
 
