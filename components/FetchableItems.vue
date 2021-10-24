@@ -2,7 +2,7 @@
   <div>
     <div v-if="items">
       <b-dropdown-item v-for='item in items' :key='item._id'>
-        <nuxt-link class="text-decoration-none text-body" :to="{...$route, name: `${type}-id`, params: {id: item._id}}">
+        <nuxt-link class="text-decoration-none text-body" :to="{...$route, name: `${type}-id-config`, params: {id: item.Slug || item._id}}">
           {{ item.name || item._id }}
         </nuxt-link>
       </b-dropdown-item>

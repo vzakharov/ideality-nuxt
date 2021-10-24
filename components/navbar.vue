@@ -1,11 +1,10 @@
 <template>
-<nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
-  <div class="container-fluid">
+  <b-navbar toggleable="lg" type="light" variant="light" class="sticky-top">
     <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <b-navbar-toggle target="collapsed-menu">
       <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    </b-navbar-toggle>
+    <b-collapse id="collapsed-menu" is-nav>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <b-dropdown v-if='$auth.loggedIn' variant='light' text="Projects" lazy>
           <FetchableItems type="project"/>
@@ -28,9 +27,8 @@
       <b-dropdown v-if="!$auth.loggedIn" variant="light" text="Log in" right>
         <login/>
       </b-dropdown>
-    </div>
-  </div>
-</nav>
+    </b-collapse>
+  </b-navbar>
 </template>
 
 <script>
