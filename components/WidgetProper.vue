@@ -53,11 +53,11 @@
 
   export default {
 
-    props: ['config', 'value', 'duringSetup'],
+    props: ['widget', 'value', 'duringSetup'],
 
     data() { 
       let content = this.value || {}
-      let { display } = this.config
+      let { display } = this.widget
       let data = {
         generating: false,
         generated: false,
@@ -76,7 +76,7 @@
         
 
         try {
-          let { id, setup, template } = this.config
+          let { id, setup, template } = this.widget
           let { duringSetup } = this
           let { input, output } = this.content
 
@@ -93,7 +93,7 @@
           ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, config: { setup, template } } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: { setup, template } } ) 
           ).data
           console.log(this.content)
           this.generated = true

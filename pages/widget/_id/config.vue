@@ -6,8 +6,8 @@
     </div>
     <template v-if="canAdmin">
       <Navbar/>
-      <template v-if="config">
-        <h2 class="ideality-widget-heading" v-text="config.display.name"/>
+      <template v-if="widget">
+        <h2 class="ideality-widget-heading" v-text="widget.display.name"/>
         <ul class="nav nav-tabs">
           <li class="nav-item" v-for="item in [
             { caption: 'Configure', editing: true },
@@ -16,7 +16,7 @@
             <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
           </li>
         </ul>
-        <WidgetConfig v-if="editing" v-model="config" v-bind="{id}"
+        <WidgetConfig v-if="editing" v-model="widget" v-bind="{id}"
           v-on="{
             loadFromYaml,
             deleted: () => { $router.push({name: 'dashboard'}) }
@@ -25,7 +25,7 @@
       </template>
       <div v-else v-text="'Please select a widget from the menu above.'"/>
     </template>
-    <WidgetProper v-if="!admin || !editing" v-bind="{config}"/>
+    <WidgetProper v-if="!admin || !editing" v-bind="{widget}"/>
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import { parseKids } from '~/plugins/helpers'
 export default {
 
   head() { return {
-    title: `${get(this, 'config.display.name') } 🔺 Ideality widget`
+    title: `${get(this, 'widget.display.name') } 🔺 Ideality widget`
   }},
 
   data() { 
@@ -88,7 +88,7 @@ async function loadWidget({ $axios, $auth, $route, route }) {
   let canAdmin = admin && ( owner || maker )
 
   console.log(parseKids)
-  let config = {
+  let widget = {
     ... mapValues(
       pickBy(pick(response, 
         ['setup', 'display', 'template']
@@ -98,7 +98,7 @@ async function loadWidget({ $axios, $auth, $route, route }) {
     name, id
   }
 
-  return { config, id, admin, canAdmin }
+  return { widget, id, admin, canAdmin }
 }
 
 </script>

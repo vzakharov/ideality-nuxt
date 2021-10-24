@@ -2,7 +2,7 @@
   <div>
 
     <LabeledInput
-      v-for="parameter in filteredParameters(config)"
+      v-for="parameter in filteredParameters(widget)"
       :key="parameter.name"
       v-model="setup.parameterValues[parameter.name]"
       :caption="parameter.name"
@@ -11,7 +11,7 @@
     />
 
     <h4 v-text="'Examples for AI to use'"/>
-    <WidgetSetupExamples v-model="setup.examples" v-bind="{config}"/>
+    <WidgetSetupExamples v-model="setup.examples" v-bind="{widget}"/>
   </div>
 </template>
 
@@ -22,7 +22,7 @@
 
   export default {
 
-    props: ['value', 'config'],
+    props: ['value', 'widget'],
 
     data() { 
       let setup = this.setDefaults(this.value, {

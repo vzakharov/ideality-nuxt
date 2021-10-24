@@ -32,13 +32,13 @@ app.post('/widget/generate', async (req, res, next) =>
 {
   try {
     console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, config } = {
+    let { id, input, output, appendInput, duringSetup, widget } = {
       input: '', output: '',
       ...req.body
     }
 
     console.log(id, req.headers)
-    if ( !config || !config.setup || !config.template ) {
+    if ( !widget || !widget.setup || !widget.template ) {
       let backend = axios.create({baseURL, headers: {Authorization: req.headers.authorization}})
 
       let [
@@ -59,13 +59,13 @@ app.post('/widget/generate', async (req, res, next) =>
       
       console.log(response)
       ;['setup', 'template'].forEach(what =>
-        !config[what] && (
-          config[what] = parse(response[what])
+        !widget[what] && (
+          widget[what] = parse(response[what])
         )
       )
     }
 
-    let { setup, template } = config
+    let { setup, template } = widget
     let { parameterValues, examples } = setup
     let { apiKey, instruction, inputPrefix, outputPrefix } = template
 

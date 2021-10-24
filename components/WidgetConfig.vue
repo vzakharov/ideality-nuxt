@@ -21,7 +21,7 @@
         </li>
       </ul>
 
-      <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{config}"/>
+      <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
 
       <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
         name: { caption: 'Display name', placeholder: 'My new widget' },
@@ -35,7 +35,7 @@
         leadgenEmail: { caption: 'Leadgen email'}
       }"/>
 
-      <TemplateConfig v-if="section=='template'" v-model="config.template"/>
+      <TemplateConfig v-if="section=='template'" v-model="widget.template"/>
 
 
     </div>
@@ -79,12 +79,12 @@ export default {
 
     return {
       changed: false,
-      config: this.value,
+      widget: this.value,
       saving: false,
       saved: false,
       editYaml: false,
       deleteRequested: false,
-      example: get(this, 'config.setup.examples[0]'),
+      example: get(this, 'widget.setup.examples[0]'),
       oldConfig: null,
       section: this.$route.query['subsection'] || 'setup'
     }
@@ -96,15 +96,15 @@ export default {
       // window.onbeforeunload = this.changed ? () => { return "" } : undefined
     },
 
-    config: {
+    widget: {
       deep: true,
-      handler(config, old) {
+      handler(widget, old) {
         if ( old == this.oldConfig )
           return
         this.changed = true
-        this.oldConfig = this.config
-        this.config = {...config}
-        // this.$emit('input', this.config)
+        this.oldConfig = this.widget
+        this.widget = {...widget}
+        // this.$emit('input', this.widget)
       }
 
     }
@@ -113,9 +113,9 @@ export default {
   computed: {
 
     configYaml: {
-      get() { return yaml.dump(this.config) },
+      get() { return yaml.dump(this.widget) },
 
-      set(value) { assign(this.config, yaml.load(value)) }
+      set(value) { assign(this.widget, yaml.load(value)) }
     },
 
     exampleIndex() { return findIndex(this.examples, this.example) },
@@ -124,9 +124,9 @@ export default {
 
     apiUrl() { return 'https://ideality.app/version-test/api/1.1/obj/widget/' + this.id },
 
-    setup() { return this.config.setup },
-    display() { return this.config.display },
-    template() { return this.config.template },
+    setup() { return this.widget.setup },
+    display() { return this.widget.display },
+    template() { return this.widget.template },
 
     examples: {
       get() { return this.setup.examples || [] },
@@ -148,7 +148,7 @@ export default {
       let { id } = this
       let { response: { newWidget }} = await this.$axios.$post('https://ideality.app/version-test/api/1.1/wf/cloneWidget', { id })
       console.log(newWidget)
-      this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
+      this.$router.push({...this.$route, name: 'widget-id-widget', params: { id: newWidget._id }})
     },
     
     getChoices: parameter => parameter.choices || (parameter.choices = [{
@@ -159,7 +159,7 @@ export default {
       try {
         this.saving = true
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.config, ['setup', 'display', 'template']), JSON.stringify), name: this.config.display.name || 'Unnamed widget'
+          ...mapValues(pick(this.widget, ['setup', 'display', 'template']), JSON.stringify), name: this.widget.display.name || 'Unnamed widget'
         }, {
           headers: {
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'

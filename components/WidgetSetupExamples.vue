@@ -20,7 +20,7 @@
     <div v-if="examples.length">
       <WidgetProper
         v-model="examples[index]"
-        v-bind="{config}"
+        v-bind="{widget}"
         :key="index"
         :duringSetup="true"
       />
@@ -35,7 +35,7 @@
 
   export default {
 
-    props: ['value', 'config'],
+    props: ['value', 'widget'],
 
     data() { return { 
       examples: this.value,
@@ -43,7 +43,7 @@
     }},
 
     watch: {
-      examples(examples) { Object.assign(this.config.setup, {examples}) }
+      examples(examples) { Object.assign(this.widget.setup, {examples}) }
     },
 
     methods: {

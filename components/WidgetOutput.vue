@@ -7,7 +7,7 @@
 <script>
 export default {
 
-  props: ['config', 'input'],
+  props: ['widget', 'input'],
 
   data: () => ({
     output: null
