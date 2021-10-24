@@ -1,6 +1,6 @@
 <template>
   <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
-    <div v-if="admin && !canAdmin">
+    <div v-if="!canAdmin">
       Log in to access the admin dashboard.
       <Login/>
     </div>
@@ -25,7 +25,7 @@
       </template>
       <div v-else v-text="'Please select a widget from the menu above.'"/>
     </template>
-    <WidgetProper v-if="!admin || !editing" v-bind="{widget}"/>
+    <WidgetProper v-if="!editing" v-bind="{widget}"/>
   </div>
 </template>
 
@@ -35,8 +35,8 @@
 
 import yaml from 'js-yaml'
 import { assign, findIndex, get, identity, map, mapValues, pick, pickBy, remove } from 'lodash'
-import { parseKids } from '~/plugins/helpers'
-
+import { parseKids } from '@/plugins/helpers'
+import Bubble from '@/plugins/bubble'
 
 export default {
 
@@ -56,6 +56,10 @@ export default {
 
   asyncData: loadWidget,
 
+  computed: {
+    canAdmin() { return this.widget.owner || this.widget.maker }
+  },
+
   mounted() {
     window.vm = this
   },
@@ -73,32 +77,11 @@ export default {
 
 }
 
-async function loadWidget({ $axios, $auth, $route, route }) {
-  console.log(arguments)
-  let { params, query } = $route || route
-  let { id } = params
-  let { admin } = query
-  admin = typeof admin !== 'undefined'
+async function loadWidget({ $auth, params: { id } }) {
+  let bubble = new Bubble({ token: $auth.strategy.token.get() })
+  let widget = await bubble.get('widget', id)
 
-  if ( !$auth.id )
-    await $auth.loginWith('local', {data: {tmp: true}})
-
-  let { response } = await $axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)
-  let { owner, maker, name } = response
-  let canAdmin = admin && ( owner || maker )
-
-  console.log(parseKids)
-  let widget = {
-    ... mapValues(
-      pickBy(pick(response, 
-        ['setup', 'display', 'template']
-      )), 
-      JSON.parse
-    ),
-    name, id
-  }
-
-  return { widget, id, admin, canAdmin }
+  return { widget }
 }
 
 </script>

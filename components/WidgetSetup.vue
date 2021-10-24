@@ -18,7 +18,7 @@
 <script>
 
   import { find } from 'lodash'
-  import { filteredParameters } from '~/plugins/helpers'
+  import { filteredParameters } from '@/plugins/helpers'
 
   export default {
 

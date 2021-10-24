@@ -13,9 +13,7 @@
     async asyncData({ params: { id }}) {
       let bubble = new Bubble()
       let widget = await bubble.get('widget', id)
-      return {
-        widget
-      }
+      return { widget }
     }
 
   }
