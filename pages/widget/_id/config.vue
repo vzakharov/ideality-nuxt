@@ -80,7 +80,7 @@ async function loadWidget({ $axios, $auth, $route, route }) {
   let { admin } = query
   admin = typeof admin !== 'undefined'
 
-  if ( !$auth.user )
+  if ( !$auth.id )
     await $auth.loginWith('local', {data: {tmp: true}})
 
   let { response } = await $axios.$get('https://ideality.app/version-test/api/1.1/obj/widget/' + id)

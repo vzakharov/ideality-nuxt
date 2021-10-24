@@ -1,5 +1,7 @@
 <template>
-  <WidgetProper v-bind="{widget}"/>
+  <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
+    <WidgetProper v-bind="{widget}"/>
+  </div>
 </template>
 
 <script>
@@ -8,8 +10,12 @@
 
   export default {
 
-    asyncData({ params: { id }}) { 
-      return new Bubble().get('widget', id)
+    async asyncData({ params: { id }}) {
+      let bubble = new Bubble()
+      let widget = await bubble.get('widget', id)
+      return {
+        widget
+      }
     }
 
   }

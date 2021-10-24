@@ -46,7 +46,7 @@
         style="font-family: monospace!important; font-size: smaller;"
         class="text-monospace w-100"
         rows="25"
-        v-model.lazy="configYaml"
+        v-model.lazy="widgetYaml"
       />
     </div>
 
@@ -112,7 +112,7 @@ export default {
 
   computed: {
 
-    configYaml: {
+    widgetYaml: {
       get() { return yaml.dump(this.widget) },
 
       set(value) { assign(this.widget, yaml.load(value)) }

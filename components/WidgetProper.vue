@@ -11,7 +11,7 @@
       }"
     />
 
-    <template v-if="canRunWidget()">
+    <template>
       <div v-if="!generating">
         <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" :disabled="!content.input"
           @click="generate"
@@ -57,6 +57,7 @@
 
     data() { 
       let content = this.value || {}
+      console.log(content)
       let { display } = this.widget
       let data = {
         generating: false,
@@ -93,7 +94,7 @@
           ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: { setup, template } } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {setup, template } } ) 
           ).data
           console.log(this.content)
           this.generated = true

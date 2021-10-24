@@ -3,7 +3,8 @@ const axios = require('axios')
 const yaml = require('js-yaml')
 const { stripIndent } = require('common-tags')
 const { parse } = JSON
-const { canRunWidget, filteredParameters } = require ('../plugins/helpers')
+const { filteredParameters } = require('../plugins/helpers')
+console.log(filteredParameters)
 const _ = require('lodash')
 const ipInt = require('ip-to-int')
 
