@@ -1,4 +1,5 @@
 import Axios from 'axios'
+import { load } from 'js-yaml'
 import { camelCase, mapKeys, mapValues } from 'lodash'
 
 function Bubble({token, admin } = {}) {
@@ -64,6 +65,15 @@ function Bubble({token, admin } = {}) {
 
       return id || isSlug ? things[0] : things
 
+    },
+
+    async load(type) { 
+      return async ({ $auth, params: { id }}) => {
+        let result = {}
+        let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
+        result[type] = await bubble.get(type, id)    
+        return result
+      }
     }
   
   })
