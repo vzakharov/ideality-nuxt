@@ -8,9 +8,11 @@ const { canRunWidget, filteredParameters } = require ('../plugins/helpers')
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.set('trust proxy', true)
+
 
 app.get('/test', function (req, res) {
-  res.send('Test successful')
+  res.send(req.ip)
 })
 
 // const log = thing => {
