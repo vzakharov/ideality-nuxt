@@ -4886,6 +4886,11 @@ internal-slot@^1.0.3:
     has "^1.0.3"
     side-channel "^1.0.4"
 
+ip-to-int@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/ip-to-int/-/ip-to-int-0.3.1.tgz#4eb315c2d0e604010047515db499e38b1fb3ef40"
+  integrity sha1-TrMVwtDmBAEAR1FdtJnjix+z70A=
+
 ip@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"

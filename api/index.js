@@ -4,16 +4,15 @@ const yaml = require('js-yaml')
 const { stripIndent } = require('common-tags')
 const { parse } = JSON
 const { canRunWidget, filteredParameters } = require ('../plugins/helpers')
+const _ = require('lodash')
+const ipInt = require('ip-to-int')
 
 const app = express()
+
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.set('trust proxy', true)
-
-
-app.get('/test', function (req, res) {
-  res.send(req.ip)
-})
 
 // const log = thing => {
 //   console.log(thing)
@@ -25,10 +24,25 @@ app.get('/test', function (req, res) {
 
 const baseURL = 'https://ideality.app/version-test/api/1.1/'
 
-const backendAdmin = axios.create({ 
+const admin = axios.create({ 
   baseURL,
   headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
 })
+
+
+const getIpInfo = ip => admin.get('/obj/ip', { params: {
+    constraints: [{
+      key: 'int',
+      constraint_type: 'equals',
+      value: ipInt(ip).toInt()
+    }]
+  }}).then(data => data.response.info)
+
+
+app.get('/test', function (req, res) {
+  res.send(req.ip)
+})
+  
 
 app.post('/widget/generate', async (req, res, next) =>
 {
@@ -48,7 +62,7 @@ app.post('/widget/generate', async (req, res, next) =>
         { data: { response }}
       ] = await Promise.all([
         backend.post('wf/getUserInfo'),
-        backendAdmin.get('obj/widget/' + id)
+        admin.get('obj/widget/' + id)
       ])
 
       if ( !canRunWidget(user) )
