@@ -72,7 +72,7 @@ function Bubble({token, admin } = {}) {
 
       console.log(things)
 
-      return fetchMany  ? things: things[0]
+      return fetchMany ? things: things[0]
 
     }
   
@@ -85,7 +85,7 @@ Bubble.load = ( type, query ) =>
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
     result[type] = await bubble.get(type, id || query)    
-    return result
+    return {...result, loaded: true}
   }
 
 export default Bubble

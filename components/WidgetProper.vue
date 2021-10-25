@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-light p-2">
     <LabeledInput
       v-model="content.input"
       v-bind="{
