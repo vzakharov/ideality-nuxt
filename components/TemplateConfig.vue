@@ -7,7 +7,8 @@
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...' },
       inputPrefix: { caption: 'Prefix for input' },
-      outputPrefix: { caption: 'Prefix for output' }
+      outputPrefix: { caption: 'Prefix for output' },
+      multilineInput: { caption: 'Allow multiline input', type: 'boolean'}
     }"/>
 
     <!-- Prompt parts -->

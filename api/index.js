@@ -4,7 +4,7 @@ const yaml = require('js-yaml')
 const { stripIndent } = require('common-tags')
 const { parse } = JSON
 const { filteredParameters } = require('../plugins/helpers')
-console.log(filteredParameters)
+// console.log(filteredParameters)
 const _ = require('lodash')
 const ipInt = require('ip-to-int')
 

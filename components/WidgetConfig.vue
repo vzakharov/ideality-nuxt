@@ -122,7 +122,7 @@ export default {
 
     saveDisabled() { return !this.changed || this.saving },
 
-    apiUrl() { return 'https://ideality.app/version-test/api/1.1/obj/widget/' + this.id },
+    apiUrl() { return 'https://ideality.app/version-test/api/1.1/obj/widget/' + this.widget.id },
 
     setup() { return this.widget.setup },
     display() { return this.widget.display },
@@ -145,10 +145,10 @@ export default {
   methods: {
 
     async clone() {
-      let { id } = this
+      let { id } = this.widget
       let { response: { newWidget }} = await this.$axios.$post('https://ideality.app/version-test/api/1.1/wf/cloneWidget', { id })
       console.log(newWidget)
-      this.$router.push({...this.$route, name: 'widget-id-widget', params: { id: newWidget._id }})
+      this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
     },
     
     getChoices: parameter => parameter.choices || (parameter.choices = [{

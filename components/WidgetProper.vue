@@ -7,7 +7,8 @@
         caption: display.inputCaption,
         placeholder: display.inputPlaceholder,
         labelTag: 'h3',
-        disabled: generating
+        disabled: generating,
+        multiline: true
       }"
     />
 
