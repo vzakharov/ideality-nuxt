@@ -11,9 +11,16 @@
     </div>
     <template v-else>
       <textarea-autosize v-if="multiline" type="text" v-bind="inputProps"
+        v-on="{...$listeners,
+          input
+        }"
         @input="$emit('input', $event)"
       />
-      <input v-else v-bind="inputProps" @input="$emit('input', commaSeparated ? $event.target.value.split(',') : $event.target.value)"/>
+      <input v-else v-bind="inputProps" 
+        v-on="{...$listeners,
+          input
+        }"
+      />
     </template>
   </div>
 </template>
@@ -21,6 +28,7 @@
 <script>
 import Vue from 'vue'
 import TextareaAutosize from 'vue-textarea-autosize'
+import { get } from 'lodash'
 
 Vue.use(TextareaAutosize)
 
@@ -31,7 +39,8 @@ export default {
 
   
   props: [
-    'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 'disabled', 'choices', 'value', 'commaSeparated', 'type'
+    'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 
+    'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows'
   ],
   
   data() { return {
@@ -48,13 +57,20 @@ export default {
     // },
 
     inputProps() {
-      let { placeholder, disabled, value, commaSeparated, lazy } = this
+      let { placeholder, disabled, value, commaSeparated, lazy, removeNewLines, rows } = this
+      if ( value ) {
+        if ( commaSeparated )
+          value = value.join(',')
+        if ( removeNewLines )
+          value = value.replace(/\n+/g, ' ')
+      }
       return {
         class: 'form-control w-100',
         // 'v-model': object[_key],
         placeholder,
         disabled,
-        value : commaSeparated ? ( value || [] ).join(',') : value
+        rows,
+        value
       }
     },
     // value() { return this.object[this._key] }
@@ -70,6 +86,15 @@ export default {
   //     }
   //   }
   // }
+
+  methods: {
+    input(event) {
+      let value = get(event, 'target.value')
+      if ( typeof value === 'undefined' )
+        value = event
+      this.$emit('input', this.commaSeparated ? value.split(',') : value)
+    }
+  }
 
 }
 

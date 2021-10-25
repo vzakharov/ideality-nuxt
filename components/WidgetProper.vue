@@ -8,8 +8,11 @@
         placeholder: display.inputPlaceholder,
         labelTag: 'h3',
         disabled: generating,
-        multiline: true
+        multiline: true,
+        removeNewLines: true,
+        rows: 1
       }"
+      @keydown.native.ctrl.enter="generate"
     />
 
     <template>
