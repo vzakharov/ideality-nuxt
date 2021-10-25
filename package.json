@@ -28,6 +28,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "nuxt": "^2.15.7",
+    "pluralize": "^8.0.0",
     "vue-async-computed": "^3.9.0",
     "vue-lodash": "^2.1.2",
     "vue-textarea-autosize": "^1.1.1",

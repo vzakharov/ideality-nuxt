@@ -1,6 +1,7 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
 import { camelCase, mapKeys, mapValues } from 'lodash'
+import { singular } from 'pluralize'
 
 function Bubble({token, admin } = {}) {
 
@@ -19,17 +20,23 @@ function Bubble({token, admin } = {}) {
       console.log(arguments)
       let id = typeof idOrQuery === 'string' && idOrQuery
       let query = !id && idOrQuery
-      let isSlug = id && !id.match(/^\d/)
+      let slug = id && !id.match(/^\d/) && id
+      if ( slug )
+        id = undefined
+      console.log(slug, id)
+      let fetchMany = !id & !slug
+      if ( fetchMany )
+        type = singular(type)
 
       const url = `obj/${type}/`
 
       let constraint_type = 'equals'
 
       let { data: { response }} = await (
-        ( id && !isSlug ) ? 
+        ( id ) ? 
           axios.get(url + id) : 
           axios.get(url, { params: { constraints: JSON.stringify(
-            isSlug ?
+            slug ?
               [{
                 key: 'Slug', value: id, constraint_type
               }] 
@@ -38,9 +45,9 @@ function Bubble({token, admin } = {}) {
               }))
           )}})
       )
-
+      
       let things = (
-        response.results || [response]
+        id ? [ response ] : response.results
       ).map(thing => 
           mapKeys(
             mapValues(thing, value => {
@@ -63,7 +70,9 @@ function Bubble({token, admin } = {}) {
           )
       )
 
-      return id || isSlug ? things[0] : things
+      console.log(things)
+
+      return fetchMany  ? things: things[0]
 
     }
   
@@ -71,11 +80,11 @@ function Bubble({token, admin } = {}) {
 
 }
 
-Bubble.load = type => 
+Bubble.load = ( type, query ) => 
   async ({ $auth, params: { id }}) => {
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-    result[type] = await bubble.get(type, id)    
+    result[type] = await bubble.get(type, id || query)    
     return result
   }
 

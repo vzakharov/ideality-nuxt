@@ -36,6 +36,9 @@ Vue.mixin({
 
   },
 
+  computed: {
+  },
+
   methods: {
     canRunWidget,
     setDefaults
