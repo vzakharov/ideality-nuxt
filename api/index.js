@@ -11,6 +11,7 @@ const Bubble = require('../plugins/bubble')
 
 const app = express()
 
+const { assign } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -49,62 +50,56 @@ app.get('/test', function (req, res) {
 app.post('/widget/generate', async (req, res, next) =>
 {
   try {
-    console.log(req.ip)
-    console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd } = {
+    // console.log(req.ip)
+    // console.log(req.body)
+    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd, code } = {
       input: '', output: '',
       ...req.body
     }
-
-    console.log(id, req.headers)
-    if ( !widget || !widget.setup || !widget.template ) {
-      let backend = axios.create({baseURL, headers: {Authorization: req.headers.authorization}})
-
-      let [
-        // { data: { response: { user }}},
-        { data: { response }}
-      ] = await Promise.all([
-        // Bubble.get('ip'),
-        admin.get('obj/widget/' + id)
-      ])
-
-      // if ( !canRunWidget(user) )
-      //   return res.status(403).send({ error: {
-      //     cause: 'dailyLimit', 
-      //     message: `Too many widget runs; please try again after ${new Date(user['Created Date'] + 24*3600).toUTCString()}`
-      //   }})
-      // else
-      //   backend.post('wf/incWidgetRuns')
-      
-      console.log(response)
-      ;['setup', 'template'].forEach(what =>
-        !widget[what] && (
-          widget[what] = parse(response[what])
+    
+    const widgetLoaded = 
+      !( widget & widget.setup & widget.template )
+      && Bubble.default.admin.get('widget', id)
+        .then( ({ setup, template }) => 
+          assign(widget, {
+            setup, template,
+            ...widget
+          })
         )
-      )
-    }
-
-    let { setup, template } = widget
-    let { parameterValues, examples } = setup
-    let { instruction, inputPrefix, outputPrefix } = template
-
-    if ( !apiKey ) {
-      if ( iddqd )
-        ({apiKey} = template)
-      else
+    
+    let runsLeft
+    if ( !apiKey && !widget.template ) {
+      if ( 
+        iddqd 
+        || (
+          runsLeft = ( 
+            await Bubble.default.admin.go('runsLeft--', {code}) 
+          ).runsLeft 
+        )
+      ) {
+        console.log({runsLeft})
+        await widgetLoaded
+        // console.log(widget.template)
+        ;( { apiKey } = widget.template )
+      } 
+      else {
         return res.status(403).send({
           error: {
             cause: 'apiKeyNotSet', 
             message: 'Please send your OpenAI apiKey as an apiKey parameter in the request body.'
           }
         })
+      }
     }
+
+    let { setup, template } = widget
+    let { parameterValues, examples } = setup
+    let { instruction, inputPrefix, outputPrefix } = template
 
     if ( duringSetup )
       examples.pop()
 
-
-    console.log(setup, template)
+    // console.log(setup, template)
 
     let prompt = [
       instruction,
@@ -123,7 +118,7 @@ app.post('/widget/generate', async (req, res, next) =>
     if ( input && !appendInput || output)
       prompt += `\n\n${outputPrefix}:\n${output}`
   
-    console.log(prompt)
+    // console.log(prompt)
 
     let payload = {
       prompt,
@@ -135,7 +130,7 @@ app.post('/widget/generate', async (req, res, next) =>
       stop: [inputPrefix + ':', ...examples.length ? [] : ['\n']]
     }
   
-    console.log(payload)
+    // console.log(payload)
 
     let response = await axios.post(
       'https://api.openai.com/v1/engines/curie-instruct-beta/completions',
@@ -147,10 +142,10 @@ app.post('/widget/generate', async (req, res, next) =>
       }
     )
   
-    console.log(response.data)
+    // console.log(response.data)
     let { text } = response.data.choices[0]
   
-    console.log(text)
+    // console.log(text)
   
     if ( input && !appendInput ) 
       output += text.trimEnd()
@@ -160,9 +155,9 @@ app.post('/widget/generate', async (req, res, next) =>
         [input] = input.split("\n")
     }
   
-    res.send({input, output})
+    res.send({content: {input, output}, runsLeft })
   } catch(err) {
-    console.log(err)
+    // console.log(err)
     next(err)
   }
 

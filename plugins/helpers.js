@@ -1,7 +1,11 @@
-import { filter, pick, get, keys } from 'lodash'
+import { filter, isObject, pick, get, keys } from 'lodash'
+// import Bubble from '@/plugins/bubble'
 
-function canRunWidget(user = get(this, '$auth.user')) {
-  return !user.temporary || user.widgetRuns < 50
+function canRunWidget({code, godMode} = this) {
+  if ( godMode )
+    return true
+  else
+    return code && code.runsLeft > 0
 }
 
 function filteredParameters({setup, template, duringGeneration}) {

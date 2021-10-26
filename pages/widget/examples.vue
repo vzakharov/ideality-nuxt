@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid="md" class="mt-3" style="max-width: 960px">
+  <b-container fluid="md" class="mt-3 mb-5" style="max-width: 960px">
     <b-row>
       <b-col sm="4" lg="3" class="d-none d-sm-block">
         <b-list-group>
@@ -16,27 +16,50 @@
         </b-dropdown>
         <div v-if="widget">
           <template v-if="!godMode">
-            <div class="mt-2" style="cursor: pointer" @click="hideApiKey=!hideApiKey">
-              <b>API key </b> <small><i v-text="hideApiKey ? '(show)' : '(hide)'"/></small>
-            </div>
-            <template v-if="!hideApiKey">
-              <b-input
-                description="While the app is still in beta, we cannot use our own API key for public purposes.
-                  We don’t store your API key and just use it once when sending the request to OpenAI servers."
-                placeholder="sk-..."
-                id="apiKey"
-                ref="apiKey"
+            <template v-if="$route.query.code && !code">
+              Checking your promo code, please wait...
+            </template>
+            <template v-else-if="code && !apiKey">
+              <b>Widget runs remaining</b>
+              <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
+                :variant="(2 * code.runsLeft > code.runsMax) ? 'primary' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
               />
-              <small class="form-text text-muted">
-                While the app is still in beta, we cannot use our own API key for public purposes, so you
-                use your own API key. One generation will cost approximately $0.003 (~500 Curie tokens).
-                <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI servers.</b>
-              </small>
+              <b-button size="sm" variant="outline-secondary" class="mt-2" v-text="'Use your own API key'"
+                @click="code=undefined"
+              />
+            </template>
+            <template v-else>
+              <h3>Before we begin</h3>
+              <div class="mt-2" style="cursor: pointer" @click="hideApiKey=!hideApiKey">
+                <b>API key </b> <small><i v-text="hideApiKey ? '(show)' : '(hide)'"/></small>
+              </div>
+              <template v-if="!hideApiKey">
+                <b-input
+                  description="While the app is still in beta, we cannot use our own API key for public purposes.
+                    We don’t store your API key and just use it once when sending the request to OpenAI servers."
+                  placeholder="sk-..."
+                  id="apiKey"
+                  ref="apiKey"
+                />
+                <p
+                  @click="showApiKeyExplanation=!showApiKeyExplanation"
+                ><small class="form-text text-muted" style="text-decoration: underline dotted; cursor: pointer">
+                  Why do we need this? Is it safe?
+                </small></p>
+                <p v-if="showApiKeyExplanation"><small class="form-text text-muted">
+                  While the app is still in beta, we cannot use our own API key for public purposes, so you
+                  use your own API key. One generation will cost approximately $0.003 (~500 Curie tokens).
+                  <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI servers.</b>
+                </small></p>
+                <p>Don’t have an API key but still want to try? <a href="#beta">Request</a> beta access.</p>
+              </template>
             </template>
           </template>
           <!-- <h3 v-text="widget.display.name"/>
           <small>Here’s how your widget might look like (shadow not included):</small> -->
-          <WidgetProper ref="widget" v-bind="{widget, apiKey}" :key="widget.id" class="border p-4 mt-4 mb-4"/>
+          <WidgetProper ref="widget" :key="widget.id" class="border p-4 mt-4 mb-4"
+            v-bind="{widget, apiKey, code}"
+          />
           <template v-if="hasQueryTag('dev')">
             <LabeledInput
               caption="Embed link"
@@ -60,7 +83,18 @@
             />
           </template>
           <div v-else>
-            <b-button variant="outline-success" v-text="'Get this widget'"/>
+            <h3>Get the widget</h3>
+            <p>If you’d like to get this or any other widget, request beta access below:</p>
+            <ObjectConfig
+              v-model="betaRequest"
+              :fields="{
+                email: { caption: 'Email', placeholder: 'bill@microsoft.com', props: {id: 'beta'}},
+                bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
+              }"
+            />
+            <b-button class="mt-2" variant="success" :disabled='!(betaRequest.email && betaRequest.bio)'>
+              Request beta access
+            </b-button>
           </div>
         </div>
       </b-col>
@@ -76,7 +110,7 @@
   import VueClipboard from 'vue-clipboard2'
   Vue.use(VueClipboard)
 
-  import { find } from 'lodash'
+  import { assign, find } from 'lodash'
 
   export default {
 
@@ -84,13 +118,22 @@
       widget: null,
       copied: false,
       apiKey: null,
-      hideApiKey: false
+      hideApiKey: false,
+      code: undefined,
+      betaRequest: {},
+      showApiKeyExplanation: false
     }},
 
     asyncData: Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'}),
 
-    mounted() {
+    async mounted() {
       this.widget = find(this.widgets, {slug: this.$route.hash.slice(1)}) || this.widgets[0]
+      let codeId = this.$route.query.code
+      if ( codeId ) {
+        console.log(codeId)
+        this.code = await Bubble.anon.get('code', codeId)
+        console.log(this.code)
+      }
     },
 
     computed: {

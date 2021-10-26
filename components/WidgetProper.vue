@@ -1,7 +1,7 @@
 <template>
   <div class="bg-light p-2">
     <template v-if="!duringSetup">
-      <h3 v-text="widget.display.name"/>
+      <!-- <h3 v-text="widget.display.name"/> -->
       <p v-text="widget.display.description"/>
     </template>
     <LabeledInput
@@ -23,17 +23,17 @@
     <template>
       <div v-if="!generating">
         <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" 
-          :disabled="!content.input || !canGenerate"
+          :disabled="!content.input || !canRunWidget"
           @click="generate"
         />
         <b-button variant="light" v-text="'🎲'"
           @click="content={}; generate()"
-          :disabled="!canGenerate"
+          :disabled="!canRunWidget"
         />
       </div>
       <b-spinner v-else class="spinner-grow text-danger"/>
     </template>
-    <b-alert :show="!canGenerate" variant="warning" class="p-1 m-2" style="cursor: pointer">
+    <b-alert :show="!canRunWidget" variant="warning" class="p-1 m-2" style="cursor: pointer">
       Please enter your <a href="#apiKey" class="text-decoration-none">API key above</a> to use the demo widget.
     </b-alert>
 
@@ -71,7 +71,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code'],
 
     data() { 
       let content = this.value || {}
@@ -96,7 +96,13 @@
 
         try {
           let { id, setup, template } = this.widget
-          let { duringSetup, apiKey } = this
+          let { duringSetup, apiKey } = {
+            apiKey: undefined, code: undefined,
+            ...this
+          }
+          
+          let { code: {id: code} } = this
+
           let { input, output } = this.content
 
           const append = what => last(what) == '-'
@@ -111,10 +117,17 @@
             !appendInput && append(output)
           ) ? cut(output) : undefined
 
-          this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey, iddqd: this.godMode } ) 
-          ).data
-          console.log(this.content)
+          let body = { 
+              id, input, output, appendInput, duringSetup, widget: {id, setup, template }, 
+              apiKey, iddqd: this.godMode, code
+            }
+          
+          
+          let { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body)
+          assign(this, { content })
+          console.log(runsLeft)
+          this.$set(this.code, 'runsLeft', runsLeft)
+          
           this.generated = true
         } catch(err) {
           console.log(err)
@@ -126,9 +139,9 @@
 
     },
 
-    computed: {
-      canGenerate() { return this.godMode || this.apiKey }
-    },
+    // computed: {
+    //   canRunWidget() { return this.godMode || this.apiKey }
+    // },
 
     watch: {
       content: {
