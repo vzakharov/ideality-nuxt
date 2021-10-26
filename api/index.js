@@ -126,7 +126,7 @@ app.post('/widget/generate', async (req, res, next) =>
       stop: [inputPrefix + ':', ...examples.length ? [] : ['\n']]
     }
   
-    // console.log(payload)
+    console.log(payload)
 
     let response = await axios.post(
       'https://api.openai.com/v1/engines/curie-instruct-beta/completions',
@@ -138,7 +138,7 @@ app.post('/widget/generate', async (req, res, next) =>
       }
     )
   
-    // console.log(response.data)
+    console.log(response.data)
     let { text } = response.data.choices[0]
   
     // console.log(text)

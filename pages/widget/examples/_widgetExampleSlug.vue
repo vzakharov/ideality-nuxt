@@ -18,8 +18,14 @@
           <h1 class="display-4" v-text="widget.display.name"/>
           <p class="lead mx-2">an example Ideality 🔺 widget</p>
           <template v-if="widget.display.sampleDescription">
-            <h3>Widget info</h3>
-            <div v-html="$md.render(widget.display.sampleDescription)"/>
+            <h3>
+              Widget info
+              <small class="text-muted pointer" 
+                v-text="hideWidgetInfo ? '⊞' : '⊟'"
+                @click="hideWidgetInfo=!hideWidgetInfo"
+              />
+            </h3>
+            <div v-show="!hideWidgetInfo" v-html="$md.render(widget.display.sampleDescription)"/>
           </template>
           <h3>Widget demo</h3>
           <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
@@ -92,7 +98,7 @@
           <h3>Customization</h3>
           <p>
             All Ideality 🔺 widgets are based on customizable templates, which allow changing both the display (changing texts,
-            adding custom CSS), calls to action (including both simple web/mailto links and complex get/post requests) and the AI logic.
+            adding custom CSS), calls to action and the AI logic.
           </p>
 
           <template v-if="hasQueryTag('dev')">
@@ -119,17 +125,24 @@
           </template>
           <div v-else>
             <h3>Get the widget</h3>
-            <p>If you’d like to get this or any other widget, request beta access below:</p>
-            <ObjectConfig
-              v-model="betaRequest"
-              :fields="{
-                email: { caption: 'Email', placeholder: 'gdb@openai.com', id: 'beta'},
-                bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
-              }"
-            />
-            <b-button class="mt-2" variant="success" :disabled='!(betaRequest.email && betaRequest.bio)'>
-              Request beta access
-            </b-button>
+            <em v-if="betaRequested">
+              We’ve got your beta request and are working on it!
+            </em>
+            <template v-else>
+              <p>If you’d like to get this or any other widget, request beta access below:</p>
+              <ObjectConfig
+                v-model="betaRequest"
+                :fields="{
+                  email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'beta'},
+                  bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
+                }"
+              />
+              <b-button class="mt-2" variant="success" :disabled='!(betaRequest.email && betaRequest.bio)'
+                @click="requestBeta"
+              >
+                Request beta access
+              </b-button>
+            </template>
           </div>
         </div>
       </b-col>
@@ -159,10 +172,12 @@
     }},
 
     data() { return {
+      betaRequested: false,
       widget: null,
       copied: false,
       apiKey: null,
       hideApiKey: false,
+      hideWidgetInfo: false,
       code: undefined,
       betaRequest: {},
       showApiKeyExplanation: false,
@@ -179,6 +194,7 @@
           apiKey: localApiKey
         })
       }
+      assign(this, { betaRequested: localStorage.getItem('betaRequested') })
       this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
       if ( !this.widget ) {
         this.setWidget(this.widgets[0])
@@ -193,9 +209,11 @@
     },
 
     computed: {
+
       iframeCode() {
         return `https://ideality.app/widget/${this.widget.slug}`
       }
+
     },
     
     watch: {
@@ -217,14 +235,24 @@
     },
 
     methods: {
+
+      requestBeta() {
+        Bubble.anon.go('requestBeta', this.betaRequest)
+        this.betaRequested = true
+        localStorage.setItem('betaRequested', true)
+      },
+      
       setWidget(widget) {
         Object.assign(this, { widget })
-        this.$router.push({...this.$route, name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}})
+        history.pushState(null, null,
+          this.$router.resolve({...this.$route, name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}}).href
+        )
         // window.location.hash = '#' + widget.slug
         // this.$nextTick(function() { 
         //   document.getElementById('user-input')
         // })
       }
+
     }
 
   }

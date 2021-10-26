@@ -11,7 +11,7 @@
       <label :for="uid" class="form-check-label"> {{caption}} </label>
     </div>
     <template v-else>
-      <textarea-autosize v-if="multiline" type="text" v-bind="inputProps" :id="uid"
+      <textarea-autosize v-if="multiline" v-bind="inputProps" :id="uid"
         v-on="{...$listeners,
           input
         }"
@@ -58,7 +58,8 @@ export default {
     },
 
     inputProps() {
-      let { placeholder, description, disabled, value, commaSeparated, lazy, removeNewLines, rows, props } = this
+      let { placeholder, description, disabled, value, commaSeparated, lazy, removeNewLines, rows, props, type } = this
+      if (!type) type='text'
       if ( value ) {
         if ( commaSeparated )
           value = value.join(',')
@@ -73,6 +74,7 @@ export default {
         description,
         rows,
         value,
+        type,
         ...props
       }
     },

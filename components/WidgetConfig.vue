@@ -23,19 +23,20 @@
 
       <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
 
-      <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
+      <WidgetDisplayConfig v-if="section=='display'" :context="{widget}" v-model="display"/>
+      <!-- <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
         name: { caption: 'Display name', placeholder: 'Shows up as an heading' },
         description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
         sampleDescription: { hide: !widget.isSample, caption: 'Description (for owners)', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},
-        leadgenTitle: { caption: 'Lead generation box title' },
-        leadgenLine1: { caption: 'Leadgen box paragraph 1', multiline: true },
-        leadgenLine2: { caption: 'Leadgen box line before CTA' },
-        leadgenCTA: { caption: 'Leadgen box CTA' },
-        leadgenEmail: { caption: 'Leadgen email'}
-      }"/>
+        preCTA: { caption: 'Line before CTA button' },
+        CTA: { caption: 'Text on the CTA button' },
+        CTAType: { choices: ['link', 'email']},
+        CTAEmail: { hide: !widget.CTAType!='email', caption: 'Email address to send the email to' },
+        CTAContent: { caption: 'Text to be included after CTA', placeholder: 'Use <input> and <output> to refer to the input and output, respectively.', multiline: true }
+      }"/> -->
 
       <TemplateConfig v-if="section=='template'" v-model="widget.template"/>
 

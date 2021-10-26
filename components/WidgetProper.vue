@@ -22,7 +22,7 @@
 
     <template>
       <div v-if="!generating">
-        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" 
+        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated && content.output ? 'Try again' : 'Suggest'" 
           :disabled="!content.input || !canRunWidget"
           @click="generate"
         />
@@ -34,7 +34,7 @@
       <b-spinner v-else class="spinner-grow text-danger"/>
     </template>
     <slot/>
-    
+
     <LabeledInput v-if="content.output || duringSetup" 
       v-model="content.output"
       v-bind="{
@@ -46,14 +46,16 @@
       @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
     />
 
-    <template v-if="false && generated && content.output && !duringSetup">
-      <div v-if="showOutro" class="shadow rounded-3 bg-white m-3 mt-5 p-3">
-        <h4 v-text="display.leadgenTitle" class="mt-3"/>
-        <p v-text="display.leadgenLine1"/>
-        <p class="fw-bold" v-text="display.leadgenLine2"/>
-        <button class="btn btn-primary" 
-          :href="`mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
-          target="_blank" v-text="display.leadgenCTA"
+    <template v-if="generated && content.output && !duringSetup">
+      <div v-if="showOutro">
+        <h4 class="pt-3" v-text="display.preCTA"/>
+        <b-button variant="primary" size="lg"
+          :href="
+            display.CTAType=='link' ?
+            encodeURI(display.CTAContent.replace('<input>', content.input).replace('<output>', content.output))
+            : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
+          target="_blank"
+          v-text="display.CTA"
         />
       </div>
     </template>
@@ -94,12 +96,11 @@
 
         try {
           let { id, setup, template } = this.widget
-          let { duringSetup, apiKey } = {
-            apiKey: undefined, code: undefined,
-            ...this
-          }
+          let { duringSetup, apiKey } = this
           
-          let { code: {id: code} } = this
+          let { code } = this
+          if (code)
+            code = code.id
 
           let { input, output } = this.content
 
