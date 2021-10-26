@@ -237,7 +237,10 @@
     methods: {
 
       requestBeta() {
-        Bubble.anon.go('requestBeta', this.betaRequest)
+        Bubble.anon.go('requestBeta', {
+          ...this.betaRequest,
+          hasApiKey: !!this.apiKey
+        })
         this.betaRequested = true
         localStorage.setItem('betaRequested', true)
       },
