@@ -25,7 +25,8 @@
 
       <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
         name: { caption: 'Display name', placeholder: 'Shows up as an heading' },
-        description: { caption: 'Description', placeholder: 'The text that will show up under the heading', multiline: true},
+        description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
+        sampleDescription: { hide: !widget.isSample, caption: 'Description (for owners)', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},

@@ -15,51 +15,82 @@
           </b-dropdown-item>
         </b-dropdown>
         <div v-if="widget">
-          <template v-if="!godMode">
+          <h1 class="display-4" v-text="widget.display.name"/>
+          <p class="lead mx-2">a sample Ideality 🔺 widget</p>
+          <template v-if="widget.display.sampleDescription">
+            <h3>Widget info</h3>
+            <div v-html="$md.render(widget.display.sampleDescription)"/>
+          </template>
+          <!-- <small>Here’s how your widget might look like (shadow not included):</small> -->
+          <h3>Widget demo</h3>
+          <WidgetProper ref="widget" :key="widget.id" class="border p-3 mt-3 mx-4 mb-4"
+            v-bind="{widget, apiKey, code}"
+          >
+            <b-alert v-if="!canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
+              <p>
+                Please enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
+                to use the widget.
+                <span style="text-decoration: underline dotted; cursor: pointer" @click="showApiKeyExplanation=!showApiKeyExplanation">
+                  Why? Is it costly? Is it safe? 
+                </span>
+              </p>
+              <p v-if="showApiKeyExplanation" class="mx-2 text-muted"><small>
+                While the app is still in beta, we cannot use our own API key for public purposes, but you
+                can use your own API key. One generation will cost approximately $0.003 
+                (~500 <a href="https://beta.openai.com/docs/engines/curie" target="_blank">Curie</a> tokens).<br/>
+                <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI servers.</b>
+              </small></p>
+              <b-input
+                description="While the app is still in beta, we cannot use our own API key for public purposes.
+                  We don’t store your API key and just use it once when sending the request to OpenAI servers."
+                placeholder="sk-..."
+                id="apiKey"
+                ref="apiKey"
+                v-model="apiKey"
+              />
+              <LabeledInput type="boolean" caption="Store locally" 
+                :description="!apiKey ? '' : storeApiKeyLocally ? 
+                  'Now stored. Local storage only, so that you don’t have to retype it after page refresh.' : 
+                  'Now not stored. If it was stored previously, it has been deleted.'"
+                v-model="storeApiKeyLocally"
+                :disabled="!apiKey"
+              />
+              <p>Don’t have an API key but still want to try? <a href="#beta">Request</a> beta access.</p>
+              <div v-if="apiKey" class="d-flex flex-row-reverse">
+                <small @click="hideApiKey=true" class="text-muted align-right" style="cursor:pointer">Close this box</small>
+              </div>
+            </b-alert>
+            <div class="mt-2">
+              <small v-if="apiKey && hideApiKey" class="text-muted">
+                Using your API key, {{ apiKey.slice(0,10) }}…
+                <a href="#apiKey" @click="hideApiKey=false" class="pointer">(Change)</a>
+              </small>
+            </div>
+          </WidgetProper>
+          <div v-if="!apiKey" class="mb-3 mw-25" style="font-size: smaller; color: gray">
             <template v-if="$route.query.code && !code">
               Checking your promo code, please wait...
             </template>
-            <template v-else-if="code && !apiKey">
+            <template v-else-if="code">
               <b>Widget runs remaining</b>
               <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
+                style="max-width: 150px"
                 :variant="(2 * code.runsLeft > code.runsMax) ? 'primary' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
               />
-              <b-button size="sm" variant="outline-secondary" class="mt-2" v-text="'Use your own API key'"
-                @click="code=undefined"
-              />
+              <b-button size="sm" variant="outline-secondary" class="mt-2"
+                to="examples" @click="code=undefined"
+              >
+                Use your own API key
+              </b-button>
             </template>
-            <template v-else>
-              <h3>Before we begin</h3>
-              <div class="mt-2" style="cursor: pointer" @click="hideApiKey=!hideApiKey">
-                <b>API key </b> <small><i v-text="hideApiKey ? '(show)' : '(hide)'"/></small>
-              </div>
-              <template v-if="!hideApiKey">
-                <b-input
-                  description="While the app is still in beta, we cannot use our own API key for public purposes.
-                    We don’t store your API key and just use it once when sending the request to OpenAI servers."
-                  placeholder="sk-..."
-                  id="apiKey"
-                  ref="apiKey"
-                />
-                <p
-                  @click="showApiKeyExplanation=!showApiKeyExplanation"
-                ><small class="form-text text-muted" style="text-decoration: underline dotted; cursor: pointer">
-                  Why do we need this? Is it safe?
-                </small></p>
-                <p v-if="showApiKeyExplanation"><small class="form-text text-muted">
-                  While the app is still in beta, we cannot use our own API key for public purposes, so you
-                  use your own API key. One generation will cost approximately $0.003 (~500 Curie tokens).
-                  <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI servers.</b>
-                </small></p>
-                <p>Don’t have an API key but still want to try? <a href="#beta">Request</a> beta access.</p>
-              </template>
-            </template>
-          </template>
-          <!-- <h3 v-text="widget.display.name"/>
-          <small>Here’s how your widget might look like (shadow not included):</small> -->
-          <WidgetProper ref="widget" :key="widget.id" class="border p-4 mt-4 mb-4"
-            v-bind="{widget, apiKey, code}"
-          />
+          </div>
+
+          <h3>Customization</h3>
+          <p>
+            All Ideality 🔺 widgets are based on customizable templates, which allow changing both the display (changing texts,
+            adding custom CSS), calls to action (including both simple web/mailto links and complex get/post requests) and the AI logic.
+          </p>
+
           <template v-if="hasQueryTag('dev')">
             <LabeledInput
               caption="Embed link"
@@ -88,7 +119,7 @@
             <ObjectConfig
               v-model="betaRequest"
               :fields="{
-                email: { caption: 'Email', placeholder: 'bill@microsoft.com', props: {id: 'beta'}},
+                email: { caption: 'Email', placeholder: 'gdb@openai.com', id: 'beta'},
                 bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
               }"
             />
@@ -121,12 +152,20 @@
       hideApiKey: false,
       code: undefined,
       betaRequest: {},
-      showApiKeyExplanation: false
+      showApiKeyExplanation: false,
+      storeApiKeyLocally: false
     }},
 
     asyncData: Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'}),
 
     async mounted() {
+      let localApiKey = localStorage.getItem('apiKey')
+      if (localApiKey) {
+        assign(this, {
+          storeApiKeyLocally: true,
+          apiKey: localApiKey
+        })
+      }
       this.widget = find(this.widgets, {slug: this.$route.hash.slice(1)}) || this.widgets[0]
       let codeId = this.$route.query.code
       if ( codeId ) {
@@ -143,9 +182,18 @@
     },
     
     watch: {
+
+      storeApiKeyLocally(yes) {
+        if ( yes )
+          localStorage.setItem('apiKey', this.apiKey)
+        else
+          localStorage.removeItem('apiKey')
+      },
+
       widget(widget) {
         this.copied = false
       }
+
     },
 
     methods: {
@@ -163,5 +211,10 @@
 </script>
 
 <style>
-
+a {
+  text-decoration: none;
+}
+.pointer {
+  cursor: pointer;
+}
 </style>

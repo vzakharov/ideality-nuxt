@@ -1,8 +1,8 @@
 import { filter, isObject, pick, get, keys } from 'lodash'
 // import Bubble from '@/plugins/bubble'
 
-function canRunWidget({code, godMode} = this) {
-  if ( godMode )
+function canRunWidget({code, godMode, apiKey} = this) {
+  if ( godMode || apiKey )
     return true
   else
     return code && code.runsLeft > 0

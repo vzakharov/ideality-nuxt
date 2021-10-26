@@ -1,23 +1,24 @@
 <template>
   <div class="form-group my-2">
-    <div v-if="caption && type!='boolean'"><label v-text="caption" class="my-1 fw-bold"/></div>
+    <div v-if="caption && type!='boolean'"><label :for="uid" v-text="caption" class="my-1 fw-bold"/></div>
     <Choices v-if="choices" v-bind="{value, choices}" @input="$emit('input', $event)"/>
     <div v-else-if="type=='boolean'" class="form-check">
       <input class="form-check-input" type="checkbox" 
-        v-bind="{checked: value}" 
+        v-bind="{checked: value, disabled}" 
         @input="console.log( $event.target.checked ); $emit('input', $event.target.checked || undefined)"
+        :id="uid"
       >
-      <label class="form-check-label"> {{caption}} </label>
+      <label :for="uid" class="form-check-label"> {{caption}} </label>
     </div>
     <template v-else>
-      <textarea-autosize v-if="multiline" type="text" v-bind="inputProps"
+      <textarea-autosize v-if="multiline" type="text" v-bind="inputProps" :id="uid"
         v-on="{...$listeners,
           input
         }"
         @input="$emit('input', $event)"
         ref="input"
       />
-      <input v-else v-bind="inputProps" 
+      <input v-else v-bind="inputProps" :id="uid"
         v-on="{...$listeners,
           input
         }"
@@ -52,13 +53,9 @@ export default {
 
   computed: {
 
-    // _id() {
-      
-    //   if (!this.id && !this.caption)
-    //     throw({vm: this, message: 'Specify either an id or a caption'})
-
-    //   return 'input-' + (this.id || this.caption).toLowerCase().replace(/[\W]/g, '-')
-    // },
+    uid() {
+      return this.id || ( 'input-' + this._uid )
+    },
 
     inputProps() {
       let { placeholder, description, disabled, value, commaSeparated, lazy, removeNewLines, rows, props } = this

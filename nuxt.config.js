@@ -44,7 +44,12 @@ export default {
     // https://go.nuxtjs.dev/content
     '@nuxt/content',
     // 'vue-async-computed'
+    '@nuxtjs/markdownit'
   ],
+
+  markdownit: {
+    runtime: true
+  },
 
   auth: {
     strategies: {

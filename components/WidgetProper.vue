@@ -33,10 +33,8 @@
       </div>
       <b-spinner v-else class="spinner-grow text-danger"/>
     </template>
-    <b-alert :show="!canRunWidget" variant="warning" class="p-1 m-2" style="cursor: pointer">
-      Please enter your <a href="#apiKey" class="text-decoration-none">API key above</a> to use the demo widget.
-    </b-alert>
-
+    <slot/>
+    
     <LabeledInput v-if="content.output || duringSetup" 
       v-model="content.output"
       v-bind="{
