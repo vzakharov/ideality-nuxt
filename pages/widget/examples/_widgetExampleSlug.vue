@@ -163,7 +163,7 @@
   export default {
 
     head() { return {
-      title: `${get(this, 'widget.display.name')} ▲ an example Ideality 🔺 widget`,
+      title: `${get(this, 'widget.display.name')} 🔺 Ideality widget example`,
       meta: [{
         hid: 'description',
         name: 'description',

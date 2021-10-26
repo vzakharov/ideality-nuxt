@@ -62,9 +62,9 @@ export default {
           property: 'response.id'
         },
         endpoints: {
-          login: {url: 'https://ideality.app/version-test/api/1.1/wf/login', method: 'post'},
-          logout: {url: 'https://ideality.app/version-test/api/1.1/wf/logout', method: 'post'},
-          user: {url: 'https://ideality.app/version-test/api/1.1/wf/getUserInfo', method: 'post'}
+          login: {url: 'https://b.ideality.app/version-test/api/1.1/wf/login', method: 'post'},
+          logout: {url: 'https://b.ideality.app/version-test/api/1.1/wf/logout', method: 'post'},
+          user: {url: 'https://b.ideality.app/version-test/api/1.1/wf/getUserInfo', method: 'post'}
         }
       }
     },

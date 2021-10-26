@@ -6,7 +6,7 @@ import { singular } from 'pluralize'
 function Bubble({token, admin } = {}) {
 
   const axios = Axios.create({ 
-    baseURL: 'https://ideality.app/version-test/api/1.1/',
+    baseURL: 'https://b.ideality.app/version-test/api/1.1/',
     ...( token || admin ? {
       headers: {'Authorization': token || ( admin && 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20' )}
     } : {})
