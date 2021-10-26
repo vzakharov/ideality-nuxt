@@ -15,11 +15,13 @@
           input
         }"
         @input="$emit('input', $event)"
+        ref="input"
       />
       <input v-else v-bind="inputProps" 
         v-on="{...$listeners,
           input
         }"
+        ref="input"
       />
     </template>
   </div>
@@ -40,7 +42,8 @@ export default {
   
   props: [
     'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 
-    'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows'
+    'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows',
+    'props'
   ],
   
   data() { return {
@@ -57,7 +60,7 @@ export default {
     // },
 
     inputProps() {
-      let { placeholder, disabled, value, commaSeparated, lazy, removeNewLines, rows } = this
+      let { placeholder, disabled, value, commaSeparated, lazy, removeNewLines, rows, props } = this
       if ( value ) {
         if ( commaSeparated )
           value = value.join(',')
@@ -70,7 +73,8 @@ export default {
         placeholder,
         disabled,
         rows,
-        value
+        value,
+        ...props
       }
     },
     // value() { return this.object[this._key] }

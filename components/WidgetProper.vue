@@ -12,7 +12,8 @@
         removeNewLines: true,
         rows: 1
       }"
-      @keydown.native.ctrl.enter="generate"
+      @keydown.native.enter="generate"
+      ref="input"
     />
 
     <template>
@@ -20,7 +21,7 @@
         <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" :disabled="!content.input"
           @click="generate"
         />
-        <b-button :variant="!generated ? 'light' : 'text-secondary'" v-html="!generated ? 'Show me how' : '<small>Show another example</small>'"
+        <b-icon-dice5 variant="secondary" class="mx-3" cursor="pointer"
           @click="content={}; generate()"
         />
       </div>
@@ -34,6 +35,7 @@
         caption: display.outputCaption,
         disabled: generating
       }"
+      @keydown.native.ctrl.enter="last(content.output)=='-' && generate"
     />
 
     <template v-if="false && generated && content.output && !duringSetup">
@@ -54,9 +56,11 @@
 <script>
 
   import { assign, last, pick} from 'lodash'
+  import { BIconDice5 } from 'bootstrap-vue'
 
   export default {
 
+    components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup'],
 
     data() { 
@@ -74,18 +78,18 @@
     },
 
     methods: {
-
+      last,
       async generate() {
 
         this.generating = true
         
 
         try {
-          let { id, setup, template } = this.widget
+          let { id, setup, template, apiKey } = this.widget
           let { duringSetup } = this
           let { input, output } = this.content
 
-          const append = what => last(what) == '$'
+          const append = what => last(what) == '-'
           const cut = what => what.slice(0, -1)
           
           const appendInput = append(input) || undefined
@@ -98,7 +102,7 @@
           ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {setup, template } } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey } ) 
           ).data
           console.log(this.content)
           this.generated = true

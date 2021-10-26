@@ -49,7 +49,7 @@ app.post('/widget/generate', async (req, res, next) =>
 {
   try {
     console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, widget } = {
+    let { id, input, output, appendInput, duringSetup, widget, apiKey } = {
       input: '', output: '',
       ...req.body
     }
@@ -84,7 +84,10 @@ app.post('/widget/generate', async (req, res, next) =>
 
     let { setup, template } = widget
     let { parameterValues, examples } = setup
-    let { apiKey, instruction, inputPrefix, outputPrefix } = template
+    let { instruction, inputPrefix, outputPrefix } = template
+
+    if (!apiKey)
+      ({apiKey} = template)
 
     if ( duringSetup )
       examples.pop()

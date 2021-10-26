@@ -38,7 +38,7 @@ function Bubble({token, admin } = {}) {
           axios.get(url, { params: { constraints: JSON.stringify(
             slug ?
               [{
-                key: 'Slug', value: id, constraint_type
+                key: 'Slug', value: slug, constraint_type
               }] 
               : Object.entries(query).map(([key, value]) => ({
                 key, value, constraint_type
