@@ -37,12 +37,15 @@ Vue.mixin({
   },
 
   computed: {
+    godMode() {
+      return this.hasQueryTag('iddqd')
+    }
   },
 
   methods: {
     canRunWidget,
     hasQueryTag(tag) {
-      return typeof this.$route.query[tag] !== 'undefined'
+      return typeof this.$route.query[tag] !== 'undefined' || undefined
     },
     setDefaults
   }

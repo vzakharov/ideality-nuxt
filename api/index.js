@@ -88,15 +88,17 @@ app.post('/widget/generate', async (req, res, next) =>
     let { parameterValues, examples } = setup
     let { instruction, inputPrefix, outputPrefix } = template
 
-    if ( !apiKey && iddqd )
-      ({apiKey} = template)
-    else
-      return res.status(403).send({
-        error: {
-          cause: 'apiKeyNotSet', 
-          message: 'Please send your OpenAI apiKey as an apiKey parameter in the request body.'
-        }
-      })
+    if ( !apiKey ) {
+      if ( iddqd )
+        ({apiKey} = template)
+      else
+        return res.status(403).send({
+          error: {
+            cause: 'apiKeyNotSet', 
+            message: 'Please send your OpenAI apiKey as an apiKey parameter in the request body.'
+          }
+        })
+    }
 
     if ( duringSetup )
       examples.pop()

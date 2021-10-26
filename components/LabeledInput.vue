@@ -24,6 +24,7 @@
         ref="input"
       />
     </template>
+    <small v-if="description" class="form-text text-muted" v-text="description"/>
   </div>
 </template>
 
@@ -41,7 +42,7 @@ export default {
 
   
   props: [
-    'caption', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 
+    'caption', 'description', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 
     'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows',
     'props'
   ],
@@ -60,7 +61,7 @@ export default {
     // },
 
     inputProps() {
-      let { placeholder, disabled, value, commaSeparated, lazy, removeNewLines, rows, props } = this
+      let { placeholder, description, disabled, value, commaSeparated, lazy, removeNewLines, rows, props } = this
       if ( value ) {
         if ( commaSeparated )
           value = value.join(',')
@@ -72,6 +73,7 @@ export default {
         // 'v-model': object[_key],
         placeholder,
         disabled,
+        description,
         rows,
         value,
         ...props

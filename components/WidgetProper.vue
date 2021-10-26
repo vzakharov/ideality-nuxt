@@ -22,15 +22,20 @@
 
     <template>
       <div v-if="!generating">
-        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" :disabled="!content.input"
+        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" 
+          :disabled="!content.input || !canGenerate"
           @click="generate"
         />
         <b-button variant="light" v-text="'🎲'"
           @click="content={}; generate()"
+          :disabled="!canGenerate"
         />
       </div>
       <b-spinner v-else class="spinner-grow text-danger"/>
     </template>
+    <b-alert :show="!canGenerate" variant="warning" class="p-1 m-2" style="cursor: pointer">
+      Please enter your <a href="#apiKey" class="text-decoration-none">API key above</a> to use the demo widget.
+    </b-alert>
 
     <LabeledInput v-if="content.output || duringSetup" 
       v-model="content.output"
@@ -39,6 +44,7 @@
         caption: display.outputCaption,
         disabled: generating
       }"
+      rows="1"
       @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
     />
 
@@ -65,7 +71,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey'],
 
     data() { 
       let content = this.value || {}
@@ -89,8 +95,8 @@
         
 
         try {
-          let { id, setup, template, apiKey, iddqd } = this.widget
-          let { duringSetup } = this
+          let { id, setup, template } = this.widget
+          let { duringSetup, apiKey } = this
           let { input, output } = this.content
 
           const append = what => last(what) == '-'
@@ -106,7 +112,7 @@
           ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey, iddqd } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey, iddqd: this.godMode } ) 
           ).data
           console.log(this.content)
           this.generated = true
@@ -118,6 +124,10 @@
 
       }
 
+    },
+
+    computed: {
+      canGenerate() { return this.godMode || this.apiKey }
     },
 
     watch: {
