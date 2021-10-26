@@ -1,5 +1,9 @@
 <template>
   <div class="bg-light p-2">
+    <template v-if="!duringSetup">
+      <h3 v-text="widget.display.name"/>
+      <p v-text="widget.display.description"/>
+    </template>
     <LabeledInput
       v-model="content.input"
       v-bind="{
@@ -21,7 +25,7 @@
         <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated ? 'Try again' : 'Suggest'" :disabled="!content.input"
           @click="generate"
         />
-        <b-icon-dice5 variant="secondary" class="mx-3" cursor="pointer"
+        <b-button variant="light" v-text="'🎲'"
           @click="content={}; generate()"
         />
       </div>
@@ -35,7 +39,7 @@
         caption: display.outputCaption,
         disabled: generating
       }"
-      @keydown.native.ctrl.enter="last(content.output)=='-' && generate"
+      @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
     />
 
     <template v-if="false && generated && content.output && !duringSetup">
@@ -56,11 +60,11 @@
 <script>
 
   import { assign, last, pick} from 'lodash'
-  import { BIconDice5 } from 'bootstrap-vue'
+  // import { BIconDice5 } from 'bootstrap-vue'
 
   export default {
 
-    components: {BIconDice5},
+    // components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup'],
 
     data() { 
@@ -85,7 +89,7 @@
         
 
         try {
-          let { id, setup, template, apiKey } = this.widget
+          let { id, setup, template, apiKey, iddqd } = this.widget
           let { duringSetup } = this
           let { input, output } = this.content
 
@@ -102,7 +106,7 @@
           ) ? cut(output) : undefined
 
           this.content = ( 
-            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey } ) 
+            await this.$axios.post('api/widget/generate', { id, input, output, appendInput, duringSetup, widget: {id, setup, template }, apiKey, iddqd } ) 
           ).data
           console.log(this.content)
           this.generated = true

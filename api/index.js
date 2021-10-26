@@ -7,6 +7,7 @@ const { filteredParameters } = require('../plugins/helpers')
 // console.log(filteredParameters)
 const _ = require('lodash')
 const ipInt = require('ip-to-int')
+const Bubble = require('../plugins/bubble')
 
 const app = express()
 
@@ -48,8 +49,9 @@ app.get('/test', function (req, res) {
 app.post('/widget/generate', async (req, res, next) =>
 {
   try {
+    console.log(req.ip)
     console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, widget, apiKey } = {
+    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd } = {
       input: '', output: '',
       ...req.body
     }
@@ -62,7 +64,7 @@ app.post('/widget/generate', async (req, res, next) =>
         // { data: { response: { user }}},
         { data: { response }}
       ] = await Promise.all([
-        // backend.post('wf/getUserInfo'),
+        // Bubble.get('ip'),
         admin.get('obj/widget/' + id)
       ])
 
@@ -86,8 +88,15 @@ app.post('/widget/generate', async (req, res, next) =>
     let { parameterValues, examples } = setup
     let { instruction, inputPrefix, outputPrefix } = template
 
-    if (!apiKey)
+    if ( !apiKey && iddqd )
       ({apiKey} = template)
+    else
+      return res.status(403).send({
+        error: {
+          cause: 'apiKeyNotSet', 
+          message: 'Please send your OpenAI apiKey as an apiKey parameter in the request body.'
+        }
+      })
 
     if ( duringSetup )
       examples.pop()

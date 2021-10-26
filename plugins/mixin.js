@@ -41,6 +41,9 @@ Vue.mixin({
 
   methods: {
     canRunWidget,
+    hasQueryTag(tag) {
+      return typeof this.$route.query[tag] !== 'undefined'
+    },
     setDefaults
   }
 

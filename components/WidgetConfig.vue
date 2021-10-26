@@ -24,7 +24,8 @@
       <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
 
       <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
-        name: { caption: 'Display name', placeholder: 'My new widget' },
+        name: { caption: 'Display name', placeholder: 'Shows up as an heading' },
+        description: { caption: 'Description', placeholder: 'The text that will show up under the heading', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},

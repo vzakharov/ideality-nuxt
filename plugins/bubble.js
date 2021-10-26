@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
-import { camelCase, mapKeys, mapValues } from 'lodash'
+import { camelCase, mapKeys, mapValues, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
 function Bubble({token, admin } = {}) {
@@ -16,8 +16,8 @@ function Bubble({token, admin } = {}) {
   Object.assign(this, {
 
 
-    async get( type, idOrQuery ) {
-      console.log(arguments)
+    async get( type, idOrQuery, options = {}) {
+      console.log(options)
       let id = typeof idOrQuery === 'string' && idOrQuery
       let query = !id && idOrQuery
       let slug = id && !id.match(/^\d/) && id
@@ -72,7 +72,12 @@ function Bubble({token, admin } = {}) {
 
       console.log(things)
 
-      return fetchMany ? things: things[0]
+      if ( fetchMany ) {
+        if ( options.sortBy )
+          things = sortBy(things, options.sortBy)
+        return things
+      } else
+        return things[0]
 
     }
   
@@ -80,11 +85,12 @@ function Bubble({token, admin } = {}) {
 
 }
 
-Bubble.load = ( type, query ) => 
+Bubble.load = ( type, query, options ) => 
   async ({ $auth, params: { id }}) => {
+    console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-    result[type] = await bubble.get(type, id || query)    
+    result[type] = await bubble.get(type, id || query, options)    
     return {...result, loaded: true}
   }
 
