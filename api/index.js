@@ -70,19 +70,13 @@ app.post('/widget/generate', async (req, res, next) =>
     let runsLeft
     if ( !apiKey && !widget.template ) {
       if ( 
-        iddqd 
-        || (
+        !iddqd 
+        && !(
           runsLeft = ( 
             await Bubble.default.admin.go('runsLeft--', {code}) 
           ).runsLeft 
         )
       ) {
-        console.log({runsLeft})
-        await widgetLoaded
-        // console.log(widget.template)
-        ;( { apiKey } = widget.template )
-      } 
-      else {
         return res.status(403).send({
           error: {
             cause: 'apiKeyNotSet', 
@@ -92,7 +86,9 @@ app.post('/widget/generate', async (req, res, next) =>
       }
     }
 
+    await widgetLoaded
     let { setup, template } = widget
+    ;( { apiKey } = template )
     let { parameterValues, examples } = setup
     let { instruction, inputPrefix, outputPrefix } = template
 

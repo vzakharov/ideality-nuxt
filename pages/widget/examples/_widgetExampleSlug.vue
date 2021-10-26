@@ -68,15 +68,17 @@
             </div>
           </WidgetProper>
           <div v-if="$route.query.code || code" class="d-flex flex-row-reverse px-4">
-            <b-alert show class="mb-3 mw-25 fs-sm" style="color: gray; font-size: smaller">
-              <div v-if="$route.query.code && !code">
-                Checking your promo code, please wait...
-              </div>
-              <div v-else-if="code">
+            <div v-if="$route.query.code && !code">
+              Checking your promo code, please wait...
+            </div>
+            <b-alert v-else-if="code" show class="mb-3 mw-25 fs-sm" 
+              :variant="(2 * code.runsLeft > code.runsMax) ? 'info' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
+              style="color: gray; font-size: smaller"
+            >
+              <div>
                 <b>Widget runs remaining</b>
                 <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
                   style="max-width: 150px"
-                  :variant="(2 * code.runsLeft > code.runsMax) ? 'primary' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
                 />
                 <b-button size="sm" variant="outline-secondary" class="mt-2"
                   to="examples" @click="code=undefined"
@@ -206,6 +208,9 @@
       },
 
       widget(widget) {
+        // let apiKey = get(widget, 'template.apiKey')
+        // if ( apiKey )
+        //   assign(this, { apiKey })
         this.copied = false
       }
 
