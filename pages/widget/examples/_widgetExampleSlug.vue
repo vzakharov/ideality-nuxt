@@ -21,12 +21,12 @@
             <h3>Widget info</h3>
             <div v-html="$md.render(widget.display.sampleDescription)"/>
           </template>
-          <!-- <small>Here’s how your widget might look like (shadow not included):</small> -->
           <h3>Widget demo</h3>
+          <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
           <WidgetProper ref="widget" :key="widget.id" class="border p-3 mt-3 mx-4 mb-4"
             v-bind="{widget, apiKey, code}"
           >
-            <b-alert v-if="!canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
+            <b-alert v-if="!$route.query.code && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
               <p>
                 Please enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
                 to use the widget.
@@ -67,22 +67,24 @@
               </small>
             </div>
           </WidgetProper>
-          <div v-if="!apiKey" class="mb-3 mw-25" style="font-size: smaller; color: gray">
-            <template v-if="$route.query.code && !code">
-              Checking your promo code, please wait...
-            </template>
-            <template v-else-if="code">
-              <b>Widget runs remaining</b>
-              <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
-                style="max-width: 150px"
-                :variant="(2 * code.runsLeft > code.runsMax) ? 'primary' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
-              />
-              <b-button size="sm" variant="outline-secondary" class="mt-2"
-                to="examples" @click="code=undefined"
-              >
-                Use your own API key
-              </b-button>
-            </template>
+          <div v-if="$route.query.code || code" class="d-flex flex-row-reverse px-4">
+            <b-alert show class="mb-3 mw-25 fs-sm" style="color: gray; font-size: smaller">
+              <div v-if="$route.query.code && !code">
+                Checking your promo code, please wait...
+              </div>
+              <div v-else-if="code">
+                <b>Widget runs remaining</b>
+                <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
+                  style="max-width: 150px"
+                  :variant="(2 * code.runsLeft > code.runsMax) ? 'primary' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
+                />
+                <b-button size="sm" variant="outline-secondary" class="mt-2"
+                  to="examples" @click="code=undefined"
+                >
+                  Use your own API key
+                </b-button>
+              </div>
+            </b-alert>
           </div>
 
           <h3>Customization</h3>
@@ -141,9 +143,18 @@
   import VueClipboard from 'vue-clipboard2'
   Vue.use(VueClipboard)
 
-  import { assign, find } from 'lodash'
+  import { assign, find, get } from 'lodash'
 
   export default {
+
+    head() { return {
+      title: `${get(this, 'widget.display.name')} ▲ an example Ideality 🔺 widget`,
+      meta: [{
+        hid: 'description',
+        name: 'description',
+        content: get(this, 'widget.display.sampleDescription')
+      }]
+    }},
 
     data() { return {
       widget: null,
@@ -166,7 +177,11 @@
           apiKey: localApiKey
         })
       }
-      this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug}) || this.widgets[0]
+      this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
+      if ( !this.widget ) {
+        this.setWidget(this.widgets[0])
+        return
+      }
       let codeId = this.$route.query.code
       if ( codeId ) {
         console.log(codeId)
@@ -199,7 +214,7 @@
     methods: {
       setWidget(widget) {
         Object.assign(this, { widget })
-        this.$router.push({name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}})
+        this.$router.push({...this.$route, name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}})
         // window.location.hash = '#' + widget.slug
         // this.$nextTick(function() { 
         //   document.getElementById('user-input')
