@@ -16,7 +16,7 @@
         </b-dropdown>
         <div v-if="widget">
           <h1 class="display-4" v-text="widget.display.name"/>
-          <p class="lead mx-2">a sample Ideality 🔺 widget</p>
+          <p class="lead mx-2">an example Ideality 🔺 widget</p>
           <template v-if="widget.display.sampleDescription">
             <h3>Widget info</h3>
             <div v-html="$md.render(widget.display.sampleDescription)"/>
@@ -166,7 +166,7 @@
           apiKey: localApiKey
         })
       }
-      this.widget = find(this.widgets, {slug: this.$route.hash.slice(1)}) || this.widgets[0]
+      this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug}) || this.widgets[0]
       let codeId = this.$route.query.code
       if ( codeId ) {
         console.log(codeId)
@@ -199,7 +199,8 @@
     methods: {
       setWidget(widget) {
         Object.assign(this, { widget })
-        window.location.hash = '#' + widget.slug
+        this.$router.push({name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}})
+        // window.location.hash = '#' + widget.slug
         // this.$nextTick(function() { 
         //   document.getElementById('user-input')
         // })
