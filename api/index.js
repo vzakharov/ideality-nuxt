@@ -25,7 +25,7 @@ app.set('trust proxy', true)
 // axios.interceptors.request.use(log, log)
 // axios.interceptors.response.use(log, log)
 
-const baseURL = 'https://b.ideality.app/version-test/api/1.1/'
+const baseURL = 'https://b.ideality.app/api/1.1/'
 
 const admin = axios.create({ 
   baseURL,
