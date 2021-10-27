@@ -39,9 +39,10 @@
           </template>
 
           <WidgetProper ref="widget" :key="widget.id" class="border p-3 mt-3 mx-4 mb-4"
-            v-bind="{widget, apiKey, code}"
+            v-bind="{widget, apiKey, code, go}"
+            :value="content"
           >
-            <b-alert v-if="!$route.query.code && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
+            <b-alert v-if="!codeId && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
               <p>
                 Enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
                 to use the widget.
@@ -82,8 +83,8 @@
               </small>
             </div>
           </WidgetProper>
-          <div v-if="$route.query.code || code" class="d-flex flex-row-reverse px-4">
-            <div v-if="$route.query.code && !code">
+          <div v-if="codeId || code" class="d-flex flex-row-reverse px-4">
+            <div v-if="codeId && !code">
               Checking your promo code, please wait...
             </div>
             <b-alert v-else-if="code" show class="mb-3 mw-25 fs-sm" 
@@ -96,7 +97,7 @@
                   style="max-width: 150px"
                 />
                 <b-button size="sm" variant="outline-secondary" class="mt-2"
-                  to="examples" @click="code=undefined"
+                  @click.prevent="code=undefined; codeId=undefined; $nextTick(()=>window.document.getElementById('apiKey').focus())"
                 >
                   Use your own API key
                 </b-button>
@@ -184,6 +185,9 @@
     }},
 
     data() { 
+      let { input, output } = this.$route.query
+      let content = { input, output }
+      
       return {
         betaRequested: false,
         widget: null,
@@ -194,8 +198,11 @@
         },
         hideApiKey: false,
         hideWidgetInfo: false,
+        go: typeof this.$route.query.go !== 'undefined',
+        codeId: this.$route.query.code,
         code: undefined,
         betaRequest: {},
+        content,
         showApiKeyExplanation: false,
         storeApiKeyLocally: false
       }
@@ -217,9 +224,9 @@
         this.setWidget(this.widgets[0])
         return
       }
-      let codeId = this.$route.query.code
+
+      let { codeId } = this
       if ( codeId ) {
-        console.log(codeId)
         this.code = await Bubble.anon.get('code', codeId)
         console.log(this.code)
       }

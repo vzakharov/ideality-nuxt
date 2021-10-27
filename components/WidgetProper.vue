@@ -59,7 +59,12 @@
         <b-button variant="primary" size="lg"
           :href="
             display.CTAType=='link' ?
-            encodeURI(display.CTAContent.replace('<input>', content.input).replace('<output>', content.output))
+            encodeURI(
+              display.CTAContent
+              .replace('<input>', content.input)
+              .replace('<output>', content.output)
+              .replace('<query>', new window.URLSearchParams($route.query).toString())
+            )
             : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
           target="_blank"
           v-text="display.CTA"
@@ -78,7 +83,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go'],
 
     data() { 
       let content = this.value || {}
@@ -96,6 +101,11 @@
       return data
     },
 
+    mounted() {
+      if (this.go)
+        this.$nextTick(this.generate)
+    },
+
     methods: {
       last,
       async generate() {
@@ -107,9 +117,7 @@
           let { id, setup, template } = this.widget
           let { duringSetup, apiKey } = this
           
-          let { code } = this
-          if (code)
-            code = code.id
+          let { code } = this.$route.query
 
           let { input, output } = this.content
 
