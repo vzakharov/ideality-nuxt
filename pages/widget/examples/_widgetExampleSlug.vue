@@ -139,7 +139,10 @@
           <div v-if="!betaRequested || !hide.allButWidget">
             <h3>Get the widget</h3>
             <em v-if="betaRequested">
-              We’ve got your beta request and are working on it!
+              We’ve got your beta request and 
+                {{ code ? 
+                  'will contact you as soon as you will be able to install the widget.'
+                  : 'are working on it!' }}
             </em>
             <template v-else>
               <p>If you’d like to get this or any other widget, request beta access below:</p>
