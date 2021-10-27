@@ -84,14 +84,14 @@
             </div>
           </WidgetProper>
           <div v-if="codeId || code" class="d-flex flex-row-reverse px-4">
-            <div v-if="codeId && !code">
-              Checking your promo code, please wait...
-            </div>
-            <b-alert v-else-if="code" show class="mb-3 mw-25 fs-sm" 
-              :variant="(2 * code.runsLeft > code.runsMax) ? 'info' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
+            <b-alert show class="mb-3 mw-25 fs-sm" 
+              :variant="(!code || 2 * code.runsLeft > code.runsMax) ? 'info' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
               style="color: gray; font-size: smaller"
             >
-              <div>
+              <div v-if="codeId && !code">
+                Checking your promo code, please wait...
+              </div>
+              <div v-else>
                 <b>Widget runs remaining</b>
                 <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
                   style="max-width: 150px"
@@ -210,10 +210,8 @@
 
     async asyncData({params, query}) {
       let data = {}
-      assign(data, ...await Promise.all([
-        Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'})(...arguments),
-        Bubble.anon.get('code', query.code, { includeKey: true } )
-      ]))
+      assign(data, await Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'})(...arguments))
+
       data.widget = find(data.widgets, {slug: params.widgetExampleSlug})
       if ( !data.widget ) {
         data.widget = data.widgets[0]
@@ -236,11 +234,11 @@
       //   this.setWidget(this.widgets[0])
       // }
 
-      // let { codeId } = this
-      // if ( codeId ) {
-      //   this.code = await Bubble.anon.get('code', codeId)
-      //   console.log(this.code)
-      // }
+      let { codeId } = this
+      if ( codeId ) {
+        this.code = await Bubble.anon.get('code', codeId)
+        console.log(this.code)
+      }
 
 
     },
