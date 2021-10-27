@@ -124,8 +124,9 @@
           
           let { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body)
           assign(this, { content })
-          console.log(runsLeft)
-          this.$set(this.code, 'runsLeft', runsLeft)
+          // console.log(runsLeft)
+          if ( runsLeft )
+            this.$set(this.code, 'runsLeft', runsLeft)
           
           this.generated = true
         } catch(err) {
