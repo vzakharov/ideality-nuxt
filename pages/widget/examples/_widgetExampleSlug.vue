@@ -219,10 +219,10 @@
         })
       }
       assign(this, { betaRequested: localStorage.getItem('betaRequested') })
+
       this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
       if ( !this.widget ) {
         this.setWidget(this.widgets[0])
-        return
       }
 
       let { codeId } = this
@@ -230,6 +230,8 @@
         this.code = await Bubble.anon.get('code', codeId)
         console.log(this.code)
       }
+
+
     },
 
     computed: {
