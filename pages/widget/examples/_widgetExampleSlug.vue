@@ -195,7 +195,7 @@
         betaRequested: false,
         // widget: null,
         copied: false,
-        apiKey: null,
+        apiKey: undefined,
         hide: {
           allButWidget: typeof this.$route.query.noinfo !== 'undefined'
         },

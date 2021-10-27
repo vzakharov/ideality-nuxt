@@ -52,13 +52,16 @@ app.post('/widget/generate', async (req, res, next) =>
   try {
     // console.log(req.ip)
     // console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n, code } = {
+    let { input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n, code } = {
       input: '', output: '',
       ...req.body
     }
 
     let allowUnsafe = godMode || pr0n
     
+    let { id } = widget
+    
+    console.log(Bubble)
     const widgetLoaded = 
       !( widget & widget.setup & widget.template )
       && Bubble.default.admin.get('widget', id)

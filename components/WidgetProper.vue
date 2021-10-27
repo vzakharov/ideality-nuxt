@@ -134,7 +134,7 @@
           ) ? cut(output) : undefined
 
           let body = { 
-              id, input, output, appendInput, duringSetup, widget: {id, setup, template }, 
+              input, output, appendInput, duringSetup, widget: {id, setup, template }, 
               apiKey, code, ...this.queryTags
             }
           
