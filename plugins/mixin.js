@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { get, keys, mapValues, pickBy } from 'lodash'
+import { get, set, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
 
 function setDefaults(object, defaults) {
@@ -52,6 +52,10 @@ Vue.mixin({
   methods: {
     hasQueryTag(tag) {
       return this.queryTags[tag]
+    },
+
+    invert(what) {
+      set(this, what, !get(this, what))
     },
 
     setDefaults

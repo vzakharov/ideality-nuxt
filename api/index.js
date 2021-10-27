@@ -52,10 +52,12 @@ app.post('/widget/generate', async (req, res, next) =>
   try {
     // console.log(req.ip)
     // console.log(req.body)
-    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd, code } = {
+    let { id, input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n, code } = {
       input: '', output: '',
       ...req.body
     }
+
+    let allowUnsafe = godMode || pr0n
     
     const widgetLoaded = 
       !( widget & widget.setup & widget.template )
@@ -70,7 +72,7 @@ app.post('/widget/generate', async (req, res, next) =>
     let runsLeft
     if ( !apiKey && !widget.template ) {
       if ( 
-        !iddqd 
+        !godMode 
         && !(
           runsLeft = ( 
             await Bubble.default.admin.go('runsLeft--', {code}) 
@@ -84,6 +86,8 @@ app.post('/widget/generate', async (req, res, next) =>
           }
         })
       }
+    } else {
+      allowUnsafe = true
     }
 
     await widgetLoaded
@@ -128,15 +132,40 @@ app.post('/widget/generate', async (req, res, next) =>
   
     console.log(payload)
 
+    let headers = {
+      Authorization: `Bearer ${apiKey}`
+    }
+
+    let safetyChecked = 
+      !allowUnsafe && 
+      axios.post('https://api.openai.com/v1/engines/content-filter-alpha/completions', {
+        prompt: `<|endoftext|>${prompt}\n--\nLabel:`,
+        temperature: 0,
+        top_p: 0,
+        max_tokens: 1,
+        logprobs: 10
+      }, {headers})
+
     let response = await axios.post(
       'https://api.openai.com/v1/engines/curie-instruct-beta/completions',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`
-        }
-      }
+      payload, {headers}
     )
+    
+    if (!allowUnsafe) {
+      let { data: { choices: [{ text: safetyLabel }]}} = await safetyChecked
+      
+      console.log(safetyLabel)
+  
+      if ( safetyLabel.match(/[12]/) )
+        return res.status(403).send({
+          error: {
+            cause: 'holdOnYourHorses', 
+            message: 'OpenAI thinks that’s an “unsafe” request, so no luck today ¯\\_(ツ)_/¯. '+
+              'To disable request filtering, use your own API key — **at your own risk!**'
+          }
+        })
+  
+    }
   
     console.log(response.data)
     let { text } = response.data.choices[0]

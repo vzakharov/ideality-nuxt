@@ -34,6 +34,13 @@
       <b-spinner v-else class="spinner-grow text-danger"/>
     </template>
     <slot/>
+    <b-alert show v-if="error && !hide.error" variant="danger">
+      <h5>Oops!</h5>
+      <p v-html="$md.render(error.message)"/>
+      <b-button variant="outline-secondary" size="sm"
+        @click="$set(hide, 'error', true)"
+      >Got it</b-button>
+    </b-alert>
 
     <LabeledInput v-if="content.output || duringSetup" 
       v-model="content.output"
@@ -78,9 +85,11 @@
       console.log(content)
       let { display } = this.widget
       let data = {
+        error: null,
         generating: false,
         generated: false,
         showOutro: true,
+        hide: {},
         content,
         display
       }
@@ -92,7 +101,7 @@
       async generate() {
 
         this.generating = true
-        
+        this.error = null
 
         try {
           let { id, setup, template } = this.widget
@@ -118,7 +127,7 @@
 
           let body = { 
               id, input, output, appendInput, duringSetup, widget: {id, setup, template }, 
-              apiKey, iddqd: this.godMode, code
+              apiKey, code, ...this.queryTags
             }
           
           
@@ -129,8 +138,9 @@
             this.$set(this.code, 'runsLeft', runsLeft)
           
           this.generated = true
-        } catch(err) {
-          console.log(err)
+        } catch({response: {data: {error}}}) {
+          if ( error )
+            assign(this, {error})
         } finally {
           this.generating = false
         }

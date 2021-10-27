@@ -16,35 +16,44 @@
         </b-dropdown>
         <div v-if="widget">
           <h1 class="display-4" v-text="widget.display.name"/>
-          <p class="lead mx-2">an example Ideality 🔺 widget</p>
-          <template v-if="widget.display.sampleDescription">
-            <h3>
-              Widget info
-              <small class="text-muted pointer" 
-                v-text="hideWidgetInfo ? '⊞' : '⊟'"
-                @click="hideWidgetInfo=!hideWidgetInfo"
-              />
-            </h3>
-            <div v-show="!hideWidgetInfo" v-html="$md.render(widget.display.sampleDescription)"/>
+          <p class="lead mx-2">an Ideality 🔺 widget example</p>
+
+          <b-button variant="outline-secondary" size="sm" class="mb-4"
+            @click="invert('hide.allButWidget'); window.history.pushState(0,0,$router.resolve({...$route, query:{...$route.query, noinfo: hide.allButWidget ? null : undefined}}).href)"
+            v-text="hide.allButWidget ? 'About the widget' : 'Hide all but the widget'"
+          />
+
+          <template v-if="!hide.allButWidget">
+            <template v-if="widget.display.sampleDescription">
+              <h3>
+                Widget info
+                <small class="text-muted pointer" 
+                  v-text="hideWidgetInfo ? '⊞' : '⊟'"
+                  @click="hideWidgetInfo=!hideWidgetInfo"
+                />
+              </h3>
+              <div v-show="!hideWidgetInfo" v-html="$md.render(widget.display.sampleDescription)"/>
+            </template>
+            <h3>Widget demo</h3>
+            <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
           </template>
-          <h3>Widget demo</h3>
-          <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
+
           <WidgetProper ref="widget" :key="widget.id" class="border p-3 mt-3 mx-4 mb-4"
             v-bind="{widget, apiKey, code}"
           >
             <b-alert v-if="!$route.query.code && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
               <p>
-                Please enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
+                Enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
                 to use the widget.
-                <span style="text-decoration: underline dotted; cursor: pointer" @click="showApiKeyExplanation=!showApiKeyExplanation">
-                  Why? Is it costly? Is it safe? 
-                </span>
+                <a href="#" @click.prevent="showApiKeyExplanation=!showApiKeyExplanation">
+                  Why?
+                </a>
               </p>
               <p v-if="showApiKeyExplanation" class="mx-2 text-muted"><small>
                 While the app is still in beta, we cannot use our own API key for public purposes, but you
-                can use your own API key. One generation will cost approximately $0.003 
-                (~500 <a href="https://beta.openai.com/docs/engines/curie" target="_blank">Curie</a> tokens).<br/>
-                <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI servers.</b>
+                can use yours. One generation costs ~$0.003 
+                (~500 <a href="https://beta.openai.com/docs/engines/curie" target="_blank">Curie</a> tokens).
+                <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI.</b>
               </small></p>
               <b-input
                 description="While the app is still in beta, we cannot use our own API key for public purposes.
@@ -95,35 +104,38 @@
             </b-alert>
           </div>
 
-          <h3>Customization</h3>
-          <p>
-            All Ideality 🔺 widgets are based on customizable templates, which allow changing both the display (changing texts,
-            adding custom CSS), calls to action and the AI logic.
-          </p>
+          <template v-if="!hide.allButWidget">
+            <h3>Customization</h3>
+            <p>
+              All Ideality 🔺 widgets are based on customizable templates, which allow changing both the display (changing texts,
+              adding custom CSS), calls to action and the AI logic.
+            </p>
 
-          <template v-if="hasQueryTag('dev')">
-            <LabeledInput
-              caption="Embed link"
-              :value="iframeCode"
-              :multiline="true"
-              :props="{
-                style: 'font-family: monospace',
-                disabled: true,
-                rows: 1
-              }"
-            />
-            <b-button :variant="copied ? 'light' : 'outline-secondary'" size="sm" v-text="!copied ? 'Copy' : 'Copied!'"
-              @click="$copyText(iframeCode).then(() => copied=true)"
-            />
-            <LabeledInput
-              caption="Use with your own API key"
-              v-model="widget.apiKey"
-              :props="{
-                placeholder: 'sk-...'
-              }"
-            />
+            <template v-if="hasQueryTag('dev')">
+              <LabeledInput
+                caption="Embed link"
+                :value="iframeCode"
+                :multiline="true"
+                :props="{
+                  style: 'font-family: monospace',
+                  disabled: true,
+                  rows: 1
+                }"
+              />
+              <b-button :variant="copied ? 'light' : 'outline-secondary'" size="sm" v-text="!copied ? 'Copy' : 'Copied!'"
+                @click="$copyText(iframeCode).then(() => copied=true)"
+              />
+              <LabeledInput
+                caption="Use with your own API key"
+                v-model="widget.apiKey"
+                :props="{
+                  placeholder: 'sk-...'
+                }"
+              />
+            </template>
           </template>
-          <div v-else>
+
+          <div v-if="!betaRequested || !hide.allButWidget">
             <h3>Get the widget</h3>
             <em v-if="betaRequested">
               We’ve got your beta request and are working on it!
@@ -171,18 +183,23 @@
       }]
     }},
 
-    data() { return {
-      betaRequested: false,
-      widget: null,
-      copied: false,
-      apiKey: null,
-      hideApiKey: false,
-      hideWidgetInfo: false,
-      code: undefined,
-      betaRequest: {},
-      showApiKeyExplanation: false,
-      storeApiKeyLocally: false
-    }},
+    data() { 
+      return {
+        betaRequested: false,
+        widget: null,
+        copied: false,
+        apiKey: null,
+        hide: {
+          allButWidget: typeof this.$route.query.noinfo !== 'undefined'
+        },
+        hideApiKey: false,
+        hideWidgetInfo: false,
+        code: undefined,
+        betaRequest: {},
+        showApiKeyExplanation: false,
+        storeApiKeyLocally: false
+      }
+    },
 
     asyncData: Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'}),
 
