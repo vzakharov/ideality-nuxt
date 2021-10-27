@@ -160,7 +160,7 @@ app.post('/widget/generate', async (req, res, next) =>
         return res.status(403).send({
           error: {
             cause: 'holdOnYourHorses', 
-            message: 'OpenAI thinks that’s an “unsafe” request, so no luck today ¯\\_(ツ)_/¯. '+
+            message: 'OpenAI thinks that’s an “unsafe” request, so no luck today ¯\\\_(ツ)\_/¯. '+
               'To disable request filtering, use your own API key — **at your own risk!**'
           }
         })
