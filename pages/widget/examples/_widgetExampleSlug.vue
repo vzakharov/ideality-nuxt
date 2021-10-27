@@ -190,7 +190,7 @@
       
       return {
         betaRequested: false,
-        widget: null,
+        // widget: null,
         copied: false,
         apiKey: null,
         hide: {
@@ -208,7 +208,18 @@
       }
     },
 
-    asyncData: Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'}),
+    async asyncData({params, query}) {
+      let data = {}
+      assign(data, ...await Promise.all([
+        Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'})(...arguments),
+        Bubble.anon.get('code', query.code, { includeKey: true } )
+      ]))
+      data.widget = find(data.widgets, {slug: params.widgetExampleSlug})
+      if ( !data.widget ) {
+        data.widget = data.widgets[0]
+      }
+      return data
+    },
 
     async mounted() {
       let localApiKey = localStorage.getItem('apiKey')
@@ -220,16 +231,16 @@
       }
       assign(this, { betaRequested: localStorage.getItem('betaRequested') })
 
-      this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
-      if ( !this.widget ) {
-        this.setWidget(this.widgets[0])
-      }
+      // this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
+      // if ( !this.widget ) {
+      //   this.setWidget(this.widgets[0])
+      // }
 
-      let { codeId } = this
-      if ( codeId ) {
-        this.code = await Bubble.anon.get('code', codeId)
-        console.log(this.code)
-      }
+      // let { codeId } = this
+      // if ( codeId ) {
+      //   this.code = await Bubble.anon.get('code', codeId)
+      //   console.log(this.code)
+      // }
 
 
     },

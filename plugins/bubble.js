@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
-import { camelCase, mapKeys, mapValues, sortBy } from 'lodash'
+import { assign, camelCase, mapKeys, mapValues, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
 function Bubble({token, admin } = {}) {
@@ -78,12 +78,21 @@ function Bubble({token, admin } = {}) {
 
       // console.log(things)
 
+      let result
       if ( fetchMany ) {
         if ( options.sortBy )
           things = sortBy(things, options.sortBy)
-        return things
+        result = things
       } else
-        return things[0]
+        result = things[0]
+      
+      if ( options.includeKey ) {
+        let keyedResult = {}
+        keyedResult[type] = result
+        result = keyedResult
+      }
+
+      return result
 
     },
 
@@ -103,7 +112,7 @@ Bubble.load = ( type, query, options ) =>
     // console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-    result[type] = await bubble.get(type, id || query, options)    
+    result[type] = await bubble.get(type, query || id, options)    
     return {...result, loaded: true}
   }
 
