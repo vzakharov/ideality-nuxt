@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { get, keys } from 'lodash'
+import { get, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
 
 function setDefaults(object, defaults) {
@@ -39,14 +39,21 @@ Vue.mixin({
   computed: {
     canRunWidget,
     godMode() {
-      return this.hasQueryTag('iddqd')
+      return this.queryTags.iddqd
+    },
+    queryTags() {
+      return mapValues(
+        pickBy(this.$route.query,
+          tag => !tag && ( typeof tag !== 'undefined' )
+        ), () => true)
     }
   },
 
   methods: {
     hasQueryTag(tag) {
-      return typeof this.$route.query[tag] !== 'undefined' || undefined
+      return this.queryTags[tag]
     },
+
     setDefaults
   }
 
