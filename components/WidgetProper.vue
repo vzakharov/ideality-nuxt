@@ -84,7 +84,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput'],
 
     data() { 
       let content = this.value || {}
@@ -148,7 +148,8 @@
           
           this.generated = true
           this.$emit('generated')
-          this.focus('widget-output')
+          if ( content.output && !this.dontFocusOnOutput)
+            this.focus('widget-output')
         } catch(e) {
           console.log(e)
           let error = get(e, 'response.data.error')

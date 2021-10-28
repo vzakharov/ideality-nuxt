@@ -12,7 +12,12 @@
           </p>
         </b-col>
         <b-col cols="3" align-self="center" class="d-none d-md-block">
-          <img src="/image.svg" style="width: 300px" class="rotate"/>
+          <img src="/image.svg" :style="{
+              width: '300px', 
+              animation: rotate && `rotation ${rotate_period}s infinite linear`
+            }" 
+            @click="rotate=true; rotate_period -= 2"
+          />
         </b-col>
       </b-row>
       <b-row align-h="center" align-v="center" class="vh bg-light">
@@ -73,6 +78,8 @@
 
   export default {
     data() { return {
+      rotate: false,
+      rotate_period: 60,
       show: {
         accessRequest: false
       }
@@ -89,10 +96,6 @@
 
   .bg-retro {
     background-color: #FBF7EC
-  }
-
-  .rotate {
-    animation: rotation 60s infinite linear;
   }
 
   @keyframes rotation {

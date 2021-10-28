@@ -8,8 +8,24 @@ const demoTemplate = {
     }
   ],
   apiKey: "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",
-  instruction: "Suggest ideas on how to use various products based on various user bios.\n\nProduct:\na tweet scheduling app\n\nUser bio:\nI'm a freelance writer focusing on tech and a lifelong learner\n\nHow this user could use the product:\n• Tweet links to interesting news about upcoming technology\n• Share copywriting tips and wisdom to build your reputation\n• Tell what you have learned from your customers\n• Write listicles on how tech people can be better marketers\n\nProduct:\na productivity app with tasks, lists, schedules, etc.\n\nUser bio:\nI’m juggling freelance work, grad school classes, and a social life.\n\nHow this user could use the product:\n• Create lists of task assignments, and useful resources for students\n• Schedule meetings with clients so that you can keep your mind clear\n• Plan games for your next get-together or party\n• Use a timer to keep your focus when working on a large project\n\nProduct:\na website that sells vintage clothing\n\nUser bio:\nI’m looking for something new and different in my wardrobe.\n\nHow this user could use the product:  \n• Find one-of-a-kind pieces that make you stand out in the crowd\n• Save money on clothes without sacrificing fashion\n• Make fashion your passion while supporting independent artists","inputPrefix":"User bio","outputPrefix":"How this user could use the product",
-  omitExamples:true
+  instruction:
+`Suggest ideas on how to use various products based on various user bios.
+
+Product:
+a productivity app with tasks, lists, schedules, etc.
+
+User bio:
+I’m juggling freelance work, grad school classes, and a social life.
+
+How this user could use the product:
+• Create lists of task assignments, and useful resources for students
+• Schedule meetings with clients so that you can keep your mind clear
+• Plan games for your next get-together or party
+• Use a timer to keep your focus when working on a large project`,
+  inputPrefix: "User bio",
+  outputPrefix: "How this user could use the product",
+  omitExamples: true,
+  stop: ['Product']
 }
 
 const express = require('express')
@@ -142,6 +158,12 @@ app.post('/widget/generate', async (req, res, next) =>
   
     // console.log(prompt)
 
+    let stop = [
+      inputPrefix + ':', 
+      ...(examples && examples.length) || omitExamples ? [] : ['\n'],
+      ...template.stop || []
+    ]
+
     let payload = {
       prompt,
       temperature: 0.75, 
@@ -149,7 +171,7 @@ app.post('/widget/generate', async (req, res, next) =>
       frequency_penalty: 1,
       presence_penalty: 1,
       n: 1,
-      stop: [inputPrefix + ':', ...(examples && examples.length) || omitExamples ? [] : ['\n']]
+      stop
     }
   
     console.log(payload)
@@ -168,8 +190,9 @@ app.post('/widget/generate', async (req, res, next) =>
         logprobs: 10
       }, {headers})
 
+    let engine = template.engine || 'curie-instruct-beta'
     let response = await axios.post(
-      'https://api.openai.com/v1/engines/curie-instruct-beta/completions',
+      `https://api.openai.com/v1/engines/${engine}/completions`,
       payload, {headers}
     )
     

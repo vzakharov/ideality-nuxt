@@ -46,7 +46,8 @@ Vue.mixin({
         pickBy(this.$route.query,
           tag => !tag && ( typeof tag !== 'undefined' )
         ), () => true)
-    }
+    },
+    isTest() { return this.queryTags.test }
   },
 
   methods: {

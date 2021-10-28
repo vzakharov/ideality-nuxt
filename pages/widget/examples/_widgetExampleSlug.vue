@@ -1,6 +1,9 @@
 <template>
   <b-container fluid="md" class="mt-3 mb-5" style="max-width: 960px">
     <b-row>
+      <Breadcrumbs/>
+    </b-row>
+    <b-row>
       <b-col sm="4" lg="3" class="d-none d-sm-block">
         <b-list-group>
           <b-list-group-item button v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)">
@@ -27,12 +30,8 @@
             <template v-if="widget.display.sampleDescription">
               <h3>
                 Widget info
-                <small class="text-muted pointer" 
-                  v-text="hideWidgetInfo ? '⊞' : '⊟'"
-                  @click="hideWidgetInfo=!hideWidgetInfo"
-                />
               </h3>
-              <div v-show="!hideWidgetInfo" v-html="$md.render(widget.display.sampleDescription)"/>
+              <div v-html="$md.render(widget.display.sampleDescription)"/>
             </template>
             <h3>Widget demo</h3>
             <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>

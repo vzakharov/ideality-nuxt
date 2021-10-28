@@ -7,7 +7,7 @@
         bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
       }"
     />
-    <b-button class="mt-2" variant="primary" :disabled='!(request.email && request.bio)'
+    <b-button size="lg" class="mt-2" variant="primary" :disabled='!(request.email && request.bio)'
       @click="send"
     >
       Submit
