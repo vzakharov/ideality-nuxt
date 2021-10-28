@@ -50,6 +50,26 @@ Vue.mixin({
   },
 
   methods: {
+
+    element: window.document.getElementById,
+
+    focus(id, ...furtherActions) {
+      this.$nextTick(() => {
+        let element = window.document.getElementById(id)
+        element.focus()
+        const next = () => {
+          if ( furtherActions.length ) {
+            this.$nextTick(() => {
+              let action = furtherActions.shift()
+              element[action]()
+              next()
+            })
+          }    
+        }
+        next()
+      })
+    },
+    
     hasQueryTag(tag) {
       return this.queryTags[tag]
     },

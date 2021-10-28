@@ -1,0 +1,51 @@
+<template>
+  <div v-if="!requested">
+    <ObjectConfig
+      v-model="request"
+      :fields="{
+        email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'access-request-email'},
+        bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
+      }"
+    />
+    <b-button class="mt-2" variant="primary" :disabled='!(request.email && request.bio)'
+      @click="send"
+    >
+      Submit
+    </b-button>
+  </div>
+</template>
+
+<script>
+
+  import Bubble from '~/plugins/bubble'
+
+  export default {
+
+    props: ['value'],
+
+    data() { console.log(this.value); return {
+      request: this.value || {},
+      requested: undefined
+    }},
+
+    mounted() {
+      this.requested = localStorage.getItem('betaRequested')
+    },
+
+    methods: {
+
+      send() {
+        Bubble.anon.go('requestBeta', this.request)
+        this.requested = true
+        localStorage.setItem('betaRequested', true)
+      }
+
+    }
+
+  }
+
+</script>
+
+<style>
+
+</style>

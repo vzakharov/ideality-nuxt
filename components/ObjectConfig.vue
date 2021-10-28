@@ -7,7 +7,8 @@
         ...field,
         value: object[field.key]
       }"
-      @input="$set(object, field.key, $event)"
+      @input="!field.lazy && $set(object, field.key, $event)"
+      @change="field.lazy && $set(object, field.key, $event)"
     />
   </div>
 </template>

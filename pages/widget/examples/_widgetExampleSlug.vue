@@ -290,7 +290,7 @@
         )
         // window.location.hash = '#' + widget.slug
         // this.$nextTick(function() { 
-        //   document.getElementById('user-input')
+        //   document.getElementById('widget-input')
         // })
       }
 

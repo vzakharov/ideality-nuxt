@@ -12,37 +12,57 @@
           </p>
         </b-col>
         <b-col cols="3" align-self="center" class="d-none d-md-block">
-          <img src="/image.svg" style="transform:rotate(180deg); width: 300px"/>
+          <img src="/image.svg" style="width: 300px" class="rotate"/>
         </b-col>
       </b-row>
-      <b-row align-h="center" class="vh">
-        <b-col cols="4" align-self="center">
-          <h2 class="text-center display-4">Products</h2>
-        </b-col>
-        <b-row align-h="center" class="gx-4">
-          <b-col v-for="(item, i) in [
-            { 
-              title: 'Widget', 
-              description: 'Install a widget on your site that will give your users ideas on how to use your product.',
-              url: 'widget'
-            },
-            { 
-              title: 'Chat', 
-              description: 'The first multi-user AI chatbot that helps people brainstorm & develop ideas together.'
-            },
-            { 
-              title: 'Studio', 
-              description: 'An AI-enabled text editor with tree-like structure so that you don’t miss a single idea.'
-            }]" :key="i" xs="12" md="3" sm="4" class="text-center">
-            <h3 class="display-6">Ideality {{ item.title }}</h3>
-            <p class="lead">
-              {{ item.description }}
-            </p>
-            <b-button v-if="item.url" class="mx-auto" variant="outline-primary" :to="item.url">
-              Learn more
-            </b-button>
-            <em v-else>Coming soon!</em>
-          </b-col>
+      <b-row align-h="center" align-v="center" class="vh bg-light">
+        <b-row class="h-75">
+          <b-row align-h="center">
+            <b-col align-self="center">
+              <h2 class="text-center fw-normal display-5">Products</h2>
+            </b-col>
+          </b-row>
+          <b-row align-h="center">
+            <b-col v-for="(item, i) in [
+              { 
+                title: 'Widget', 
+                description: 'Install a widget on your site that will give your users ideas on how to use your product.',
+                url: 'widget'
+              },
+              { 
+                title: 'Chat', 
+                description: 'The first multi-user AI chatbot that helps people brainstorm & develop ideas together.'
+              },
+              { 
+                title: 'Studio', 
+                description: 'An AI-enabled text editor with tree-like structure so that you don’t miss a single idea.'
+              }]" :key="i" xs="12" md="3" sm="4" class="text-center">
+              <h3 class="display-6">Ideality {{ item.title }}</h3>
+              <p class="lead">
+                {{ item.description }}
+              </p>
+              <b-button v-if="item.url" class="mx-auto" variant="outline-primary" :to="item.url">
+                Learn more
+              </b-button>
+              <em v-else>Coming soon!</em>
+            </b-col>
+          </b-row>
+          <b-row align-h="center">
+            
+            <b-col cols="4" align-self="center">
+              <div v-if="!show.accessRequest" class="text-center">
+                <p class="lead">
+                  ...and more to come!
+                </p>
+                <b-button variant="primary" size="lg"
+                  @click="show.accessRequest=true; $nextTick(() => window.document.getElementById('access-request-email').focus())"
+                >
+                  Request beta access
+                </b-button>
+              </div>
+              <AccessRequest class="shadow rounded-3 p-3" v-if="show.accessRequest" :value="{section: 'homepage'}"/>
+            </b-col>
+          </b-row>
         </b-row>
       </b-row>
     </b-container>
@@ -50,9 +70,15 @@
 </template>
 
 <script>
-export default {
 
-}
+  export default {
+    data() { return {
+      show: {
+        accessRequest: false
+      }
+    }}
+  }
+
 </script>
 
 <style>
@@ -63,6 +89,20 @@ export default {
 
   .bg-retro {
     background-color: #FBF7EC
+  }
+
+  .rotate {
+    animation: rotation 60s infinite linear;
+  }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(359deg);
+    }
   }
 
 </style>

@@ -5,10 +5,11 @@
 
     <ObjectConfig v-model="vm" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
-      instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...' },
+      instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...', multiline: true },
       inputPrefix: { caption: 'Prefix for input' },
       outputPrefix: { caption: 'Prefix for output' },
-      multilineInput: { caption: 'Allow multiline input', type: 'boolean'}
+      multilineInput: { caption: 'Allow multiline input', type: 'boolean'},
+      omitExamples: { caption: 'Doesn’t need examples', type: 'boolean'}
     }"/>
 
     <!-- Prompt parts -->
@@ -51,7 +52,11 @@
 
     data() { 
       return this.setDefaults(this.value, {
-        apiKey: '', instruction: '', inputPrefix: 'Input', outputPrefix: 'Output'
+        apiKey: '', 
+        instruction: '', 
+        inputPrefix: 'Input', 
+        outputPrefix: 'Output',
+        omitExamples: false
       })
     }
 

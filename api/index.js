@@ -1,3 +1,17 @@
+const demoTemplate = {
+  parameters: [
+    {
+      type: "text",
+      name: "Product",
+      recital: true, 
+      multiline: true
+    }
+  ],
+  apiKey: "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",
+  instruction: "Suggest ideas on how to use various products based on various user bios.\n\nProduct:\na tweet scheduling app\n\nUser bio:\nI'm a freelance writer focusing on tech and a lifelong learner\n\nHow this user could use the product:\n• Tweet links to interesting news about upcoming technology\n• Share copywriting tips and wisdom to build your reputation\n• Tell what you have learned from your customers\n• Write listicles on how tech people can be better marketers\n\nProduct:\na productivity app with tasks, lists, schedules, etc.\n\nUser bio:\nI’m juggling freelance work, grad school classes, and a social life.\n\nHow this user could use the product:\n• Create lists of task assignments, and useful resources for students\n• Schedule meetings with clients so that you can keep your mind clear\n• Plan games for your next get-together or party\n• Use a timer to keep your focus when working on a large project\n\nProduct:\na website that sells vintage clothing\n\nUser bio:\nI’m looking for something new and different in my wardrobe.\n\nHow this user could use the product:  \n• Find one-of-a-kind pieces that make you stand out in the crowd\n• Save money on clothes without sacrificing fashion\n• Make fashion your passion while supporting independent artists","inputPrefix":"User bio","outputPrefix":"How this user could use the product",
+  omitExamples:true
+}
+
 const express = require('express')
 const axios = require('axios')
 const yaml = require('js-yaml')
@@ -11,7 +25,7 @@ const Bubble = require('../plugins/bubble')
 
 const app = express()
 
-const { assign } = _
+const { assign, get } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -58,12 +72,17 @@ app.post('/widget/generate', async (req, res, next) =>
     }
 
     let allowUnsafe = godMode || pr0n
-    
+
     let { id } = widget
+
+    let isDemo = id=='demo'
+    if ( isDemo ) {
+      widget.template = demoTemplate
+      code = '1635431643111x338474208627258500'
+    }
     
-    console.log(Bubble)
     const widgetLoaded = 
-      !( widget & widget.setup & widget.template )
+      !( widget && widget.setup && widget.template )
       && Bubble.default.admin.get('widget', id)
         .then( ({ setup, template }) => 
           assign(widget, {
@@ -73,7 +92,7 @@ app.post('/widget/generate', async (req, res, next) =>
         )
     
     let runsLeft
-    if ( !apiKey && !widget.template ) {
+    if ( isDemo || !apiKey && !get(widget, 'template.apiKey') ) {
       if ( 
         !godMode 
         && !(
@@ -97,7 +116,7 @@ app.post('/widget/generate', async (req, res, next) =>
     let { setup, template } = widget
     ;( { apiKey } = template )
     let { parameterValues, examples } = setup
-    let { instruction, inputPrefix, outputPrefix } = template
+    let { instruction, inputPrefix, outputPrefix, omitExamples } = template
 
     if ( duringSetup )
       examples.pop()
@@ -109,7 +128,7 @@ app.post('/widget/generate', async (req, res, next) =>
       filteredParameters({setup, template, onlyRecitals: true, duringGeneration: true}).map(({ name }) =>
         `${name}:\n${parameterValues[name]}`
       ).join('\n\n'),
-      examples.map(example =>
+      (examples || []).map(example =>
         `${inputPrefix}:\n${example.input}\n\n${outputPrefix}:\n${example.output}`
       ).join('\n\n'),
       inputPrefix+':\n'
@@ -130,7 +149,7 @@ app.post('/widget/generate', async (req, res, next) =>
       frequency_penalty: 1,
       presence_penalty: 1,
       n: 1,
-      stop: [inputPrefix + ':', ...examples.length ? [] : ['\n']]
+      stop: [inputPrefix + ':', ...(examples && examples.length) || omitExamples ? [] : ['\n']]
     }
   
     console.log(payload)
@@ -185,7 +204,7 @@ app.post('/widget/generate', async (req, res, next) =>
   
     res.send({content: {input, output}, runsLeft })
   } catch(err) {
-    // console.log(err)
+    console.log(err)
     next(err)
   }
 

@@ -2,12 +2,12 @@
   <div class="bg-light p-2">
     <template v-if="!duringSetup">
       <!-- <h3 v-text="widget.display.name"/> -->
-      <p v-text="widget.display.description"/>
+      <p v-if="widget.display.description" v-text="widget.display.description"/>
     </template>
     <LabeledInput
       v-model="content.input"
       v-bind="{
-        id: 'user-input',
+        id: 'widget-input',
         caption: display.inputCaption,
         placeholder: display.inputPlaceholder,
         labelTag: 'h3',
@@ -43,6 +43,7 @@
     </b-alert>
 
     <LabeledInput v-if="content.output || duringSetup" 
+      id="widget-output"
       v-model="content.output"
       v-bind="{
         multiline: true,
@@ -53,7 +54,7 @@
       @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
     />
 
-    <template v-if="generated && content.output && !duringSetup">
+    <template v-if="display.CTA && generated && content.output && !duringSetup">
       <div v-if="showOutro">
         <h4 class="pt-3" v-text="display.preCTA"/>
         <b-button variant="primary" size="lg"
@@ -77,7 +78,7 @@
 
 <script>
 
-  import { assign, last, pick} from 'lodash'
+  import { assign, get, last, pick} from 'lodash'
   // import { BIconDice5 } from 'bootstrap-vue'
 
   export default {
@@ -142,11 +143,15 @@
           let { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body)
           assign(this, { content })
           // console.log(runsLeft)
-          if ( runsLeft )
+          if ( runsLeft && this.code)
             this.$set(this.code, 'runsLeft', runsLeft)
           
           this.generated = true
-        } catch({response: {data: {error}}}) {
+          this.$emit('generated')
+          this.focus('widget-output')
+        } catch(e) {
+          console.log(e)
+          let error = get(e, 'response.data.error')
           if ( error )
             assign(this, {error})
         } finally {

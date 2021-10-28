@@ -1,11 +1,14 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'ideality',
+    title: 'Ideality 🔺 AI-driven ideation platform',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 
+        'Ideality is a set of AI-driven ideation tools built to make ideas come to life. ' +
+        'Whether it’s about yourself or your users and customers, Ideality helps explore, ' + 
+        'refine and flesh out that will one day change the world.' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
