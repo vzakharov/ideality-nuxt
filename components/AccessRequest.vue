@@ -34,10 +34,14 @@
 
     methods: {
 
-      send() {
-        Bubble.anon.go('requestBeta', this.request)
-        this.requested = true
-        localStorage.setItem('betaRequested', true)
+      async send() {
+        try {
+          await Bubble.anon.go('requestBeta', this.request)
+          this.requested = true
+          localStorage.setItem('betaRequested', true)
+        } catch(e) {
+          window.alert(e.toString()+'; Please contact the developer.')
+        }
       }
 
     }
