@@ -113,6 +113,7 @@
 
         this.generating = true
         this.error = null
+        this.hide.error = false
 
         try {
           let { id, setup, template } = this.widget

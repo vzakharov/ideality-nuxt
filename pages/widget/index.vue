@@ -36,10 +36,7 @@
       id="product-description"
       :description="!productDescription ? 'Enter a description to continue' : 'Enter any other description if you wish'"
       v-model="productDescription"
-      :fix-after-blur="true"
       :lazy="true"
-      @input="userDefinedDescription=true; focus('widget-input', 'select', 'scrollIntoView')"
-      @blur="focus('widget-input', 'select', 'scrollIntoView')"
     />
     <!-- <b-button variant="primary"
     >
