@@ -144,7 +144,7 @@
           assign(this, { content })
           // console.log(runsLeft)
           if ( runsLeft && this.code)
-            this.$set(this.code, 'runsLeft', runsLeft)
+            this.$set(this.code, 'runsLeft', runsLeft.code)
           
           this.generated = true
           this.$emit('generated')
