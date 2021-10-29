@@ -77,8 +77,13 @@ function Bubble({$auth, token, admin } = {}) {
                   return value
               }
             }),
-            (value, key) =>
-              camelCase(key)
+            (value, key) => {
+              switch(key) {
+                case 'Slug': return 'slug'
+                case '_id': return 'id'
+                default: return key
+              }
+            }
           )
       )
 
@@ -102,11 +107,16 @@ function Bubble({$auth, token, admin } = {}) {
 
     },
 
+    async patch(thing) {
+      debugger
+      axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id')))
+    },
+
     async go( workflow, body ) {
       body = omit(body, v => typeof v === 'undefined') 
       console.log(this, workflow, body)
       let { data: { response } } = await axios.post('/wf/'+workflow, body)
-      parseResponse(response)
+      parse(response)
       console.log(response)
       return response
     }
@@ -128,7 +138,7 @@ Bubble.asyncData = ( type, query, options ) =>
 Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
 
-function parseResponse(response) {
+function parse(object) {
 
   const process = thing => mapKeys(
     mapValues(thing, value => {
@@ -150,13 +160,23 @@ function parseResponse(response) {
     (value, key) => camelCase(key)
   )
 
-  for ( let key of keys(response) ) {
-    let value = response[key]
+  for ( let key of keys(object) ) {
+    let value = object[key]
     if ( isArray(value) )
-      response[key] = map(value, process)
+      object[key] = map(value, process)
     else if ( isObject(value) )
-      response[key] = process(value)
+      object[key] = process(value)
   }
+
+}
+
+function unparse(object) {
+
+  return mapValues(object, value =>
+    isObject(value) && !isArray(value) ?
+      JSON.stringify(value) :
+      value
+  )
 
 }
 

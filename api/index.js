@@ -97,16 +97,28 @@ app.post('/democode', async (req, res) => {
 
 const users = {}
 
+async function getUser(token, ignoreErrors) {
+  let user = users[token]
+  if (!user) {
+    try {
+      user = await (
+        new Bubble.default({ token })
+      ).go('getUserInfo')  
+    } catch (err) {
+      if ( ignoreErrors )
+        return undefined
+      else
+        throw(err)
+    }
+    users[token] = user
+    setTimeout(() => delete users[token], 1000 * 3600 * 24)
+  }
+  return user
+}
+
 app.get('/auth/user', async ( {headers: { authorization: token }}, res, next ) => {
   try {
-    let user = users[token] 
-    if (!user) {
-      user = await(
-        new Bubble.default({token})
-      ).go('getUserInfo')
-      users[token] = user
-      setTimeout(() => delete users[token], 1000*3600*24)
-    }
+    let user = await getUser(token)
     res.send({user})
   } catch(err) {
     next(log(err))
@@ -159,17 +171,18 @@ app.post('/widget/generate', async (req, res, next) =>
           )
         )[0]
         if ( quotaExceeded ) {
-          return res.status(403).send({
-            error: {
-              cause: 'quota', 
-              message: ({
-                ip: 'User',
-                code: 'Code',
-                widget: 'Widget',
-                owner: 'Widget owner'
-              })[quotaExceeded] + ' quota exceeded.'
-            }
-          })
+          if ( quotaExceeded != 'ip' || !await getUser(get(req, 'headers.authorization') ))
+            return res.status(403).send({
+              error: {
+                cause: 'quota', 
+                message: ({
+                  ip: 'User',
+                  code: 'Code',
+                  widget: 'Widget',
+                  owner: 'Widget owner'
+                })[quotaExceeded] + ' quota exceeded.'
+              }
+            })
         }
       }
     }
@@ -285,3 +298,4 @@ export default {
   path: '/api',
   handler: app
 }
+

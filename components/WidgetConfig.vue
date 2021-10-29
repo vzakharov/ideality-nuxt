@@ -161,8 +161,9 @@ export default {
     async save() {
       try {
         this.saving = true
+        let time = Date.now()
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.widget, ['setup', 'display', 'template']), JSON.stringify), name: this.widget.display.name || 'Unnamed widget'
+          ...mapValues(pick(this.widget, ['setup', 'display', 'template']), JSON.stringify), name: this.widget.name || 'Unnamed widget'
         }, {
           headers: {
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'

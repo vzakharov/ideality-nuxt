@@ -1,7 +1,7 @@
 <template>
   <div>
       <ObjectConfig v-model="display" :fields="{
-        name: { caption: 'Display name', placeholder: 'Shows up as an heading' },
+        name: { object: context.widget, caption: 'Display name', placeholder: 'Shows up as an heading' },
         description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
         sampleDescription: { hide: !widget.isExample, caption: 'Description (for owners)', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},

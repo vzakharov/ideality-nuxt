@@ -11,7 +11,7 @@
 
   export default {
     head() { return {
-      title: `${get(this, 'widget.display.name') } 🔺 Ideality widget`
+      title: `${get(this, 'widget.name') } 🔺 Ideality widget`
     }},
 
     asyncData: Bubble.asyncData('widget')

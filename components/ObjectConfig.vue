@@ -5,10 +5,10 @@
       :key="field.key"
       v-bind="{
         ...field,
-        value: object[field.key]
+        value: ( field.object || object )[field.key]
       }"
-      @input="!field.lazy && $set(object, field.key, $event)"
-      @change="field.lazy && $set(object, field.key, $event)"
+      @input="!field.lazy && $set(( field.object || object ), field.key, $event)"
+      @change="field.lazy && $set(( field.object || object ), field.key, $event)"
     />
   </div>
 </template>

@@ -8,7 +8,7 @@
     <template v-if="canAdmin">
       <Navbar/>
       <template v-if="widget">
-        <h2 class="ideality-widget-heading" v-text="widget.display.name"/>
+        <h2 class="ideality-widget-heading" v-text="widget.name"/>
         <ul class="nav nav-tabs">
           <li class="nav-item" v-for="item in [
             { caption: 'Configure', editing: true },
@@ -42,7 +42,7 @@ import Bubble from '@/plugins/bubble'
 export default {
 
   head() { return {
-    title: `${get(this, 'widget.display.name') } 🔺 Ideality widget`
+    title: `${get(this, 'widget.name') } 🔺 Ideality widget`
   }},
 
   data() { 

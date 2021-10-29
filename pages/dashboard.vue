@@ -1,15 +1,13 @@
 <template>
   <Container>
-    <Breadcrumbs/>
-    <div class="border bg-light p-3">
-      <h1>
-        {{ user.slug }}’s dashboard
-      </h1>
-      <Heading>
-        Widgets
-      </Heading>
-      <WidgetTable/>
-    </div>
+    <h1>
+      {{ user.slug }}’s dashboard
+    </h1>
+    <Heading>
+      Widgets
+    </Heading>
+    <WidgetNewPicker/>
+    <WidgetTable/>
   </Container>
 </template>
 

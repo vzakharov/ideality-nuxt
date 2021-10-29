@@ -1,6 +1,12 @@
 <template>
   <div>
-    <b-table hover
+    <div v-if="!widgets">
+      <em>
+        Loading your widgets, please wait...
+      </em>
+      <b-spinner small/>
+    </div>
+    <b-table hover v-else
       :fields="[
         'name',
         {

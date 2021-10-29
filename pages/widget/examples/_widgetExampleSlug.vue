@@ -6,10 +6,10 @@
     <b-row>
       <b-col class="bg-white">
         <b-tabs pills>
-          <b-tab size="sm" v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)" :title="w.display.name"/>
+          <b-tab size="sm" v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)" :title="w.name"/>
         </b-tabs>
         <div v-if="widget" class="px-3">
-          <h1 class="display-4" v-text="widget.display.name"/>
+          <h1 class="display-4" v-text="widget.name"/>
 
           <b-button variant="outline-secondary" size="sm" class="mb-4"
             @click="invert('hide.allButWidget'); window.history.pushState(0,0,$router.resolve({...$route, query:{...$route.query, noinfo: hide.allButWidget ? null : undefined}}).href)"
@@ -168,7 +168,7 @@
   export default {
 
     head() { return {
-      title: `${get(this, 'widget.display.name')} 🔺 Ideality widget example`,
+      title: `${get(this, 'widget.name')} 🔺 Ideality widget example`,
       meta: [{
         hid: 'description',
         name: 'description',
