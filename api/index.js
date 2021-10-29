@@ -50,6 +50,7 @@ const { filteredParameters } = require('../plugins/helpers')
 // console.log(filteredParameters)
 const ipInt = require('ip-to-int')
 const Bubble = require('../plugins/bubble')
+const jsyaml = require('js-yaml')
 
 const app = express()
 
@@ -91,17 +92,33 @@ app.get('/test', function (req, res) {
 })
   
 app.post('/democode', async (req, res) => {
+  
+})
 
+const users = {}
 
-
+app.get('/auth/user', async ( {headers: { authorization: token }}, res, next ) => {
+  try {
+    let user = users[token] 
+    if (!user) {
+      user = await(
+        new Bubble.default({token})
+      ).go('getUserInfo')
+      users[token] = user
+      setTimeout(() => delete users[token], 1000*3600*24)
+    }
+    res.send({user})
+  } catch(err) {
+    next(log(err))
+  }
 })
 
 app.post('/widget/generate', async (req, res, next) =>
 {
   try {
 
-    // console.log(req.ip)
-    // console.log(req.body)
+    console.log(req.ip)
+    console.log(req.body)
     let { input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n: allowUnsafe, code, fake_ip } = {
       input: '', output: '',
       ...req.body

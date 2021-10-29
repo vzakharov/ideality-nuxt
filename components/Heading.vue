@@ -1,5 +1,5 @@
 <template>
-  <h2 v-bind="{id}">
+  <h2 v-bind="{id}" class="mt-4">
     <slot/>
     <nuxt-link :to="{hash: id}">
       <small>#</small>
@@ -13,7 +13,7 @@ export default {
   
   computed: {
     id() {
-      return this.$slots.default[0].text
+      return this.$slots.default[0].text.trim()
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w-]/g,'')

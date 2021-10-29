@@ -1,5 +1,6 @@
 <template>
   <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
+    <Breadcrumbs/>
     <div v-if="!canAdmin">
       Log in to access the admin dashboard.
       <Login/>
@@ -54,7 +55,7 @@ export default {
     
   },
 
-  asyncData: Bubble.load('widget'),
+  asyncData: Bubble.asyncData('widget'),
 
   computed: {
     canAdmin() { return this.widget.owner || this.widget.maker }
@@ -71,7 +72,7 @@ export default {
   watch: {
     async '$auth.id'(id) {
       if (id)
-        assign(this, Bubble.load('widget'))
+        assign(this, Bubble.asyncData('widget'))
     }
   }
 

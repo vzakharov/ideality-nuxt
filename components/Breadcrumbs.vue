@@ -2,7 +2,7 @@
   <div class="mb-3">
     <small v-for="(crumb, i) in crumbs" :key="partialPath(i)">
       <span v-if="i" v-text="' / '"/>
-      <nuxt-link :to="partialPath(i)" v-text="crumb || 'ideality'"/>
+      <nuxt-link :to="partialPath(i)" v-text="crumb || '▲'"/>
     </small>
   </div>
 </template>

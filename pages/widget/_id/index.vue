@@ -14,7 +14,7 @@
       title: `${get(this, 'widget.display.name') } 🔺 Ideality widget`
     }},
 
-    asyncData: Bubble.load('widget')
+    asyncData: Bubble.asyncData('widget')
 
   }
 

@@ -1,16 +1,22 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
-import { assign, camelCase, mapKeys, mapValues, omit, sortBy } from 'lodash'
+import { assign, camelCase, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
-function Bubble({token, admin } = {}) {
+function Bubble({$auth, token, admin } = {}) {
 
-  const axios = Axios.create({ 
+  console.log($auth)
+  if ( $auth )
+    token = $auth.strategy.token.get()
+
+  let axios = Axios.create({ 
     baseURL: 'https://b.ideality.app/api/1.1/',
     ...( token || admin ? {
       headers: {'Authorization': token || ( admin && 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20' )}
     } : {})
   })
+
+  console.log({token})
 
   
   Object.assign(this, {
@@ -98,8 +104,9 @@ function Bubble({token, admin } = {}) {
 
     async go( workflow, body ) {
       body = omit(body, v => typeof v === 'undefined') 
-      console.log(workflow, body)
+      console.log(this, workflow, body)
       let { data: { response } } = await axios.post('/wf/'+workflow, body)
+      parseResponse(response)
       console.log(response)
       return response
     }
@@ -108,8 +115,9 @@ function Bubble({token, admin } = {}) {
 
 }
 
-Bubble.load = ( type, query, options ) => 
-  async ({ $auth, params: { id }}) => {
+Bubble.asyncData = ( type, query, options ) => 
+  async ({ $auth, route, $route}) => {
+    let { params: { id }} = route || $route
     // console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
@@ -119,5 +127,37 @@ Bubble.load = ( type, query, options ) =>
 
 Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
+
+function parseResponse(response) {
+
+  const process = thing => mapKeys(
+    mapValues(thing, value => {
+      const isString = typeof value === 'string'
+      if (isString && value[0] == '{')
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      else {
+        if (isString && value.match(/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/))
+          return new Date(value)
+
+        else
+          return value
+      }
+    }),
+    (value, key) => camelCase(key)
+  )
+
+  for ( let key of keys(response) ) {
+    let value = response[key]
+    if ( isArray(value) )
+      response[key] = map(value, process)
+    else if ( isObject(value) )
+      response[key] = process(value)
+  }
+
+}
 
 export default Bubble

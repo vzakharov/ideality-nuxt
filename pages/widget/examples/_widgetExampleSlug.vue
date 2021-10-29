@@ -202,7 +202,7 @@
 
     async asyncData({params, query}) {
       let data = {}
-      assign(data, await Bubble.load('widgets', { isSample: true }, {sortBy: 'sortIndex'})(...arguments))
+      assign(data, await Bubble.asyncData('widgets', { isExample: true }, {sortBy: 'sortIndex'})(...arguments))
 
       data.widget = find(data.widgets, {slug: params.widgetExampleSlug})
       if ( !data.widget ) {

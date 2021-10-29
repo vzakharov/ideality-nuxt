@@ -62,12 +62,14 @@ export default {
           global: true
         },
         user: {
-          property: 'response.id'
+          property: 'user'
         },
         endpoints: {
           login: {url: 'https://b.ideality.app/api/1.1/wf/login', method: 'post'},
           logout: {url: 'https://b.ideality.app/api/1.1/wf/logout', method: 'post'},
-          user: {url: 'https://b.ideality.app/api/1.1/wf/getUserInfo', method: 'post'}
+          // user: false
+          user: {url: 'api/auth/user'}
+          // user: {url: 'https://b.ideality.app/api/1.1/wf/getUserInfo', method: 'post'}
         }
       }
     },
@@ -127,7 +129,7 @@ export default {
   },
   
   serverMiddleware: {
-    '/api': '~/api'
+    '/api/': '~/api/'
   },
 
   script: [

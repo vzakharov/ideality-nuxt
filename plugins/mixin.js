@@ -47,12 +47,26 @@ Vue.mixin({
           tag => !tag && ( typeof tag !== 'undefined' )
         ), () => true)
     },
-    isTest() { return this.queryTags.test }
+    isTest() { return this.queryTags.test },
+    user() { return this.$auth.user || {}}
   },
 
   methods: {
 
     element: window.document.getElementById,
+
+    withElement(id, ...actions) {
+      let element = window.document.getElementById(id)
+      const next = () =>
+        this.$nextTick(() => {
+          if ( actions.length ) {
+            let action = actions.shift()
+            element[action]()
+            next()
+          }    
+        })
+      next()
+    },
 
     focus(id, ...furtherActions) {
       this.$nextTick(() => {
