@@ -3,6 +3,9 @@
     <h1>
       {{ user.slug }}’s dashboard
     </h1>
+    <b-link variant="secondary" href="#" v-text="'Log out'"
+      @click="$auth.logout()"
+    />
     <Heading>
       Widgets
     </Heading>

@@ -5,7 +5,7 @@
 <script>
 export default {
   created() {
-    this.$router.push({name: 'dashboard'})
+    this.$router.push({name: 'dashboard', hash: '#widgets'})
   }
 }
 </script>
