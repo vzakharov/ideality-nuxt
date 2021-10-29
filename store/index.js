@@ -1,4 +1,5 @@
 export const state = () => ({
+  path: '',
   tree: {
     children: [{ 
       body: 'Hello world', children: [{

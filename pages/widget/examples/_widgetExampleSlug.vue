@@ -1,25 +1,15 @@
 <template>
-  <b-container fluid="md" class="mt-3 mb-5" style="max-width: 960px">
+  <b-container fluid="md" class="mt-3 mb-5" style="max-width: 920px">
     <b-row>
       <Breadcrumbs/>
     </b-row>
     <b-row>
-      <b-col sm="4" lg="3" class="d-none d-sm-block">
-        <b-list-group>
-          <b-list-group-item button v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)">
-            {{ w.display.name }}
-          </b-list-group-item>
-        </b-list-group>
-      </b-col>
-      <b-col xs="12" sm="8" lg="9" class="bg-white">
-        <b-dropdown class="d-sm-none" variant="outline-primary" :text="widget ? widget.display.name : 'Pick a widget'">
-          <b-dropdown-item v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)">
-            {{ w.display.name }}
-          </b-dropdown-item>
-        </b-dropdown>
-        <div v-if="widget">
+      <b-col class="bg-white">
+        <b-tabs pills>
+          <b-tab size="sm" v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)" :title="w.display.name"/>
+        </b-tabs>
+        <div v-if="widget" class="px-3">
           <h1 class="display-4" v-text="widget.display.name"/>
-          <p class="lead mx-2">an Ideality 🔺 widget example</p>
 
           <b-button variant="outline-secondary" size="sm" class="mb-4"
             @click="invert('hide.allButWidget'); window.history.pushState(0,0,$router.resolve({...$route, query:{...$route.query, noinfo: hide.allButWidget ? null : undefined}}).href)"
@@ -231,12 +221,8 @@
       }
       assign(this, { betaRequested: localStorage.getItem('betaRequested') })
 
-      // this.widget = find(this.widgets, {slug: this.$route.params.widgetExampleSlug})
-      // if ( !this.widget ) {
-      //   this.setWidget(this.widgets[0])
-      // }
-
       let { codeId } = this
+
       if ( codeId ) {
         this.code = await Bubble.anon.get('code', codeId)
         console.log(this.code)
@@ -267,6 +253,10 @@
         // if ( apiKey )
         //   assign(this, { apiKey })
         this.copied = false
+      },
+
+      'window.location.pathname': {
+        deep: true
       }
 
     },
@@ -287,10 +277,7 @@
         history.pushState(null, null,
           this.$router.resolve({...this.$route, name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}}).href
         )
-        // window.location.hash = '#' + widget.slug
-        // this.$nextTick(function() { 
-        //   document.getElementById('widget-input')
-        // })
+        this.$store.commit('set', { path: window.location.pathname })
       }
 
     }
