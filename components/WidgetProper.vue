@@ -1,7 +1,6 @@
 <template>
   <div class="bg-light p-2">
     <template v-if="!duringSetup">
-      <!-- <h3 v-text="widget.display.name"/> -->
       <p v-if="widget.display.description" v-text="widget.display.description"/>
     </template>
     <LabeledInput
