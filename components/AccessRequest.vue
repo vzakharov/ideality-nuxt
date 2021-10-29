@@ -1,17 +1,20 @@
 <template>
-  <div v-if="!requested">
-    <ObjectConfig
-      v-model="request"
-      :fields="{
-        email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'access-request-email'},
-        bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
-      }"
-    />
-    <b-button size="lg" class="mt-2" variant="primary" :disabled='!(request.email && request.bio)'
-      @click="send"
-    >
-      Submit
-    </b-button>
+  <div>
+    <template v-if="!requested">
+      <ObjectConfig
+        v-model="request"
+        :fields="{
+          email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'access-request-email'},
+          bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
+        }"
+      />
+      <b-button size="lg" class="mt-2" variant="primary" :disabled='!(request.email && request.bio)'
+        @click="send"
+      >
+        Submit
+      </b-button>
+    </template>
+    <div class="py-2 text-center">We received your request and will get back to you soon!</div>
   </div>
 </template>
 

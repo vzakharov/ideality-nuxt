@@ -89,7 +89,7 @@
       <Heading>How much?</Heading>
       <p>
         As we’re using a super-efficient AI, Ideality Widget is surprisingly affordable.
-        In fact, <b>early adopters get 1000 generations for free</b>, so you can try it out
+        In fact, <b>early adopters get 100 generations for free</b>, so you can try it out
         and see if it boosts your conversion rates. After that, the price is as low as
         <b>$6 per 1000 generations</b>.
       </p>

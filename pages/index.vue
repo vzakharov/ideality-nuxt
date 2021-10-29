@@ -41,9 +41,10 @@
               { 
                 title: 'Studio', 
                 description: 'An AI-enabled text editor with tree-like structure so that you don’t miss a single idea.'
-              }]" :key="i" xs="12" md="3" sm="4" class="text-center">
+              }]" :key="i" xs="12" md="3" sm="4" class="text-center mb-4"
+            >
               <h3 class="display-6">Ideality {{ item.title }}</h3>
-              <p class="lead">
+              <p class="lead text-responsive">
                 {{ item.description }}
               </p>
               <b-button v-if="item.url" class="mx-auto" variant="outline-primary" :to="item.url">
@@ -52,9 +53,8 @@
               <em v-else>Coming soon!</em>
             </b-col>
           </b-row>
-          <b-row align-h="center">
-            
-            <b-col cols="4" align-self="center">
+          <b-row align-h="center" class="margin-bottom:400px">
+            <b-col align-self="center">
               <div v-if="!show.accessRequest" class="text-center">
                 <p class="lead">
                   ...and more to come!
@@ -62,7 +62,7 @@
                 <b-button variant="primary" size="lg"
                   @click="show.accessRequest=true; $nextTick(() => window.document.getElementById('access-request-email').focus())"
                 >
-                  Request beta access
+                  Request access
                 </b-button>
               </div>
               <AccessRequest class="shadow rounded-3 p-3" v-if="show.accessRequest" :value="{section: 'homepage'}"/>
@@ -106,6 +106,10 @@
     to {
       transform: rotate(359deg);
     }
+  }
+
+  .text-responsive {
+    font-size: calc(70% + 1vw);
   }
 
 </style>

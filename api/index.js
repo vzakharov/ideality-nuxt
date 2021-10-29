@@ -17,7 +17,7 @@ an app for managing all kinds of lists
 User bio (avoid choices that are too obvious for that product):
 I’m juggling freelance work, grad school classes, and a social life.
 
-Ideas tailored to the product:
+Ideas tailored to the product (avoid generic ones):
 Create lists for
 • Task assignments
 • Useful resources for students
@@ -30,13 +30,13 @@ a tweet scheduler
 User bio (avoid choices that are too obvious for that product):
 We are a startup that brings AI to Edge Computing.
 
-Ideas tailored to the product:
+Ideas tailored to the product (avoid generic ones):
 Tweet about
 • The latest AI technologies
 • Various ideas on adding AI to edge devices
 • Behind the scenes of running a stratup`,
   inputPrefix: "User bio (avoid choices that are too obvious for that product)",
-  outputPrefix: "Ideas tailored to the product",
+  outputPrefix: "Ideas tailored to the product (avoid generic ones)",
   omitExamples: true,
   stop: ['\nProduct:']
 }
