@@ -34,7 +34,7 @@
 
         let bubble = new Bubble(this)
         let { widget } = await bubble.go('createWidget', { template })
-        this.$router.push({name: 'widget-id-config', params: {id: widget.id}})
+        this.$router.push({name: 'dashboard-widget-id', params: {id: widget.id}})
 
       }
 

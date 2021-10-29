@@ -151,7 +151,7 @@ export default {
       let { id } = this.widget
       let { response: { newWidget }} = await this.$axios.$post('https://b.ideality.app/api/1.1/wf/cloneWidget', { id })
       console.log(newWidget)
-      this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
+      this.$router.push({...this.$route, name: 'dashboard-widget-id', params: { id: newWidget._id }})
     },
     
     getChoices: parameter => parameter.choices || (parameter.choices = [{
