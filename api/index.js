@@ -35,13 +35,13 @@ const { stripIndent } = require('common-tags')
 const { parse } = JSON
 const { filteredParameters } = require('../plugins/helpers')
 // console.log(filteredParameters)
-const _ = require('lodash')
 const ipInt = require('ip-to-int')
 const Bubble = require('../plugins/bubble')
 
 const app = express()
 
-const { assign, get } = _
+const _ = require('lodash')
+const { assign, get, keys, pickBy } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -71,23 +71,30 @@ const getIpInfo = ip => admin.get('/obj/ip', { params: {
     }]
   }}).then(data => data.response.info)
 
+const log = what => ( console.log(what), what )
 
 app.get('/test', function (req, res) {
   res.send(req.ip)
 })
   
+app.post('/democode', async (req, res) => {
+
+
+
+})
 
 app.post('/widget/generate', async (req, res, next) =>
 {
   try {
+
     // console.log(req.ip)
     // console.log(req.body)
-    let { input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n, code } = {
+    let { input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n: allowUnsafe, code, fake_ip } = {
       input: '', output: '',
       ...req.body
     }
 
-    let allowUnsafe = godMode || pr0n
+    let ip = req.ip || fake_ip      
 
     let { id } = widget
 
@@ -107,25 +114,34 @@ app.post('/widget/generate', async (req, res, next) =>
           })
         )
     
-    let runsLeft
-    if ( isDemo || !apiKey && !get(widget, 'template.apiKey') ) {
-      if ( 
-        !godMode 
-        && !(
-          runsLeft = ( 
-            await Bubble.default.admin.go('runsLeft--', {code}) 
-          ).runsLeft 
-        )
-      ) {
-        return res.status(403).send({
-          error: {
-            cause: 'apiKeyNotSet', 
-            message: 'Please send your OpenAI apiKey as an apiKey parameter in the request body.'
-          }
-        })
-      }
-    } else {
+    let runsLeft = {}
+
+    if ( godMode || isDemo || apiKey || get(widget, 'template.apiKey') ) {
       allowUnsafe = true
+    }
+    else {
+      if ( !godMode ) {
+        runsLeft = await Bubble.default.admin.go('runsLeft--', { code, ip, widget: widget.id })
+        let quotaExceeded = keys(
+          pickBy(
+            runsLeft, value => 
+            value <= 0
+          )
+        )[0]
+        if ( quotaExceeded ) {
+          return res.status(403).send({
+            error: {
+              cause: 'quota', 
+              message: ({
+                ip: 'User',
+                code: 'Code',
+                widget: 'Widget',
+                owner: 'Widget owner'
+              })[quotaExceeded] + ' quota exceeded.'
+            }
+          })
+        }
+      }
     }
 
     await widgetLoaded
@@ -204,9 +220,8 @@ app.post('/widget/generate', async (req, res, next) =>
       if ( safetyLabel.match(/[12]/) )
         return res.status(403).send({
           error: {
-            cause: 'holdOnYourHorses', 
-            message: 'OpenAI thinks that’s an “unsafe” request, so no luck today ¯\\\_(ツ)\_/¯. '+
-              'To disable request filtering, use your own API key — **at your own risk!**'
+            cause: 'unsafe', 
+            message: 'Unsafe input'
           }
         })
   
@@ -224,7 +239,9 @@ app.post('/widget/generate', async (req, res, next) =>
       if ( !output )
         [input] = input.split("\n")
     }
-  
+    
+    delete runsLeft.ip
+
     res.send({content: {input, output}, runsLeft })
   } catch(err) {
     console.log(err)

@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
-import { assign, camelCase, mapKeys, mapValues, sortBy } from 'lodash'
+import { assign, camelCase, mapKeys, mapValues, omit, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
 function Bubble({token, admin } = {}) {
@@ -97,6 +97,7 @@ function Bubble({token, admin } = {}) {
     },
 
     async go( workflow, body ) {
+      body = omit(body, v => typeof v === 'undefined') 
       console.log(workflow, body)
       let { data: { response } } = await axios.post('/wf/'+workflow, body)
       console.log(response)
