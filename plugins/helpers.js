@@ -2,6 +2,7 @@ import { filter, isObject, pick, get, keys } from 'lodash'
 // import Bubble from '@/plugins/bubble'
 
 function canRunWidget({code, godMode, apiKey, widget} = this) {
+  return true
   if ( godMode || apiKey || widget.id=='demo')
     return true
   else
