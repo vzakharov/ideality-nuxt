@@ -12,20 +12,33 @@ const demoTemplate = {
 `Suggest ideas on how to use various products based on various user bios.
 
 Product:
-a productivity app with tasks, lists, schedules, etc.
+an app for managing all kinds of lists
 
-User bio:
+User bio (avoid choices that are too obvious for that product):
 I’m juggling freelance work, grad school classes, and a social life.
 
-How this user could use the product:
-• Create lists of task assignments, and useful resources for students
-• Schedule meetings with clients so that you can keep your mind clear
-• Plan games for your next get-together or party
-• Use a timer to keep your focus when working on a large project`,
-  inputPrefix: "User bio",
-  outputPrefix: "How this user could use the product",
+Ideas tailored to the product:
+Create lists for
+• Task assignments
+• Useful resources for students
+• Notes from meetings with clients
+• Games for your next get-together
+
+Product:
+a tweet scheduler
+
+User bio (avoid choices that are too obvious for that product):
+We are a startup that brings AI to Edge Computing.
+
+Ideas tailored to the product:
+Tweet about
+• The latest AI technologies
+• Various ideas on adding AI to edge devices
+• Behind the scenes of running a stratup`,
+  inputPrefix: "User bio (avoid choices that are too obvious for that product)",
+  outputPrefix: "Ideas tailored to the product",
   omitExamples: true,
-  stop: ['Product']
+  stop: ['\nProduct:']
 }
 
 const express = require('express')

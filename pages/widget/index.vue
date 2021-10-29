@@ -7,7 +7,7 @@
     <hr>
     <p class="fw-bold lh-3" >
       Sometimes, people don’t need your product.<br>
-      Other times, they just need is a little push to get started.
+      Other times, they just need a little push.
     </p>
 
     <p>
@@ -17,10 +17,9 @@
     </p>
 
     <p>
-      Ideality Widget goes beyond just suggesting random ideas: 
-      It uses a powerful yet affordable AI engine to connect seemingly 
-      unrelated concepts and come up with truly innovative ideas that 
-      will turn your users‘ heads around.
+      You loop them back into your product and <strong>boost&nbsp;conversion.</strong>
+      Even if the ideas aren’t directly related to your product, they make
+      your users grateful and <strong>increase&nbsp;loyalty</strong>.
     </p>
 
     <Heading>Let’s try!</Heading>
@@ -52,25 +51,29 @@
       <div class='form-text text-muted'>
         (Click on 🎲 to generate random user bios.) 
       </div>
-
-      <WidgetProper class="border shadow rounded m-3 my-5 p-3"
-        :widget="{
-          id: 'demo',
-          setup: {
-            parameterValues: {
-              Product: productDescription
-            }
-          },
-          display: {
-            inputCaption: 'User bio',
-            inputPlaceholder: 'e.g. “I am a …” or “We are …”',
-            outputCaption: 'Suggestions for your user'
-          }
-        }"
-        @generated="generated=true"
-        :go="true"
-        :dontFocusOnOutput="true"
-      />
+      
+      <b-row align-h="center">
+        <b-col cols="12" sm="11" md="10">
+          <WidgetProper class="border shadow rounded my-5 p-3"
+            :widget="{
+              id: 'demo',
+              setup: {
+                parameterValues: {
+                  Product: productDescription
+                }
+              },
+              display: {
+                inputCaption: 'User bio',
+                inputPlaceholder: 'e.g. “I am a …” or “We are …”',
+                outputCaption: 'Suggestions for your user'
+              }
+            }"
+            @generated="generated=true"
+            :go="true"
+            :dontFocusOnOutput="true"
+          />
+        </b-col>
+      </b-row>
 
     </div>
 
