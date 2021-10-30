@@ -55,7 +55,7 @@ const jsyaml = require('js-yaml')
 const app = express()
 
 const _ = require('lodash')
-const { assign, get, keys, pickBy } = _
+const { assign, filter, get, keys, pickBy } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -196,7 +196,7 @@ app.post('/widget/generate', async (req, res, next) =>
     if ( duringSetup )
       examples.pop()
 
-    // console.log(setup, template)
+    console.log(setup, template)
 
     let prompt = [
       instruction,
@@ -208,6 +208,10 @@ app.post('/widget/generate', async (req, res, next) =>
       ).join('\n\n'),
       inputPrefix+':\n'
     ].filter(a=>a).join('\n\n')
+
+    for ( let { name } of _.reject(template.parameters, { recital: true })) {
+      prompt = prompt.replace(`<${name}>`, parameterValues[name])
+    }
 
     if ( input )
       prompt += input
