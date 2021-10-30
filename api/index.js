@@ -149,9 +149,9 @@ app.post('/widget/generate', async (req, res, next) =>
     const widgetLoaded = 
       !( widget && widget.setup && widget.template )
       && Bubble.default.admin.get('widget', id)
-        .then( ({ setup, template }) => 
+        .then( ({ setup, template, tie }) => 
           assign(widget, {
-            setup, template,
+            setup, template, tie,
             ...widget
           })
         )
@@ -170,6 +170,7 @@ app.post('/widget/generate', async (req, res, next) =>
             value <= 0
           )
         )[0]
+        console.log({runsLeft, quotaExceeded})
         if ( quotaExceeded ) {
           if ( quotaExceeded != 'ip' || !await getUser(get(req, 'headers.authorization') ))
             return res.status(403).send({
