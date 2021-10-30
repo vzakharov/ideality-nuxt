@@ -1,17 +1,19 @@
 <template>
-  <Container>
-    <h1>
-      {{ user.slug }}’s dashboard
-    </h1>
-    <b-link variant="secondary" href="#" v-text="'Log out'"
-      @click="$auth.logout()"
-    />
-    <Heading>
-      Widgets
-    </Heading>
-    <WidgetNewPicker/>
-    <WidgetTable/>
-  </Container>
+  <Authorized>
+    <Container>
+      <h1>
+        {{ user.slug }}’s dashboard
+      </h1>
+      <a class="link-secondary small" href="#" v-text="'Log out'"
+        @click="$auth.setUser(null); $auth.logout()"
+      />
+      <Heading>
+        Widgets
+      </Heading>
+      <WidgetNewPicker/>
+      <WidgetTable/>
+    </Container>
+  </Authorized>
 </template>
 
 <script>

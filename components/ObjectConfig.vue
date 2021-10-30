@@ -5,6 +5,7 @@
       :key="field.key"
       v-bind="{
         ...field,
+        $key: field.key,
         value: ( field.object || object )[field.key]
       }"
       @input="!field.lazy && $set(( field.object || object ), field.key, $event)"

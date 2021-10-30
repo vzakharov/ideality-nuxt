@@ -1,11 +1,11 @@
 <template>
   <div class="form-group my-2">
     <template v-if="value && blurred && fixAfterBlur">
-      <label v-text="caption" class="my-1 fw-bold"/>
+      <label v-text="$caption" class="my-1 fw-bold"/>
       <p v-text="value" @click="blurred=false; $nextTick(() => { $refs.input.focus(); $refs.input.select() })"/>
     </template>
     <template v-else>
-      <div v-if="caption && type!='boolean'"><label :for="uid" v-text="caption" class="my-1 fw-bold"/></div>
+      <div v-if="$caption && type!='boolean'"><label :for="uid" v-text="$caption" class="my-1 fw-bold"/></div>
       <Choices v-if="choices" v-bind="{value, choices}" @input="$emit('input', $event)"/>
       <div v-else-if="type=='boolean'" class="form-check">
         <input class="form-check-input" type="checkbox" 
@@ -13,7 +13,7 @@
           @input="console.log( $event.target.checked ); $emit('input', $event.target.checked || undefined)"
           :id="uid"
         >
-        <label :for="uid" class="form-check-label"> {{caption}} </label>
+        <label :for="uid" class="form-check-label"> {{$caption}} </label>
       </div>
       <template v-else>
         <textarea-autosize v-if="multiline" v-bind="inputProps" :id="uid"
@@ -43,7 +43,7 @@
 
   import Vue from 'vue'
   import TextareaAutosize from 'vue-textarea-autosize'
-  import { get } from 'lodash'
+  import { get, upperFirst } from 'lodash'
 
   Vue.use(TextareaAutosize)
 
@@ -54,7 +54,7 @@
     components: { Choices },
     
     props: [
-      'caption', 'description', 'placeholder', 'object', '_key', 'multiline', 'labelClass', 'id', 
+      'caption', 'description', 'placeholder', 'object', '$key', 'multiline', 'labelClass', 'id', 
       'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows', 'lazy',
       'props', 'fixAfterBlur'
     ],
@@ -66,6 +66,10 @@
     },
 
     computed: {
+
+      $caption() {
+        return this.caption || upperFirst(this.$key)
+      },
 
       uid() {
         return this.id || ( 'input-' + this._uid )
