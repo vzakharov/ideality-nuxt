@@ -9,11 +9,12 @@ function canRunWidget({code, godMode, apiKey, widget} = this) {
     return code && code.runsLeft > 0
 }
 
-function filteredParameters({setup, template, onlyRecitals, duringGeneration}) {
-  if ( !template.parameters )
+function filteredParameters({setup, template, tie, onlyRecitals, duringGeneration}) {
+  let { parameters } = template || tie
+  if ( !parameters )
     return []
   let { parameterValues } = setup
-  return template.parameters.filter(({ name, requires, regex, recital }) => {
+  return parameters.filter(({ name, requires, regex, recital }) => {
     if ( onlyRecitals && !recital )
       return false
     let value = parameterValues[name]

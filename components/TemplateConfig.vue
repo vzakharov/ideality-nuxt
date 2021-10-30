@@ -3,7 +3,7 @@
 
     <!-- Basic settings (to be deleted probably) -->
 
-    <ObjectConfig v-model="vm" :fields="{
+    <ObjectConfig v-model="template" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...', multiline: true },
       inputPrefix: { caption: 'Prefix for input' },
@@ -31,8 +31,8 @@
     <h4>Parameters</h4>
     
     <ListOfComponents
-      v-model="parameters"
-      :context="{template: vm}"
+      v-model="template.parameters"
+      :context="{template}"
       component="TemplateParameter"
       title="parameter"
       :defaultItem="{
@@ -48,16 +48,28 @@
 
   export default {
 
-    props: ['value'],
+    props: ['value', 'widget'],
 
     data() { 
-      return this.setDefaults(this.value, {
-        apiKey: '', 
-        instruction: '', 
-        inputPrefix: 'Input', 
-        outputPrefix: 'Output',
-        omitExamples: false
-      })
+      return {
+        template: this.setDefaults(this.value, {
+          apiKey: '', 
+          instruction: '', 
+          inputPrefix: 'Input', 
+          outputPrefix: 'Output',
+          omitExamples: false
+        })
+      }
+    },
+
+    watch: {
+      'template.parameters': {
+        deep: true,
+        handler(parameters) {
+          debugger
+          this.$set(this.widget, 'tie', {parameters})
+        }
+      }
     }
 
   }

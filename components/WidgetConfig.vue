@@ -38,7 +38,7 @@
         CTAContent: { caption: 'Text to be included after CTA', placeholder: 'Use <input> and <output> to refer to the input and output, respectively.', multiline: true }
       }"/> -->
 
-      <TemplateConfig v-if="section=='template'" v-model="widget.template"/>
+      <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
 
 
     </div>
@@ -69,7 +69,7 @@
 
 // import ObjectConfig from '@/components/ObjectConfig.vue'
 
-import { assign, findIndex, get, last, mapValues, pick, without } from 'lodash'
+import { assign, findIndex, get, last, mapValues, omit, pick, without } from 'lodash'
 import yaml from 'js-yaml'
 
 export default {
@@ -116,7 +116,7 @@ export default {
   computed: {
 
     widgetYaml: {
-      get() { return yaml.dump(this.widget) },
+      get() { return yaml.dump(omit(this.widget, 'tie')) },
 
       set(value) { assign(this.widget, yaml.load(value)) }
     },
@@ -163,9 +163,10 @@ export default {
         this.saving = true
         let time = Date.now()
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.widget, ['setup', 'display', 'template']), JSON.stringify), name: this.widget.name || 'Unnamed widget'
+          ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name || 'Unnamed widget'
         }, {
           headers: {
+            //TODO: Remove secret token to inner API!
             'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
           }
         })
