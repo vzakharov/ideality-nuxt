@@ -188,10 +188,10 @@ app.post('/widget/generate', async (req, res, next) =>
     }
 
     await widgetLoaded
-    let { setup, template } = widget
+    let { setup, template, tie } = widget
     ;( { apiKey } = template )
     let { parameterValues, examples } = setup
-    let { instruction, inputPrefix, outputPrefix, omitExamples } = template
+    let { instruction, inputPrefix, outputPrefix, omitExamples } = {...template, ...tie}
 
     if ( duringSetup )
       examples.pop()

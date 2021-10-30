@@ -115,7 +115,7 @@
         this.hide.error = false
 
         try {
-          let { id, setup, template } = this.widget
+          let { id, setup, template, tie } = this.widget
           let { duringSetup, apiKey } = this
           
           let { code } = this.$route.query
@@ -135,7 +135,7 @@
           ) ? cut(output) : undefined
 
           let body = { 
-              input, output, appendInput, duringSetup, widget: {id, setup, template }, 
+              input, output, appendInput, duringSetup, widget: {id, setup, template, tie }, 
               apiKey, code, ...this.queryTags
             }
           

@@ -1,7 +1,7 @@
 <template>
   <div>
     <LabeledInput 
-      v-for="field in fieldArray.filter(f=>!f.hide)" 
+      v-for="field in fieldArray.filter(f=>!f.hide && ( typeof object[f.key] !=='undefined' || !f.hideIfUndefined ))" 
       :key="field.key"
       v-bind="{
         ...field,

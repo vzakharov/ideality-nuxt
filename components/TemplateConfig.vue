@@ -7,7 +7,9 @@
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...', multiline: true },
       inputPrefix: { caption: 'Prefix for input' },
+      inputPrefixEditable: { caption: 'Can be changed in setup', type: 'boolean' },
       outputPrefix: { caption: 'Prefix for output' },
+      outputPrefixEditable: { caption: 'Can be changed in setup', type: 'boolean' },
       multilineInput: { caption: 'Allow multiline input', type: 'boolean'},
       omitExamples: { caption: 'Doesn’t need examples', type: 'boolean'}
     }"/>
@@ -56,18 +58,26 @@
           apiKey: '', 
           instruction: '', 
           inputPrefix: 'Input', 
+          inputPrefixEditable: false,
           outputPrefix: 'Output',
+          outputPrefixEditable: false,
           omitExamples: false
         })
       }
     },
 
     watch: {
-      'template.parameters': {
+      'template': {
         deep: true,
-        handler(parameters) {
-          debugger
-          this.$set(this.widget, 'tie', {parameters})
+        handler(template) {
+          let { 
+            parameters, inputPrefix, inputPrefixEditable, outputPrefix, outputPrefixEditable
+          } = template
+          this.$set(this.widget, 'tie', {
+            parameters,
+            ...inputPrefixEditable && { inputPrefix },
+            ...outputPrefixEditable && { outputPrefix }
+          })
         }
       }
     }
