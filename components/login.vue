@@ -37,6 +37,7 @@ export default {
       let { email, password } = this
       this.$auth.loginWith('local', { data: { email, password } })
       this.$router.push(this.$route)
+      this.$emit('login')
     }
   }
 

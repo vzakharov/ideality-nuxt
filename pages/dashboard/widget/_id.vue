@@ -1,33 +1,34 @@
 <template>
-  <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
-    <Breadcrumbs/>
-    <div v-if="!canAdmin">
-      Log in to access the admin dashboard.
-      <Login/>
-    </div>
-    <template v-if="canAdmin">
-      <Navbar/>
-      <template v-if="widget">
-        <h2 class="ideality-widget-heading" v-text="widget.name"/>
-        <ul class="nav nav-tabs">
-          <li class="nav-item" v-for="item in [
-            { caption: 'Configure', editing: true },
-            { caption: 'Try it out!', editing: false },
-          ]" :key="item.caption">
-            <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
-          </li>
-        </ul>
-        <WidgetConfig v-if="editing" v-model="widget" v-bind="{id}"
-          v-on="{
-            loadFromYaml,
-            deleted: () => { $router.push({name: 'dashboard'}) }
-          }"
-        />
+  <Authorized>
+    <div class="container-sm w-auto p-3 bg-light mx-auto" style="max-width: 800px">
+      <Breadcrumbs/>
+      <div v-if="!canAdmin">
+        You don’t have access to edit this widget.
+      </div>
+      <template v-if="canAdmin">
+        <Navbar/>
+        <template v-if="widget">
+          <h2 class="ideality-widget-heading" v-text="widget.name"/>
+          <ul class="nav nav-tabs">
+            <li class="nav-item" v-for="item in [
+              { caption: 'Configure', editing: true },
+              { caption: 'Try it out!', editing: false },
+            ]" :key="item.caption">
+              <a href="#" :class="{'nav-link': true, active: editing===item.editing}" v-text="item.caption" @click="editing=item.editing"/>
+            </li>
+          </ul>
+          <WidgetConfig v-if="editing" v-model="widget" v-bind="{id: widget.id}"
+            v-on="{
+              loadFromYaml,
+              deleted: () => { $router.push({name: 'dashboard'}) }
+            }"
+          />
+        </template>
+        <div v-else v-text="'Please select a widget from the menu above.'"/>
       </template>
-      <div v-else v-text="'Please select a widget from the menu above.'"/>
-    </template>
-    <WidgetProper v-if="!editing" v-bind="{widget}"/>
-  </div>
+      <WidgetProper v-if="!editing" v-bind="{widget}"/>
+    </div>
+  </Authorized>
 </template>
 
 <script>
@@ -58,7 +59,7 @@ export default {
   asyncData: Bubble.asyncData('widget'),
 
   computed: {
-    canAdmin() { return this.widget.owner || this.widget.maker }
+    canAdmin() { return get(this, '$auth.user.id') == get(this, 'widget.owner') }
   },
 
   mounted() {
@@ -70,9 +71,11 @@ export default {
   },
 
   watch: {
-    async '$auth.id'(id) {
-      if (id)
-        assign(this, Bubble.asyncData('widget'))
+    async '$auth.user.id'(id) {
+      if (id) {
+        let { widget } = await Bubble.asyncData('widget')(this)
+        assign(this, {widget})
+      }
     }
   }
 
