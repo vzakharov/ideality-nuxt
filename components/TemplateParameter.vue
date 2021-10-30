@@ -3,6 +3,7 @@
       <ObjectConfig v-model="parameter" :fields="{
         name: { caption: 'Name' },
         type: { caption: 'Type', choices: ['text', 'choices'] },
+        useAs: { caption: 'Use as', choices: ['input', 'output']},
         multiline: { hide: parameter.type!='text', caption: 'Multiline', type: 'boolean'},
         choices: { hide: parameter.type!='choices', caption: 'Choices', placeholder: 'Comma-separated list', commaSeparated: true},
         recital: { caption: 'Recital', type: 'boolean' },
@@ -34,7 +35,8 @@
         recital: undefined,
         requires: undefined,
         regex: undefined,
-        multiline: undefined
+        multiline: undefined,
+        useAs: undefined
       })
       // debugger
       return { parameter }

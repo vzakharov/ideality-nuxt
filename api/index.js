@@ -55,7 +55,7 @@ const jsyaml = require('js-yaml')
 const app = express()
 
 const _ = require('lodash')
-const { assign, filter, get, keys, pickBy } = _
+const { assign, filter, find, get, keys, map, pickBy } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -193,11 +193,24 @@ app.post('/widget/generate', async (req, res, next) =>
     ;( { apiKey } = template )
     let { parameterValues, examples } = setup
     let { instruction, inputPrefix, outputPrefix, omitExamples } = {...template, ...tie}
+    let { parameters } = template
+
+    let prefix = {}
+    
+    for ( let useAs of ['input', 'output'] ) {
+      let parameter = find(parameters, { useAs })
+      if ( parameter )
+        prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /,'').toUpperCase()
+      else
+        prefix[useAs] = template[useAs + 'Prefix']
+    }
+
+    console.log({prefix})
 
     if ( duringSetup )
       examples.pop()
 
-    console.log(setup, template)
+    // console.log(setup, template)
 
     let prompt = [
       instruction,
@@ -205,12 +218,12 @@ app.post('/widget/generate', async (req, res, next) =>
         `${name}:\n${parameterValues[name]}`
       ).join('\n\n'),
       (examples || []).map(example =>
-        `${inputPrefix}:\n${example.input}\n\n${outputPrefix}:\n${example.output}`
+        `${prefix.input}:\n- ${example.input}\n\n${prefix.output}:\n${example.output}`
       ).join('\n\n'),
-      inputPrefix+':\n'
+      prefix.input+':\n-'
     ].filter(a=>a).join('\n\n')
 
-    for ( let { name } of _.reject(template.parameters, { recital: true })) {
+    for ( let { name } of _.reject(parameters, { recital: true })) {
       prompt = prompt.replace(`<${name}>`, parameterValues[name])
     }
 
@@ -218,12 +231,12 @@ app.post('/widget/generate', async (req, res, next) =>
       prompt += input
       
     if ( input && !appendInput || output)
-      prompt += `\n\n${outputPrefix}:\n${output}`
+      prompt += `\n\n${prefix.output}:\n${output}`
   
     // console.log(prompt)
 
     let stop = [
-      inputPrefix + ':', 
+      prefix.input + ':', 
       ...(examples && examples.length) || omitExamples ? [] : ['\n'],
       ...template.stop || []
     ]
@@ -283,7 +296,7 @@ app.post('/widget/generate', async (req, res, next) =>
     if ( input && !appendInput ) 
       output += text.trimEnd()
     else {
-      [input, output] = (input + text).trimEnd().split(outputPrefix+':').map(s=>s.trim())
+      [input, output] = (input + text).trimEnd().split(prefix.output+':').map(s=>s.trim())
       if ( !output )
         [input] = input.split("\n")
     }
