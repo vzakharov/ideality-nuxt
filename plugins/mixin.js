@@ -93,6 +93,16 @@ Vue.mixin({
       set(this, what, !get(this, what))
     },
 
+    // redirectIfNotLoggedIn() {
+    //   if ( !this.$auth.loggedIn )
+    //     this.$router.push({
+    //       name: 'login',
+    //       query: {
+    //         then: this.$route.fullPath
+    //       }
+    //     })
+    // },
+
     setDefaults
   }
 
