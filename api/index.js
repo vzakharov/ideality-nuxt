@@ -163,7 +163,7 @@ app.post('/widget/generate', async (req, res, next) =>
     }
     else {
       if ( !godMode ) {
-        runsLeft = await Bubble.default.admin.go('runsLeft--', { code, ip, widget: widget.id })
+        runsLeft = await Bubble.default.admin.go('runsLeft--', { ip, widget: widget.id })
         let quotaExceeded = keys(
           pickBy(
             runsLeft, value => 
