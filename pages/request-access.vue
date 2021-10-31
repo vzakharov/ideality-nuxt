@@ -1,11 +1,11 @@
 <template>
-  <Box>
+  <FullBox>
     <p>
       Ideality is currently in private beta, but we’re eager to onboard new users.
       Request your access below, and we’ll get back to you real fast.
     </p>
     <ObjectConfig v-model="request" :fields="{
-      email: { type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail },
+      email: { id: 'email', type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail },
       slug: { caption: 'Username', placeholder: 'a-z, 0-9, -', status: status.slug, lazy: true, handler: slugChanged },
       password: { type: 'password' },
       repeatPassword: { caption: 'Repeat password', type: 'password', status: status.password, handler: checkrepeatPassword, lazy: true },
@@ -14,7 +14,7 @@
     <b-button :disabled="!valid" size="lg" class="mt-2" variant="primary" @click="send">
       Send
     </b-button>
-  </Box>
+  </FullBox>
 </template>
 
 <script>
@@ -32,7 +32,7 @@
           slug: '',
           password: '',
           repeatPassword: '',
-          bio: '',
+          bio: this.$route.query.bio,
         },
         status: {
           slug: null,
@@ -50,6 +50,10 @@
           && this.status.password.ok
         )
       }
+    },
+
+    mounted() {
+      window.document.getElementById('email').focus()
     },
 
     methods: {

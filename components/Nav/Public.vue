@@ -7,7 +7,7 @@
       <b-nav-item-dropdown text="Products">
         <b-dropdown-item
           v-for="item in [
-            { caption: 'Widget', to: 'Widget' },
+            { caption: 'Widget', to: 'widget' },
             { caption: 'Chat', to: { name:'index', hash: '#chat' } },
             { caption: 'Studio', to: { name:'index', hash: '#studio' } }
           ]"

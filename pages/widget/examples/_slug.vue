@@ -204,7 +204,7 @@
       let data = {}
       assign(data, await Bubble.asyncData('widgets', { isExample: true }, {sortBy: 'sortIndex'})(...arguments))
 
-      data.widget = find(data.widgets, {slug: params.widgetExampleSlug})
+      data.widget = find(data.widgets, {slug: params.slug})
       if ( !data.widget ) {
         data.widget = data.widgets[0]
       }
@@ -275,7 +275,7 @@
       setWidget(widget) {
         Object.assign(this, { widget })
         history.pushState(null, null,
-          this.$router.resolve({...this.$route, name: 'widget-examples-widgetExampleSlug', params: { widgetExampleSlug: widget.slug}}).href
+          this.$router.resolve({...this.$route, name: 'widget-examples-slug', params: { slug: widget.slug}}).href
         )
         this.$store.commit('set', { path: window.location.pathname })
       }

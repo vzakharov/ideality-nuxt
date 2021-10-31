@@ -24,7 +24,6 @@
         :key="index"
         :duringSetup="true"
       />
-      <hr/>
     </div>
   </div>
 </template>

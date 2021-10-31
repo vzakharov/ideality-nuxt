@@ -7,91 +7,111 @@
       <hr>
       <p>
         Sometimes, people don’t need your product. Other times, they just need a little push.
-        Ideality Widget encourages your users to use your product by giving them ideas.
+        <strong>Ideality Widget encourages your users to use your product by giving them ideas.</strong>
       </p>
 
       <p>
-        Let’s try a little experiment. Enter a brief description of your product.
+        Better shown than spoken.
       </p>
 
-      <LabeledInput 
-        caption="Describe your product"
-        placeholder="E.g. “a bookmarking app”"
-        id="product-description"
-        :description="!productDescription ? 'Enter a description to continue' : 'Enter any other description if you wish'"
-        v-model="productDescription"
-        :lazy="true"
-      />
-      <!-- <b-button variant="primary"
-      >
-        Show me the widget!
-      </b-button> -->
+      <p>
+        Let’s say you’re building a tweet scheduling app.
+      </p>
 
-      <div v-if="productDescription || isTest" class="mt-5">
+      <p>
+        Your users want to use it, but <strong>they just don’t know what to tweet</strong>.
+      </p>
+      <p>
+        So you give them this (try with your own bio, it’s fun!):
+      </p>
 
-        <template v-if="!generated">
-            Please wait, preparing your widget... <b-spinner small variant="grow danger"></b-spinner>
-        </template>
-        <div v-show="generated">
-          <h5 id="widget-demo">
-            <span v-if="userDefinedDescription">Excellent! </span>
-            Here’s how a widget for your users might look like. Try it out!
-          </h5>
-          <div class='form-text text-muted'>
-            (Click on 🎲 to generate random user bios.) 
-          </div>
-          
-          <b-row align-h="center">
-            <b-col cols="12" sm="11" md="10">
-              <WidgetProper class="border shadow rounded my-5 p-3"
-                :widget="{
-                  id: 'demo',
-                  setup: {
-                    parameterValues: {
-                      Product: productDescription
-                    }
-                  },
-                  display: {
-                    inputCaption: 'User bio (this is what the user will enter in the widget)',
-                    inputPlaceholder: 'e.g. “I am a …” or “We are …”',
-                    outputCaption: 'Suggestions for your user'
-                  }
-                }"
-                @generated="generated=true; withElement('product-description', 'scrollIntoView')"
-                :go="true"
-                :dontFocusOnOutput="true"
-              />
-            </b-col>
-          </b-row>
+      <WidgetBox>
+        <WidgetProper v-if="widgets" :widget="widgets[0]" :go="true"/>
+        <Loading v-else message="Loading your widget, hold on a sec..."/>
+      </WidgetBox>
 
-          <h5>Impressed?</h5>
-          <p>
-            The real thing is even better, as you can flexibly customize it to match your 
-            specific product and goals. You can watch some of the customized examples
-            <nuxt-link to="widget/examples">here</nuxt-link>.
-          </p>
+      <p>
+        Or maybe you run an online grocery store? Then you can give your visitors
+        a nifty tool that tells them what groceries they need to buy to bake their favorite cake:
+      </p>
 
-          <Heading>How much?</Heading>
-          <p>
-            As we’re using a super-efficient AI, Ideality Widget is surprisingly affordable.
-            In fact, <b>early adopters get 100 generations for free</b>, so you can try it out
-            and see if it boosts your conversion rates. After that, the price is as low as
-            <b>$6 per 1000 generations</b>.
-          </p>
+      <p class="text-muted">
+        <small>
+          For some extra hilarity, try with some non-food items like “love” or “the meaning of life”
+        </small>
+      </p>  
 
-          <Heading>How to get it</Heading>
-          <p>
-            Ideality Widget is currently in private beta. If you want to get your hands on it,
-            fill out the form below, and we’ll see what we can do!
-          </p>
+      <WidgetBox :value="widgets" :key="widgets">
+        <WidgetProper v-if="widgets" :widget="widgets[1]" :go="true"/>
+        <Loading v-else message="Loading your widget, hold on a sec..."/>
+      </WidgetBox>
 
-          <b-row align-h="center">
-            <b-col cols="8">
-              <AccessRequest class="border rounded shadow p-2"/>
-            </b-col>
-          </b-row>
-        </div>
-      </div>
+      <Heading id="you">
+        Why would <em>I</em> want to use it?
+      </Heading>
+
+      <p>
+        But you know what? Why don’t we ask the widget itself why you need it?
+      </p>
+
+      <p>
+        <strong>Enter below what kind of an app you’re building</strong>
+      </p>
+
+      <WidgetBox>
+        <WidgetProper v-if="widgets" :widget="widgets[2]" :go="true"/>
+        <Loading v-else message="Loading your widget, hold on a sec..."/>
+      </WidgetBox>
+
+      <Heading id="setup">
+        Is it hard to set up?
+      </Heading>
+
+      <p>
+        No! Ideality Widget is packed with very simple yet flexible AI logic, so you
+        can adapt it to pretty much any product or service. (You can see several more
+        examples <nuxt-link :to="{name: 'widget-examples-slug'}">here</nuxt-link>.)
+      </p>
+
+      <p>
+        All you have to do fill out a few fields to configure how you want the widget to look,
+        what you want it to suggest, and give it a few examples. Just
+        <a href="https://gyazo.com/4bad7e812a8c3697cf95ef3e70e2bff4" target="_blank">
+          like this.
+        </a>
+      </p>
+
+      <p>
+        After that you can embed it
+        (<nuxt-link :to="{ name: 'widget-id', params: {id: 'tweet-ideas'}}">example</nuxt-link>)
+        just like you would with any other HTML.
+
+      <h5>Impressed?</h5>
+      <p>
+        The real thing is even better, as you can flexibly customize it to match your 
+        specific product and goals. You can watch some of the customized examples
+        <nuxt-link to="widget/examples">here</nuxt-link>.
+      </p>
+
+      <Heading>How much?</Heading>
+      <p>
+        As we’re using a super-efficient AI, Ideality Widget is surprisingly affordable.
+        In fact, <b>early adopters get 100 generations for free</b>, so you can try it out
+        and see if it boosts your conversion rates. After that, the price is as low as
+        <b>$6 per 1000 generations</b>.
+      </p>
+
+      <Heading>How to get it</Heading>
+      <p>
+        Ideality Widget is currently in private beta. If you want to get your hands on it,
+        fill out the form below, and we’ll see what we can do!
+      </p>
+
+      <b-row align-h="center">
+        <b-col cols="8">
+          <AccessRequest class="border rounded shadow p-2"/>
+        </b-col>
+      </b-row>
 
     </b-container>
   </div>
@@ -99,14 +119,23 @@
 
 <script>
 
+  import Bubble from '~/plugins/bubble'
+
   export default {
 
     data() { 
       return {
         productDescription: '',
         userDefinedDescription: false,
-        generated: false
+        generated: false,
+        widgets: null
       }
+    },
+
+    async fetch() {
+      let { widgets } = await Bubble.anon.go('getWidgetLandingWidgets')
+      console.log(widgets)
+      Object.assign(this, { widgets })
     },
 
     computed: {
@@ -114,7 +143,7 @@
     },
 
     mounted() {
-      this.focus('product-description', 'select')
+      // this.focus('product-description', 'select')
     }
 
   }

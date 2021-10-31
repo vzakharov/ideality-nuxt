@@ -1,7 +1,7 @@
 <template>
-  <Box>
+  <FullBox>
     <Loading message="Creating your new widget, hold on a sec..."/>
-  </Box>
+  </FullBox>
 </template>
 
 <script>

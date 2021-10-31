@@ -305,6 +305,7 @@ try {
       }
 
       output = output.trim()
+      output = output.replace(/\n\n.*/, '')
       
       delete runsLeft.ip
 

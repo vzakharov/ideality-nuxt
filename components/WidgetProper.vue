@@ -42,7 +42,7 @@
     </b-alert>
 
     <LabeledInput v-if="content.output || duringSetup" 
-      id="widget-output"
+      :id="widget.slug+'-widget-output'"
       v-model="content.output"
       v-bind="{
         multiline: true,
@@ -78,12 +78,13 @@
 <script>
 
   import { assign, get, last, pick} from 'lodash'
+  import Bubble from '~/plugins/bubble'
   // import { BIconDice5 } from 'bootstrap-vue'
 
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load'],
 
     data() { 
       let content = this.value || {}
@@ -101,8 +102,17 @@
       return data
     },
 
+    // async fetch() {
+    //   console.log(this)
+    //   debugger
+    //   if ( this.load ) {
+    //     let { widget } = await new Bubble(this).get('widget', this.widget.id)
+    //     assign(this.widget, { ...widget })
+    //   }
+    // },
+
     mounted() {
-      if (this.go)
+      if (this.queryTags.go || this.go)
         this.$nextTick(this.generate)
     },
 
@@ -149,7 +159,7 @@
           this.generated = true
           this.$emit('generated')
           if ( content.output && !this.dontFocusOnOutput)
-            this.focus('widget-output')
+            this.focus(widget.slug+'-widget-output')
         } catch(e) {
           console.log(e)
           let error = get(e, 'response.data.error')

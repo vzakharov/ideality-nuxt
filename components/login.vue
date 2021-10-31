@@ -1,5 +1,5 @@
 <template>
-  <Box>
+  <FullBox>
     <template v-if="!loggingIn">
       <div v-if="$auth.loggedIn">
         <p>Already logged in as {{ user.name || user.slug || user.id}}. <a href="#" @click.prevent="$auth.logout()">Log out?</a></p>
@@ -17,7 +17,7 @@
         <Loading message="Logging you in, hold on a sec..."/>
       </template>
     </div>
-  </Box>
+  </FullBox>
 </template>
 
 <script>

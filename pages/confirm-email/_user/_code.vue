@@ -1,12 +1,12 @@
 <template>
-  <Box>
+  <FullBox>
     <template v-if="ok">
       ✔️ Email confirmed — we’ll get in touch with you once we can give you beta access. Stay tuned!
     </template>
     <template v-else>
       ❌ Oops, this doesn’t seem to be the correct confirmation code.
     </template>
-  </Box>
+  </FullBox>
 </template>
 
 <script>

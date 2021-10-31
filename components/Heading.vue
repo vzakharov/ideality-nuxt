@@ -1,19 +1,24 @@
 <template>
-  <h2 v-bind="{id}" class="mt-4">
-    <slot/>
-    <nuxt-link :to="{hash: id}">
-      <small>#</small>
-    </nuxt-link>
-  </h2>
+  <div>
+    <a class="anchor" :id="_id"/>
+    <h2 class="mt-4">
+      <slot/>
+      <nuxt-link :to="{hash: id}">
+        <small>#</small>
+      </nuxt-link>
+    </h2>
+  </div>
 </template>
 
 <script>
 
 export default {
   
+  props: ["id"],
+
   computed: {
-    id() {
-      return this.$slots.default[0].text.trim()
+    _id() {
+      return this.id || this.$slots.default[0].text.trim()
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w-]/g,'')
@@ -29,5 +34,12 @@ a {
   color: #ddd;
   font-size: smaller;
   margin-left: 10px;
+}
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -70px;
+  visibility: hidden;
 }
 </style>
