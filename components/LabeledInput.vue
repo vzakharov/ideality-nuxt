@@ -34,6 +34,15 @@
           ref="input"
         />
       </template>
+      <div v-if="status">
+        <Loading v-if="typeof status.ok === 'undefined'" :message="status.message"/>
+        <template v-else-if="status.ok">
+          ✔️ {{ status.message }}
+        </template>
+        <template v-else>
+          ❌ <span class="text-danger" v-text="status.message"/>
+        </template>
+      </div>
       <small v-if="description" class="form-text text-muted" v-text="description"/>
     </template>
   </div>
@@ -56,7 +65,7 @@
     props: [
       'caption', 'description', 'placeholder', 'object', '$key', 'multiline', 'labelClass', 'id', 
       'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows', 'lazy',
-      'props', 'fixAfterBlur'
+      'props', 'fixAfterBlur', 'status'
     ],
     
     data() { 

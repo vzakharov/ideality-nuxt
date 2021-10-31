@@ -8,8 +8,7 @@
         $key: field.key,
         value: ( field.object || object )[field.key]
       }"
-      @input="!field.lazy && $set(( field.object || object ), field.key, $event)"
-      @change="field.lazy && $set(( field.object || object ), field.key, $event)"
+      @input="$set(( field.object || object ), field.key, $event); if ( field.handler ) field.handler($event)"
     />
   </div>
 </template>

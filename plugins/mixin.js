@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { get, set, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
+import axios from 'axios'
 
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
@@ -33,6 +34,10 @@ Vue.mixin({
       window.vms[this._name] = []
     
     window.vms[this._name].push(this)
+
+    console.log({axios})
+    if (!window.axios)
+      window.axios = axios
 
   },
 

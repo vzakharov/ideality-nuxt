@@ -74,7 +74,7 @@ export default {
       }
     },
     redirect: {
-      logout: '/login'
+      logout: '/'
     }
   },
 
