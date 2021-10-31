@@ -1,67 +1,72 @@
 <template>
   <div>
-    <div v-if="!editYaml">
-      <ul class="nav nav-tabs">
-        <li class="nav-item" 
-          v-for="item in [
-            { slug: 'setup', caption: 'Algo settings' },
-            { slug: 'display', caption: 'Display settings'},
-            { slug: 'template', caption: 'Template settings'}
-          ].filter(item=>vm[item.slug])"
-          :key="item.slug"
-        >
-          <a href="#"
-            :class="{
-              'nav-link': true,
-              active: section == item.slug
-            }"
-            v-text="item.caption"
-            @click="section = item.slug"
+    <b-row align-h="between">
+      <b-col cols="auto">
+        <h2 class="ideality-widget-heading">
+          <span v-if="widget.name" v-text="widget.name"/>
+          <em v-else>Unnamed widget</em>
+        </h2>
+      </b-col>
+      <b-col cols="4" sm="2">
+        <b-row align-h="end">
+          <b-dropdown text="Actions" variant="outline-secondary">
+            <b-dropdown-item :to="{ name: 'dashboard-widget-new', query: { template: widget.id }}">
+              Clone
+            </b-dropdown-item>
+            <b-dropdown-item @click="destroy" variant="danger">
+              Delete
+            </b-dropdown-item>
+          </b-dropdown>
+        </b-row>
+      </b-col>
+    </b-row>
+    <b-row>      
+      <div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item" 
+            v-for="item in [...[
+              { slug: 'display', caption: 'Display settings'},
+              { slug: 'setup', caption: 'AI settings' },
+              { slug: 'template', caption: 'Template settings'}
+            ].filter(item=>vm[item.slug]),
+              { slug: 'yaml', caption: 'Edit as YAML' },
+              { slug: 'test', caption: 'Try it out'}
+            ]"
+            :key="item.slug"
+          >
+            <b-link
+              :class="{
+                'nav-link': true,
+                active: section == item.slug
+              }"
+              v-text="item.caption"
+              :to="appendRoute({query: { section: item.slug }})"
+              @click="section=item.slug"
+            />
+          </li>
+        </ul>
+
+        <template v-if="section=='display'">
+          <LabeledInput v-model="widget.name" caption="Name" placeholder="Name for your own reference, not displayed for the user"/>
+          <WidgetDisplayConfig :context="{widget}" v-model="display"/>
+        </template>
+        <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
+        <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
+        <WidgetProper v-if="section=='test'" v-bind="{widget}"/>
+
+        <div v-if="section=='yaml'">
+          <textarea-autosize
+            style="font-family: monospace!important; font-size: smaller;"
+            class="text-monospace w-100"
+            rows="25"
+            v-model.lazy="widgetYaml"
           />
-        </li>
-      </ul>
+        </div>
+      </div>
 
-      <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
+      <!-- YAML editor -->
 
-      <WidgetDisplayConfig v-if="section=='display'" :context="{widget}" v-model="display"/>
-      <!-- <ObjectConfig v-if="section=='display'" v-model="display" :fields="{
-        name: { caption: 'Display name', placeholder: 'Shows up as an heading' },
-        description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
-        sampleDescription: { hide: !widget.isExample, caption: 'Description (for owners)', multiline: true},
-        inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
-        inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
-        outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},
-        preCTA: { caption: 'Line before CTA button' },
-        CTA: { caption: 'Text on the CTA button' },
-        CTAType: { choices: ['link', 'email']},
-        CTAEmail: { hide: !widget.CTAType!='email', caption: 'Email address to send the email to' },
-        CTAContent: { caption: 'Text to be included after CTA', placeholder: 'Use <input> and <output> to refer to the input and output, respectively.', multiline: true }
-      }"/> -->
-
-      <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
-
-
-    </div>
-
-    <!-- YAML editor -->
-    <div v-else>
-      <textarea
-        style="font-family: monospace!important; font-size: smaller;"
-        class="text-monospace w-100"
-        rows="25"
-        v-model.lazy="widgetYaml"
-      />
-    </div>
-
-    <!-- Footer -->
-    <div class="d-flex flex-row pt-4 container-sm mx-auto" style="max-width: 800px">
-      <b-button :variant="editYaml ? 'secondary' : 'outline-secondary'" v-text="'Edit as YAML'" @click="editYaml = !editYaml"/>
-      <b-button variant="outline-secondary" v-text="'Clone'" @click="clone"/>
-      <b-button v-if="saved || changed" :variant="!saveDisabled ? 'primary' : 'light'" :disabled="saveDisabled" v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " @click="save"/>
-      <b-button v-if="!deleteRequested" variant="outline-danger" v-text="'Delete'" @click="deleteRequested=true; window.setTimeout(() => {deleteRequested = false}, 3000)"/>
-      <b-button v-else variant="danger" v-text="'Are you sure? This cannot be undone!'" @click="$axios.delete(apiUrl); $emit('deleted')"/>
-    </div>
-
+    </b-row>
   </div>
 </template>
 
@@ -89,7 +94,7 @@ export default {
       deleteRequested: false,
       example: get(this, 'widget.setup.examples[0]'),
       oldConfig: null,
-      section: this.$route.query['subsection'] || 'setup'
+      section: this.$route.query['section'] || 'display'
     }
   },
 
@@ -153,6 +158,11 @@ export default {
       console.log(newWidget)
       this.$router.push({...this.$route, name: 'dashboard-widget-id', params: { id: newWidget._id }})
     },
+
+    destroy() {
+      this.$axios.delete(this.apiUrl)
+      this.$emit('deleted')
+    },
     
     getChoices: parameter => parameter.choices || (parameter.choices = [{
       name: ''
@@ -163,7 +173,7 @@ export default {
         this.saving = true
         let time = Date.now()
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name || 'Unnamed widget'
+          ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name
         }, {
           headers: {
             //TODO: Remove secret token to inner API!

@@ -3,6 +3,7 @@
       <ObjectConfig v-model="parameter" :fields="{
         name: { caption: 'Name' },
         type: { caption: 'Type', choices: ['text', 'choices'] },
+        placeholder: { hide: parameter.type!='text', caption: 'Placeholder' },
         useAs: { caption: 'Use as', choices: ['input', 'output']},
         multiline: { hide: parameter.type!='text', caption: 'Multiline', type: 'boolean'},
         choices: { hide: parameter.type!='choices', caption: 'Choices', placeholder: 'Comma-separated list', commaSeparated: true},
@@ -30,6 +31,7 @@
     data() {
       let parameter = this.setDefaults(this.value, {
         name: '',
+        placeholder: '',
         type: 'text',
         choices: undefined,
         recital: undefined,

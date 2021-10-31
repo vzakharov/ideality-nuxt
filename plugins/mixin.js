@@ -53,6 +53,16 @@ Vue.mixin({
 
   methods: {
 
+    appendRoute({ params, query, hash }) {
+      let { $route } = this
+      return {
+        ...$route,
+        query: { ...$route.query, ...query },
+        params: { ...$route.params, ...params },
+        hash: hash || $route.hash
+      }
+    },
+
     element: window.document.getElementById,
 
     withElement(id, ...actions) {
@@ -87,6 +97,12 @@ Vue.mixin({
     
     hasQueryTag(tag) {
       return this.queryTags[tag]
+    },
+
+    pseudoRoute({ params, query, hash }) {
+      window.history.pushState(null, null,
+        this.$router.resolve(appendRoute({ params, query, hash })).href
+      )
     },
 
     invert(what) {
