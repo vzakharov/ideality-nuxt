@@ -12,6 +12,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
       { hid: 'og:title', name: 'og:title', content: 'Ideality 🔺 AI-driven ideation platform' },
       { hid: 'og:description', name: 'og:description', content: 'Ideality is a set of AI-driven tools built to make ideas come to life. Ideality helps explore, refine and flesh out ideas that will one day change the world.' },
+      { hid: 'og:image', name: 'og:image', content: 'https://ideality.app/image.png'}
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
