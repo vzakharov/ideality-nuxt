@@ -159,7 +159,7 @@ export default {
       this.$router.push({...this.$route, name: 'dashboard-widget-id', params: { id: newWidget._id }})
     },
 
-    destroy() {
+    async destroy() {
       await this.$axios.delete(this.apiUrl)
       this.$emit('deleted')
     },
