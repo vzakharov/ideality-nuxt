@@ -1,5 +1,5 @@
 <template>
-  <b-navbar sticky class="bg-retro px-2"> 
+  <b-navbar sticky class="bg-retro ps-3 px-2"> 
     <b-navbar-brand :to="{ name:'index' }">
       Ideality ▲
     </b-navbar-brand>

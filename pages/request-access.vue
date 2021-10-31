@@ -1,19 +1,46 @@
 <template>
   <FullBox>
-    <p>
-      Ideality is currently in private beta, but we’re eager to onboard new users.
-      Request your access below, and we’ll get back to you real fast.
-    </p>
-    <ObjectConfig v-model="request" :fields="{
-      email: { id: 'email', type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail },
-      slug: { caption: 'Username', placeholder: 'a-z, 0-9, -', status: status.slug, lazy: true, handler: slugChanged },
-      password: { type: 'password' },
-      repeatPassword: { caption: 'Repeat password', type: 'password', status: status.password, handler: checkrepeatPassword, lazy: true },
-      bio: { multiline: true, placeholder: 'Write a few words about yourself and your plans. Can be as short as your Twitter handle.'}
-    }"/>
-    <b-button :disabled="!valid" size="lg" class="mt-2" variant="primary" @click="send">
-      Send
-    </b-button>
+    <template v-if="sent">
+      <p class="lead">
+        <b>Well received! We will get back to you as soon as we can.</b>
+      </p>
+    </template>
+    <template v-else>
+      <p>
+        Ideality is currently in private beta, but we’re eager to onboard new users.
+        Request your access below, and we’ll get back to you real fast.
+      </p>
+      <b-form>
+        <ObjectConfig v-model="request" :fields="{
+          email: { id: 'email', type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail,
+            props: {
+              name: 'username',
+              autocomplete: 'username'
+            }
+          },
+          slug: { caption: 'Username', placeholder: 'a-z, 0-9, -', status: status.slug, lazy: true, handler: slugChanged},
+          password: { type: 'password', 
+            props: {
+              name: 'password',
+              id: 'password',
+              autocomplete: 'new-password'
+            }
+          },
+          repeatPassword: { caption: 'Repeat password', type: 'password', 
+            status: status.password, handler: checkrepeatPassword, lazy: true, 
+            props: {
+              name: 'password',
+              id: 'password',
+              autocomplete: 'new-password'
+            }
+          },
+          bio: { multiline: true, placeholder: 'Write a few words about yourself and your plans. Can be as short as your Twitter handle.'}
+        }"/>
+        <b-button type="submit" :disabled="!valid" size="lg" class="mt-2" variant="primary" @click.prevent="send">
+          Send
+        </b-button>
+      </b-form>
+    </template>
   </FullBox>
 </template>
 
@@ -34,9 +61,10 @@
           repeatPassword: '',
           bio: this.$route.query.bio,
         },
+        sent: false,
         status: {
-          slug: {},
-          password: {}
+          slug: null,
+          password: null
         }
       }
 
@@ -46,8 +74,8 @@
       valid() {
         return (
           this.request.email
-          && this.status.slug.ok
-          && this.status.password.ok
+          && get(this, 'status.slug.ok')
+          && get(this, 'status.password.ok')
         )
       }
     },
@@ -67,7 +95,11 @@
       },
 
       async send() {
-
+        let { email, password, slug } = this.request
+        await Bubble.anon.go('requestAccess', {
+          email, password, slug
+        })
+        this.sent = true
       },
 
       setSlugFromEmail(email) {
@@ -83,10 +115,14 @@
           return 
         }
 
-        this.status.slug = { message: 'Checking availability...' }
-        let  { user: { slug: newSlug }} = await Bubble.anon.go('testSlug', { slug })
+        let newSlug = slug.replace(/[^\w\d]/g, '')
+
+        this.$set(this.status, 'slug', { message: 'Checking availability...' })
+        newSlug = (
+          await Bubble.anon.go('testSlug', { slug: newSlug })
+        ).user.slug
         if ( slug != newSlug ) {
-          assign(this.request, { slug: newSlug })
+          this.$set(this.request, 'slug', newSlug )
           this.$set(this.status, 'slug', { message: 'Fixed!', ok: true })
         } else {
           this.$set(this.status, 'slug', { message: 'Available!', ok: true })
