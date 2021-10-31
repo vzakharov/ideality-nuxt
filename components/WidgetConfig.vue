@@ -63,7 +63,9 @@
         </template>
         <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
         <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
-        <WidgetProper v-if="section=='test'" v-bind="{widget}"/>
+        <WidgetBox v-if="section=='test'">
+          <WidgetProper v-bind="{widget}"/>
+        </WidgetBox>
 
         <div v-if="section=='yaml' && queryTags.iddqd">
           <textarea-autosize
