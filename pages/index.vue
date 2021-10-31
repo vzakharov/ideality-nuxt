@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavPublic/>
+    <NavHomepage/>
     <b-container fluid>
       <b-row align-h="center" class="vh bg-retro gx-4">
           <b-col cols="12" md="5" align-self="center" class="text-center text-md-start">
@@ -41,6 +41,7 @@
                 title: 'Studio', 
                 description: 'An AI-enabled text editor with tree-like structure so that you don’t miss a single idea.'
               }]" :key="i" xs="12" md="3" sm="4" class="text-center mb-4"
+              :class="{shadow: $route.hash=='#'+item.id}"
             >
               <h3 :id="item.id" class="display-6">Ideality {{ item.title }}</h3>
               <p class="lead text-responsive">
@@ -61,13 +62,7 @@
                 <b-button size="lg" to="request-access" variant="primary">
                   Request access
                 </b-button>
-                <!-- <b-button variant="primary" size="lg"
-                  @click="show.accessRequest=true; $nextTick(() => window.document.getElementById('access-request-email').focus())"
-                >
-                  Request access
-                </b-button> -->
               </div>
-              <!-- <AccessRequest class="shadow rounded-3 p-3" v-if="show.accessRequest" :value="{section: 'homepage'}"/> -->
             </b-col>
           </b-row>
         </b-row>

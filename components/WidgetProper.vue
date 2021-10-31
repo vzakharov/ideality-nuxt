@@ -1,7 +1,7 @@
 <template>
   <div class="bg-light p-2">
     <template v-if="!duringSetup">
-      <p v-if="widget.display.description" v-text="widget.display.description"/>
+      <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
     </template>
     <LabeledInput
       v-model="content.input"
@@ -16,12 +16,13 @@
         rows: 1
       }"
       @keydown.native.enter="generate"
+      @input="changed=true"
       ref="input"
     />
 
     <template>
       <div v-if="!generating">
-        <b-button :variant="generated ? 'outline-primary' : 'primary'" v-text="generated && content.output ? 'Try again' : 'Suggest'" 
+        <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : 'Suggest'" 
           :disabled="!content.input || !canRunWidget"
           @click="generate"
         />
@@ -84,7 +85,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load'],
+    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
 
     data() { 
       let content = this.value || {}
@@ -94,6 +95,7 @@
         error: null,
         generating: false,
         generated: false,
+        usedInput: '',
         showOutro: true,
         hide: {},
         content,
@@ -157,9 +159,10 @@
             this.$set(this.code, 'runsLeft', runsLeft.code)
           
           this.generated = true
+          this.usedInput = this.content.input
           this.$emit('generated')
           if ( content.output && !this.dontFocusOnOutput)
-            this.focus(widget.slug+'-widget-output')
+            this.focus(this.widget.slug+'-widget-output')
         } catch(e) {
           console.log(e)
           let error = get(e, 'response.data.error')
@@ -173,9 +176,14 @@
 
     },
 
-    // computed: {
-    //   canRunWidget() { return this.godMode || this.apiKey }
-    // },
+    computed: {
+
+      isRetry() {
+        return this.generated && ( this.usedInput == this.content.input )
+      }
+      // canRunWidget() { return this.godMode || this.apiKey }
+
+    },
 
     watch: {
       content: {

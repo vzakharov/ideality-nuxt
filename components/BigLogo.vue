@@ -5,8 +5,9 @@
       transform: !rotate && 'rotate(180deg)',
       animation: rotate && `rotation ${rotate_period}s infinite linear`
     }" 
-    @click="rotate=true; rotate_period -= 2; counter++; if ( counter > 3 ) $router.push('login')"
+    @click="counter++; if ( counter > 3 ) $router.push('login')"
   />
+    <!-- @click="rotate=true; rotate_period -= 2; counter++; if ( counter > 3 ) $router.push('login')" -->
 </template>
 
 <script>

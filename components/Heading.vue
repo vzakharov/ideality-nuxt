@@ -1,9 +1,9 @@
 <template>
   <div>
     <a class="anchor" :id="_id"/>
-    <h2 class="mt-4">
+    <h2 class="mt-5 mb-3">
       <slot/>
-      <nuxt-link :to="{hash: id}">
+      <nuxt-link :to="{hash: _id}">
         <small>#</small>
       </nuxt-link>
     </h2>

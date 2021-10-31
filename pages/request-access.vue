@@ -35,8 +35,8 @@
           bio: this.$route.query.bio,
         },
         status: {
-          slug: null,
-          password: null
+          slug: {},
+          password: {}
         }
       }
 

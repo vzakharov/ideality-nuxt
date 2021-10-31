@@ -1,17 +1,23 @@
 <template>
   <div>
-    <NavPublic/>
+    <NavWidget/>
     <b-container class="mt-5" style="max-width: 800px; margin-bottom: 300px">
       <h1 class="display-1">Ideality Widget 🔺</h1>
       <h2 class="display-6 fw-bold">AI-powered ideas for your users</h2>
       <hr>
       <p>
         Sometimes, people don’t need your product. Other times, they just need a little push.
-        <strong>Ideality Widget encourages your users to use your product by giving them ideas.</strong>
+        <strong>Ideality Widget encourages users to use your product by giving them ideas.</strong>
       </p>
 
-      <p>
-        Better shown than spoken.
+      <Heading id="examples">
+        Better shown than spoken
+      </Heading>
+      <p class="text-end form-text">
+        <small>
+          (more examples
+          <nuxt-link :to="{name: 'widget-examples-slug'}">here</nuxt-link>)
+        </small>
       </p>
 
       <p>
@@ -26,7 +32,7 @@
       </p>
 
       <WidgetBox>
-        <WidgetProper v-if="widgets" :widget="widgets[0]" :go="true"/>
+        <WidgetProper v-if="widgets" :widget="widgets[0]" :go="true" :dontFocusOnOutput="true"/>
         <Loading v-else message="Loading your widget, hold on a sec..."/>
       </WidgetBox>
 
@@ -42,24 +48,25 @@
       </p>  
 
       <WidgetBox :value="widgets" :key="widgets">
-        <WidgetProper v-if="widgets" :widget="widgets[1]" :go="true"/>
+        <WidgetProper v-if="widgets" :widget="widgets[1]" :go="true" :dontFocusOnOutput="true"/>
         <Loading v-else message="Loading your widget, hold on a sec..."/>
       </WidgetBox>
-
-      <Heading id="you">
+      
+      <p>
+        I here you say: “Okay, this is all fun, but...”
+      </p>
+      
+      <Heading id="your-case">
         Why would <em>I</em> want to use it?
       </Heading>
 
       <p>
-        But you know what? Why don’t we ask the widget itself why you need it?
-      </p>
-
-      <p>
-        <strong>Enter below what kind of an app you’re building</strong>
+        Let’s see how!
+        <strong>Enter a brief description of your product below:</strong>
       </p>
 
       <WidgetBox>
-        <WidgetProper v-if="widgets" :widget="widgets[2]" :go="true"/>
+        <WidgetProper v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
         <Loading v-else message="Loading your widget, hold on a sec..."/>
       </WidgetBox>
 
@@ -69,8 +76,7 @@
 
       <p>
         No! Ideality Widget is packed with very simple yet flexible AI logic, so you
-        can adapt it to pretty much any product or service. (You can see several more
-        examples <nuxt-link :to="{name: 'widget-examples-slug'}">here</nuxt-link>.)
+        can adapt it to pretty much any product or service.
       </p>
 
       <p>
@@ -86,14 +92,7 @@
         (<nuxt-link :to="{ name: 'widget-id', params: {id: 'tweet-ideas'}}">example</nuxt-link>)
         just like you would with any other HTML.
 
-      <h5>Impressed?</h5>
-      <p>
-        The real thing is even better, as you can flexibly customize it to match your 
-        specific product and goals. You can watch some of the customized examples
-        <nuxt-link to="widget/examples">here</nuxt-link>.
-      </p>
-
-      <Heading>How much?</Heading>
+      <Heading id="pricing">How much?</Heading>
       <p>
         As we’re using a super-efficient AI, Ideality Widget is surprisingly affordable.
         In fact, <b>early adopters get 100 generations for free</b>, so you can try it out
@@ -101,17 +100,14 @@
         <b>$6 per 1000 generations</b>.
       </p>
 
-      <Heading>How to get it</Heading>
-      <p>
-        Ideality Widget is currently in private beta. If you want to get your hands on it,
-        fill out the form below, and we’ll see what we can do!
-      </p>
-
+      <Heading id="access">How to get it</Heading>
+      <TextAccess/>
+<!-- 
       <b-row align-h="center">
         <b-col cols="8">
           <AccessRequest class="border rounded shadow p-2"/>
         </b-col>
-      </b-row>
+      </b-row> -->
 
     </b-container>
   </div>
@@ -120,6 +116,7 @@
 <script>
 
   import Bubble from '~/plugins/bubble'
+  import { omit } from 'lodash'
 
   export default {
 
@@ -133,8 +130,11 @@
     },
 
     async fetch() {
-      let { widgets } = await Bubble.anon.go('getWidgetLandingWidgets')
-      console.log(widgets)
+      let { widgets } = (
+        await Bubble.anon.go('getWidgetLandingWidgets')
+      )
+      
+      widgets = widgets.map(widget => omit(widget, 'display.description'))
       Object.assign(this, { widgets })
     },
 

@@ -270,6 +270,8 @@ try {
           logprobs: 10
         }, {headers})
 
+      console.log({safetyChecked})
+
       let engine = template.engine || 'curie-instruct-beta'
       let response = await axios.post(
         `https://api.openai.com/v1/engines/${engine}/completions`,

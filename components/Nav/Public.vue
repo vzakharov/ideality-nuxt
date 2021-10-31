@@ -3,21 +3,7 @@
     <b-navbar-brand :to="{ name:'index' }">
       Ideality ▲
     </b-navbar-brand>
-    <b-navbar-nav>
-      <b-nav-item-dropdown text="Products">
-        <b-dropdown-item
-          v-for="item in [
-            { caption: 'Widget', to: 'widget' },
-            { caption: 'Chat', to: { name:'index', hash: '#chat' } },
-            { caption: 'Studio', to: { name:'index', hash: '#studio' } }
-          ]"
-          :key="item.caption"
-          :to="item.to"
-        >
-          {{ item.caption }}
-        </b-dropdown-item>    
-      </b-nav-item-dropdown>
-    </b-navbar-nav>
+    <slot/>
     <b-navbar-nav  class="ms-auto">
       <b-nav-form v-if="$auth.loggedIn">
         <b-button variant="outline-primary" to="dashboard">

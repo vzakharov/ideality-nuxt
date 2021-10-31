@@ -18,19 +18,20 @@
 
           <template v-if="!hide.allButWidget">
             <template v-if="widget.display.sampleDescription">
-              <h3>
+              <Heading id="info">
                 Widget info
-              </h3>
+              </Heading>
               <div v-html="$md.render(widget.display.sampleDescription)"/>
             </template>
-            <h3>Widget demo</h3>
+            <Heading id="demo">Widget demo</Heading>
             <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
           </template>
 
-          <WidgetProper ref="widget" :key="widget.id" class="border p-3 mt-3 mx-4 mb-4"
-            v-bind="{widget, apiKey, code, go}"
-            :value="content"
-          >
+          <WidgetBox>
+            <WidgetProper ref="widget" :key="widget.id" :omitDescription="true"
+              v-bind="{widget, apiKey, code, go}"
+              :value="content"
+            >
             <b-alert v-if="!codeId && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
               <p>
                 Enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
@@ -71,7 +72,8 @@
                 <a href="#apiKey" @click="hideApiKey=false" class="pointer">(Change)</a>
               </small>
             </div>
-          </WidgetProper>
+            </WidgetProper>
+          </WidgetBox>
           <div v-if="codeId || code" class="d-flex flex-row-reverse px-4">
             <b-alert show class="mb-3 mw-25 fs-sm" 
               :variant="(!code || 2 * code.runsLeft > code.runsMax) ? 'info' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
@@ -95,10 +97,11 @@
           </div>
 
           <template v-if="!hide.allButWidget">
-            <h3>Customization</h3>
+            <Heading>Customization</Heading>
             <p>
-              All Ideality 🔺 widgets are based on customizable templates, which allow changing both the display (changing texts,
+              All Ideality widgets are based on customizable templates, which allow changing both the display (changing texts,
               adding custom CSS), calls to action and the AI logic.
+              Here is an <a href="https://gyazo.com/4bad7e812a8c3697cf95ef3e70e2bff4" target="_blank">example screencast</a>.
             </p>
 
             <template v-if="hasQueryTag('dev')">
@@ -125,30 +128,8 @@
             </template>
           </template>
 
-          <div v-if="!betaRequested || !hide.allButWidget">
-            <h3>Get the widget</h3>
-            <em v-if="betaRequested">
-              We’ve got your beta request and 
-                {{ code ? 
-                  'will contact you as soon as you will be able to install the widget.'
-                  : 'are working on it!' }}
-            </em>
-            <template v-else>
-              <p>If you’d like to get this or any other widget, request beta access below:</p>
-              <ObjectConfig
-                v-model="betaRequest"
-                :fields="{
-                  email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'beta'},
-                  bio: { caption: 'Bio', placeholder: 'Anything you want to tell about yourself and/or why you want this widget. Can be as short as your Twitter handle.', multiline: true}
-                }"
-              />
-              <b-button class="mt-2" variant="success" :disabled='!(betaRequest.email && betaRequest.bio)'
-                @click="requestBeta"
-              >
-                Request beta access
-              </b-button>
-            </template>
-          </div>
+          <Heading id="access">Get the widget</Heading>
+          <TextAccess/>
         </div>
       </b-col>
     </b-row>
