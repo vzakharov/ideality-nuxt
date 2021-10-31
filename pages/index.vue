@@ -6,10 +6,15 @@
           <h1 class="display-2"><strong>Ideality&nbsp;🔺</strong></h1>
           <div class="display-6"><small>AI&#8209;driven&nbsp;ideation&nbsp;platform</small></div>
           <p class="lead py-3" >
-            Ideality is a set of AI-driven ideation tools built to make ideas come to life. 
-            Whether it’s about yourself or your users and customers, Ideality helps explore, 
-            refine and flesh out that will one day change the world.
+            Ideality is a set of AI-driven tools built to make ideas come to life. 
+            Ideality helps explore, refine and flesh out ideas that will one day change the world.
           </p>
+          <small v-if="$auth.loggedIn" class="text-muted">
+            Hi, {{ $auth.user.slug }}! 
+            <nuxt-link to="dashboard">
+              Go to dashboard
+            </nuxt-link>
+          </small>
         </b-col>
         <b-col cols="3" align-self="center" class="d-none d-md-block">
           <img src="/image.svg" :style="{

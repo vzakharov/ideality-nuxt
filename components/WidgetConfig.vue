@@ -1,25 +1,37 @@
 <template>
-  <div>
-    <b-row align-h="between">
-      <b-col cols="auto">
-        <h2 class="ideality-widget-heading">
-          <span v-if="widget.name" v-text="widget.name"/>
-          <em v-else>Unnamed widget</em>
-        </h2>
-      </b-col>
-      <b-col cols="4" sm="2">
-        <b-row align-h="end">
-          <b-dropdown text="Actions" variant="outline-secondary">
-            <b-dropdown-item :to="{ name: 'dashboard-widget-new', query: { template: widget.id }}">
-              Clone
-            </b-dropdown-item>
-            <b-dropdown-item @click="destroy" variant="danger">
-              Delete
-            </b-dropdown-item>
-          </b-dropdown>
-        </b-row>
-      </b-col>
-    </b-row>
+  <b-row>
+    <b-navbar>
+      <b-navbar-nav>
+        <b-nav-form>
+          <h2 class="ideality-widget-heading">
+            <span v-if="widget.name" v-text="widget.name"/>
+            <em v-else>Unnamed widget</em>
+          </h2>
+          <small class="text-muted">
+            Embed:
+            <nuxt-link class="text-secondary" :to="embedRoute" v-text="'https://ideality.app'+$router.resolve(embedRoute).href"/>
+          </small>
+        </b-nav-form>
+      </b-navbar-nav>
+      <b-navbar-nav class="ms-auto">
+        <b-nav-form v-if="saved || changed">
+          <b-button 
+            :variant="saveDisabled ? 'light' : 'primary'" 
+            :disabled="saveDisabled" 
+            v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " 
+            @click="save"
+          />
+        </b-nav-form>
+        <b-nav-item-dropdown text="More" variant="outline-secondary">
+          <b-dropdown-item :to="{ name: 'dashboard-widget-new', query: { template: widget.id }}">
+            Clone
+          </b-dropdown-item>
+          <b-dropdown-item @click="unlink" variant="danger">
+            Delete
+          </b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-navbar>
     <b-row>      
       <div>
         <ul class="nav nav-tabs">
@@ -67,7 +79,7 @@
       <!-- YAML editor -->
 
     </b-row>
-  </div>
+  </b-row>
 </template>
 
 <script>
@@ -76,6 +88,7 @@
 
 import { assign, findIndex, get, last, mapValues, omit, pick, without } from 'lodash'
 import yaml from 'js-yaml'
+import Bubble from '~/plugins/bubble'
 
 export default {
 
@@ -120,6 +133,10 @@ export default {
 
   computed: {
 
+    embedRoute() {
+      return { name: 'widget-id', params: { id: this.widget.slug }}
+    },
+
     widgetYaml: {
       get() { return yaml.dump(omit(this.widget, 'tie')) },
 
@@ -159,8 +176,9 @@ export default {
       this.$router.push({...this.$route, name: 'dashboard-widget-id', params: { id: newWidget._id }})
     },
 
-    async destroy() {
-      await this.$axios.delete(this.apiUrl)
+    async unlink() {
+      let { widget: { id }} = this
+      await new Bubble(this).go('removeWidgetFromUser', { id })
       this.$emit('deleted')
     },
     
@@ -182,6 +200,7 @@ export default {
         })
         this.changed = false
         this.saved = true
+        setTimeout(() => this.saved = false, 3000)
       } finally {
         this.saving = false
       }
