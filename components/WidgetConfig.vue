@@ -160,7 +160,7 @@ export default {
     },
 
     destroy() {
-      this.$axios.delete(this.apiUrl)
+      await this.$axios.delete(this.apiUrl)
       this.$emit('deleted')
     },
     
