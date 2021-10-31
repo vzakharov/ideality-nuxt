@@ -65,14 +65,14 @@
         <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
         <WidgetProper v-if="section=='test'" v-bind="{widget}"/>
 
-        <!-- <div v-if="section=='yaml'">
+        <div v-if="section=='yaml' && queryTags.iddqd">
           <textarea-autosize
             style="font-family: monospace!important; font-size: smaller;"
             class="text-monospace w-100"
             rows="25"
             v-model.lazy="widgetYaml"
           />
-        </div> -->
+        </div>
       </div>
 
       <!-- YAML editor -->
