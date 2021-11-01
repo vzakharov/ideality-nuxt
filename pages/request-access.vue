@@ -95,9 +95,9 @@
       },
 
       async send() {
-        let { email, password, slug } = this.request
+        let { email, password, slug, bio } = this.request
         await Bubble.anon.go('requestAccess', {
-          email, password, slug
+          email, password, slug, bio
         })
         this.sent = true
       },
