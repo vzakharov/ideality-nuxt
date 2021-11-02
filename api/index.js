@@ -175,7 +175,9 @@ try {
           )[0]
           console.log({runsLeft, quotaExceeded})
           if ( quotaExceeded ) {
-            if ( quotaExceeded != 'ip' || !await getUser(get(req, 'headers.authorization') ))
+            let user = await getUser(get(req, 'headers.authorization'))
+            console.log({user})
+            if ( quotaExceeded != 'ip' || !user )
               return res.status(403).send({
                 error: {
                   cause: 'quota', 
