@@ -177,7 +177,7 @@ try {
           if ( quotaExceeded ) {
             let user = await getUser(get(req, 'headers.authorization'))
             console.log({user})
-            if ( quotaExceeded != 'ip' || !user )
+            if ( quotaExceeded != 'ip' || !user.id.match(/^\d+x\d+$/) )
               return res.status(403).send({
                 error: {
                   cause: 'quota', 
