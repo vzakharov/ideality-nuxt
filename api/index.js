@@ -173,7 +173,7 @@ try {
               value <= 0
             )
           )[0]
-          // console.log({runsLeft, quotaExceeded})
+          console.log({runsLeft, quotaExceeded})
           if ( quotaExceeded ) {
             if ( quotaExceeded != 'ip' || !await getUser(get(req, 'headers.authorization') ))
               return res.status(403).send({
