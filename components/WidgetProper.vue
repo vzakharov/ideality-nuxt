@@ -70,6 +70,9 @@
           target="_blank"
           v-text="display.CTA"
         />
+        <p class="mt-2 lh-sm">
+          <small v-if="display.postCTA" v-text="display.postCTA" class="text-muted"/>
+        </p>
       </div>
     </template>
 

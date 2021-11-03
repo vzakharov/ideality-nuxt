@@ -8,6 +8,7 @@
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},
         preCTA: { caption: 'Line before CTA button', placeholder: 'e.g. “Intrigued?”' },
         CTA: { caption: 'Text on the CTA button', placeholder: 'Text on the CTA button' },
+        postCTA: {caption: 'Line after the CTA button', placeholder: 'Shown in grey fine print under the button'},
         CTAContent: { caption: 'Link to send to', placeholder: 'Use <input> and <output> to refer to the input and output, respectively.', multiline: true }
       }"/>
   </div>
@@ -29,6 +30,7 @@
         outputCaption: '',
         preCTA: '',
         CTA: '',
+        postCTA: '',
         CTAType: 'link',
         CTAEmail: '',
         CTAContent: ''
