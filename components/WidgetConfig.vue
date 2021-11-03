@@ -41,8 +41,9 @@
               { slug: 'setup', caption: 'AI settings' },
               { slug: 'template', caption: 'Template settings'}
             ].filter(item=>vm[item.slug]),
-              { slug: 'test', caption: 'Try it out'}
-            ]"
+              { testing: true, slug: 'stats', caption: 'Stats'},
+              { slug: 'test', caption: 'Try it out'},
+            ].filter(item=>!item.testing || queryTags.testing)"
             :key="item.slug"
           >
             <b-link
@@ -63,6 +64,10 @@
         </template>
         <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
         <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
+
+
+        <WidgetStats v-if="section=='stats'"/>
+
         <WidgetBox v-if="section=='test'">
           <WidgetProper v-bind="{widget}"/>
         </WidgetBox>
