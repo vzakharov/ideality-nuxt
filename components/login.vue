@@ -8,12 +8,12 @@
       <h4 v-else>Please log in to continue</h4>
     </template>
     <div :disabled="loggingIn">
-      <form @submit="login">
+      <form @submit.prevent="login">
         <ObjectConfig v-model="vm" :fields="{
           email: { type: 'email'},
           password: {type: 'password'}
         }"/>
-        <button v-if="!loggingIn" :disabled="!email || !password" @click.prevent="login" class="btn btn-primary mt-2" type="submit" v-text="'Log in'"/>
+        <button v-if="!loggingIn" :disabled="!email || !password" class="btn btn-primary mt-2" type="submit" v-text="'Log in'"/>
         <template v-else>
           <Loading message="Logging you in, hold on a sec..."/>
         </template>
