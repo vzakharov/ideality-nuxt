@@ -1,6 +1,6 @@
 <template>
   <b-dropdown size="sm" variant="outline-secondary" text="Create new">
-    <b-dropdown-item :to="{ name: 'dashboard-widget-new' }">
+    <b-dropdown-item :to="{ name: 'widget-new' }">
       Empty widget
     </b-dropdown-item>
     <hr>
@@ -9,7 +9,7 @@
       <b-spinner small v-if="!widgets"/>
     </b-dropdown-item>
     <b-dropdown-item v-for="template in widgets" :key="template.id"
-      :to="{ name: 'dashboard-widget-new', query: { template: template.id }}"
+      :to="{ name: 'widget-new', query: { template: template.id }}"
     >
       {{ template.name }}
     </b-dropdown-item>

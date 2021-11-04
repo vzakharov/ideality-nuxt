@@ -23,7 +23,7 @@
           />
         </b-nav-form>
         <b-nav-item-dropdown text="More" variant="outline-secondary">
-          <b-dropdown-item :to="{ name: 'dashboard-widget-new', query: { template: widget.id }}">
+          <b-dropdown-item :to="{ name: 'widget-new', query: { template: widget.id }}">
             Clone
           </b-dropdown-item>
           <b-dropdown-item @click="unlink" variant="danger">
@@ -140,7 +140,7 @@ export default {
   computed: {
 
     embedRoute() {
-      return { name: 'widget-id', params: { id: this.widget.slug }}
+      return { name: 'widget-id-embed', params: { id: this.widget.slug }}
     },
 
     widgetYaml: {
@@ -179,7 +179,7 @@ export default {
       let { id } = this.widget
       let { response: { newWidget }} = await this.$axios.$post('https://b.ideality.app/api/1.1/wf/cloneWidget', { id })
       console.log(newWidget)
-      this.$router.push({...this.$route, name: 'dashboard-widget-id', params: { id: newWidget._id }})
+      this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
     },
 
     async unlink() {

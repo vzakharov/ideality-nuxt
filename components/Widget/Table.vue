@@ -18,7 +18,7 @@
       :items="widgets"
     >
       <template #cell(name)="data">
-        <nuxt-link :to="{name: 'dashboard-widget-id', params: {id: data.item.slug}}" v-text="data.item.name"/>
+        <nuxt-link :to="{name: 'widget-id-config', params: {id: data.item.slug}}" v-text="data.item.name"/>
       </template>
     </b-table>
   </div>

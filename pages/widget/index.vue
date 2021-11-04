@@ -55,7 +55,7 @@
       <p>
         I here you say: “Okay, this is all fun, but...”
       </p>
-      
+
       <Heading id="your-case">
         Why would <em>I</em> want to use it?
       </Heading>
@@ -89,7 +89,7 @@
 
       <p>
         After that you can embed it
-        (<nuxt-link :to="{ name: 'widget-id', params: {id: 'tweet-ideas'}}">example</nuxt-link>)
+        (<nuxt-link :to="{ name: 'widget-id-embed', params: {id: 'tweet-ideas'}}">example</nuxt-link>)
         just like you would with any other HTML.
 
       <Heading id="pricing">How much?</Heading>
@@ -119,6 +119,11 @@
   import { omit } from 'lodash'
 
   export default {
+
+    middleware({ store: { $auth }, redirect }) {
+      if ($auth.loggedIn)
+        redirect({ name: 'dashboard', hash: '#widgets' })
+    },
 
     data() { 
       return {

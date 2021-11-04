@@ -12,6 +12,10 @@
 
     middleware({ store: { $auth }, redirect, route: { query: { template }}}) {
 
+      if (!$auth.loggedIn) {
+        return redirect({ name: 'login' })
+      }
+
       if ( !template )
         template = '1635634622693x282295039393485100'
 
@@ -20,7 +24,7 @@
       let bubble = new Bubble({$auth})
       bubble.go('createWidget', { template }).then(({ widget }) => {
         console.log(widget)
-        redirect({name: 'dashboard-widget-id', params: {id: widget.id}})
+        redirect({name: 'widget-id-config', params: {id: widget.id}})
       })
 
 
