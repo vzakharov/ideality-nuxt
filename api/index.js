@@ -134,8 +134,8 @@ try {
 
       // console.log(req.ip)
       // console.log(req.body)
-      let { input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n: allowUnsafe, code, fake_ip } = {
-        input: '', output: '',
+      let { n, input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n: allowUnsafe, code, fake_ip } = {
+        input: '', output: '', n: 1, 
         ...req.body
       }
 
@@ -252,7 +252,7 @@ try {
         max_tokens: 200, 
         frequency_penalty: 1,
         presence_penalty: 1,
-        n: 1,
+        n,
         stop
       }
     
@@ -296,24 +296,42 @@ try {
       }
     
       console.log(response.data)
-      let { text } = response.data.choices[0]
+
+      // console.log({input, output})
+
+      let starting = { input, output }
+      function process(choice) {
+
+        let { input, output } = starting
+
+        let { text } = choice
     
-      // console.log(text)
-    
-      if ( input && !appendInput ) 
-        output += text.trimEnd()
-      else {
-        [input, output] = (input + text).trimEnd().split(prefix.output+':').map(s=>s.trim())
-        if ( !output )
-          [input] = input.split("\n")
+        // console.log(text)
+      
+        if ( input && !appendInput ) 
+          output += text.trimEnd()
+        else {
+          [input, output] = (input + text).trimEnd().split(prefix.output+':').map(s=>s.trim())
+          if ( !output )
+            [input] = input.split("\n")
+        }
+  
+        output = output.trim()
+        output = output.replace(/\n\n.*/, '')
+
+        return { input, output }
+
       }
 
-      output = output.trim()
-      output = output.replace(/\n\n.*/, '')
+      let { choices } = response.data
+      let content = 
+        n == 1 ?
+          process(choices[0])
+          : choices.map(choice => process(choice))
       
       delete runsLeft.ip
 
-      res.send({content: {input, output}, runsLeft })
+      res.send({content, runsLeft })
     } catch(err) {
       console.log(err)
       next(err)

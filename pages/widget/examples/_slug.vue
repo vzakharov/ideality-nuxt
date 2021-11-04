@@ -141,8 +141,8 @@
   import Bubble from '@/plugins/bubble'
 
   import Vue from 'vue'
-  import VueClipboard from 'vue-clipboard2'
-  Vue.use(VueClipboard)
+  // import VueClipboard from 'vue-clipboard2'
+  // Vue.use(VueClipboard)
 
   import { assign, find, get } from 'lodash'
 

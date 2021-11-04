@@ -50,7 +50,8 @@ export default {
     // https://go.nuxtjs.dev/content
     '@nuxt/content',
     // 'vue-async-computed'
-    '@nuxtjs/markdownit'
+    '@nuxtjs/markdownit',
+    ['nuxt-clipboard', { autoSetContainer: true }]
   ],
 
   markdownit: {

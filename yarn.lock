@@ -6308,6 +6308,13 @@ num2fraction@^1.2.2:
   resolved "https://registry.yarnpkg.com/num2fraction/-/num2fraction-1.2.2.tgz#6f682b6a027a4e9ddfa4564cd2589d1d4e669ede"
   integrity sha1-b2gragJ6Tp3fpFZM0lidHU5mnt4=
 
+nuxt-clipboard@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/nuxt-clipboard/-/nuxt-clipboard-0.0.6.tgz#8b47e1794ef48386d6ff62ac39c6e70b2c3d06d1"
+  integrity sha512-KlfBWhQMVh9qcZGE7I0B0lhxYrcgrDwSXBtWCQIJKPOLQYEmZm3uJj8EDdLKXhpXfo8PeylaEo/6eL0u0wkgYQ==
+  dependencies:
+    vue-clipboard2 "^0.3.1"
+
 nuxt@^2.15.7:
   version "2.15.8"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-2.15.8.tgz#946cba46bdaaf0e3918aa27fd9ea0fed8ed303b0"
@@ -9165,7 +9172,7 @@ vue-client-only@^2.0.0:
   resolved "https://registry.yarnpkg.com/vue-client-only/-/vue-client-only-2.1.0.tgz#1a67a47b8ecacfa86d75830173fffee3bf8a4ee3"
   integrity sha512-vKl1skEKn8EK9f8P2ZzhRnuaRHLHrlt1sbRmazlvsx6EiC3A8oWF8YCBrMJzoN+W3OnElwIGbVjsx6/xelY1AA==
 
-vue-clipboard2@^0.3.3:
+vue-clipboard2@^0.3.1:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/vue-clipboard2/-/vue-clipboard2-0.3.3.tgz#331fec85f9d4f175eb0d4feaef4d77338562af36"
   integrity sha512-aNWXIL2DKgJyY/1OOeITwAQz1fHaCIGvUFHf9h8UcoQBG5a74MkdhS/xqoYe7DNZdQmZRL+TAdIbtUs9OyVjbw==

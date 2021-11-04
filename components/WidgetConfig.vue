@@ -8,8 +8,13 @@
             <em v-else>Unnamed widget</em>
           </h2>
           <small class="text-muted">
-            Embed:
-            <nuxt-link class="text-secondary" :to="embedRoute" v-text="'https://ideality.app'+$router.resolve(embedRoute).href"/>
+            <p class="mb-0">
+              Id: <Copiable v-model="widget.id"/>
+            </p>
+            <p>
+              Embed:
+              <nuxt-link class="text-secondary" :to="embedRoute" v-text="'https://ideality.app'+$router.resolve(embedRoute).href"/>
+            </p>
           </small>
         </b-nav-form>
       </b-navbar-nav>
@@ -95,6 +100,9 @@
 import { assign, findIndex, get, last, mapValues, omit, pick, without } from 'lodash'
 import yaml from 'js-yaml'
 import Bubble from '~/plugins/bubble'
+
+// import VueClipboard from 'vue-clipboard2'
+// Vue.use(VueClipboard)
 
 export default {
 

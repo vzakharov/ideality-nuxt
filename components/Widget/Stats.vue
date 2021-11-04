@@ -6,9 +6,22 @@
 
 <script>
 
+  import { groupBy } from 'lodash'
+
   export default {
 
-    props: ['value']
+
+    props: ['value'],
+
+    data() {
+      return {
+        ...value
+      }
+    },
+
+    computed: {
+
+    }
 
 
   }
