@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { get, set, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
 import axios from 'axios'
+import Bubble from '~/plugins/bubble'
 
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
@@ -42,6 +43,9 @@ Vue.mixin({
   },
 
   computed: {
+    bubble() {
+      return new Bubble(this)
+    },
     canRunWidget,
     godMode() {
       return this.queryTags.iddqd

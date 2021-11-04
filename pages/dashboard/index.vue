@@ -11,6 +11,15 @@
     </Heading>
     <WidgetNewPicker/>
     <WidgetTable/>
+    <div>
+      <strong>TOTAL runs left</strong>:
+        <Fetchable 
+          :promise="bubble.get('user', user.id)" 
+          v-model="userDetails"
+        >
+          {{ userDetails.runsLeft }}
+        </Fetchable>
+    </div>
   </Container>
 </template>
 
@@ -21,6 +30,12 @@
   export default {
 
     middleware: 'loggedIn',
+
+    data() {
+      return {
+        userDetails: {}
+      }
+    },
 
     methods: {
       map

@@ -122,6 +122,7 @@ try {
   app.get('/auth/user', async ( {headers: { authorization: token }}, res, next ) => {
     try {
       let user = await getUser(token)
+      // console.log({users})
       res.send({user})
     } catch(err) {
       next(log(err))
