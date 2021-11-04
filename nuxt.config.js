@@ -1,8 +1,8 @@
 export default {
 
-  // env: {
-  //   NUXT_ENV_BUBBLE_URL: process.env.NUXT_ENV_BUBBLE_URL || 'https://b.ideality.app/api/1.1/'
-  // },
+  env: {
+    NUXT_ENV_BUBBLE_URL: process.env.NUXT_ENV_BUBBLE_URL || 'https://b.ideality.app/api/1.1/'
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
