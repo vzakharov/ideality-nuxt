@@ -36,7 +36,7 @@
     <slot/>
     <b-alert show v-if="error && !hide.error" variant="danger">
       <h5>Oops!</h5>
-      <p v-html="$md.render(error.message)"/>
+      <p v-html="$md.render(error.message || JSON.stringify(error))"/>
       <b-button variant="outline-secondary" size="sm"
         @click="$set(hide, 'error', true)"
       >Got it</b-button>

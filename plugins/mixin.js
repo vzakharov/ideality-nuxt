@@ -35,7 +35,7 @@ Vue.mixin({
     
     window.vms[this._name].push(this)
 
-    console.log({axios})
+    // console.log({axios})
     if (!window.axios)
       window.axios = axios
 
@@ -45,6 +45,9 @@ Vue.mixin({
     canRunWidget,
     godMode() {
       return this.queryTags.iddqd
+    },
+    process() {
+      return process
     },
     queryTags() {
       return mapValues(
@@ -114,7 +117,7 @@ Vue.mixin({
       set(this, what, !get(this, what))
     },
 
-    
+
     // redirectIfNotLoggedIn() {
     //   if ( !this.$auth.loggedIn )
     //     this.$router.push({

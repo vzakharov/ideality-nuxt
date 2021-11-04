@@ -71,7 +71,8 @@ try {
   // axios.interceptors.request.use(log, log)
   // axios.interceptors.response.use(log, log)
 
-  const baseURL = 'https://b.ideality.app/api/1.1/'
+  const baseURL = process.env.NUXT_ENV_BUBBLE_URL
+  // console.log({baseURL})
 
   const admin = axios.create({ 
     baseURL,
@@ -134,7 +135,7 @@ try {
 
       // console.log(req.ip)
       // console.log(req.body)
-      let { n, input, output, appendInput, duringSetup, widget, apiKey, iddqd: godMode, pr0n: allowUnsafe, code, fake_ip } = {
+      let { n, input, output, appendInput, duringSetup, widget, apiKey, code, iddqd: godMode, pr0n: allowUnsafe, fake_ip } = {
         input: '', output: '', n: 1, 
         ...req.body
       }
@@ -146,7 +147,6 @@ try {
       let isDemo = id=='demo'
       if ( isDemo ) {
         widget.template = demoTemplate
-        code = '1635431643111x338474208627258500'
       }
       
       const widgetLoaded = 
@@ -154,36 +154,47 @@ try {
         && Bubble.default.admin.get('widget', id)
           .then( ({ setup, template, tie }) => 
             assign(widget, {
-              setup, template, tie,
+              setup: { ...setup, ...widget.setup },
+              template, tie,
               ...widget
             })
           )
       
-      let runsLeft = {}
+      let quota = {}
 
       if ( godMode || isDemo || apiKey || get(widget, 'template.apiKey') ) {
         allowUnsafe = true
       }
       else {
         if ( !godMode ) {
-          runsLeft = await Bubble.default.admin.go('runsLeft--', { ip, widget: widget.id })
+          quota = await Bubble.default.admin.go('runsLeft--', { ip, widget: widget.id })
+          console.log({quota})
           let quotaExceeded = keys(
             pickBy(
-              runsLeft, value => 
-              value <= 0
+              quota, item => 
+              item.runsLeft <= 0
             )
           )[0]
-          console.log({runsLeft, quotaExceeded})
+          console.log({quotaExceeded})
           if ( quotaExceeded ) {
-            let user = await getUser(get(req, 'headers.authorization'))
-            console.log({user})
-            if ( quotaExceeded != 'ip' || !user.id.match(/^\d+x\d+$/) )
+            let { authorization } = req.headers
+            let user = await
+              authorization ?
+                getUser(authorization) :
+                {}
+            let { owner } = quota
+            console.log({quota, quotaExceeded, user, code})
+            if ( !(
+              quotaExceeded == 'ip' && (
+                user.id == owner.id
+                || code && ( code == owner.code )
+              )
+            ))
               return res.status(403).send({
                 error: {
                   cause: 'quota', 
                   message: ({
                     ip: 'User',
-                    code: 'Code',
                     widget: 'Widget',
                     owner: 'Widget owner'
                   })[quotaExceeded] + ' quota exceeded.'
@@ -329,12 +340,24 @@ try {
           process(choices[0])
           : choices.map(choice => process(choice))
       
-      delete runsLeft.ip
+      delete quota.ip
 
-      res.send({content, runsLeft })
-    } catch(err) {
-      console.log(err)
-      next(err)
+      res.send({content, runsLeft: map(quota, 'runsLeft') })
+    } catch(error) {
+      try {
+        let { statusCode, body: {status, message, path }} = error
+        return res.status(statusCode).send({
+          error: {
+            cause: 'bubbleError', 
+            status,
+            message,
+            path
+          }
+        })  
+      } catch(err) {
+        let { message, stack } = error
+        return res.status(500).send({error: { message, stack }})
+      }
     }
 
   })

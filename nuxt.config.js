@@ -1,4 +1,9 @@
 export default {
+
+  // env: {
+  //   NUXT_ENV_BUBBLE_URL: process.env.NUXT_ENV_BUBBLE_URL || 'https://b.ideality.app/api/1.1/'
+  // },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Ideality 🔺 AI-driven ideation platform',
@@ -69,11 +74,11 @@ export default {
           property: 'user'
         },
         endpoints: {
-          login: {url: 'https://b.ideality.app/api/1.1/wf/login', method: 'post'},
-          logout: {url: 'https://b.ideality.app/api/1.1/wf/logout', method: 'post'},
+          login: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/login', method: 'post'},
+          logout: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/logout', method: 'post'},
           // user: false
           user: {url: 'api/auth/user'}
-          // user: {url: 'https://b.ideality.app/api/1.1/wf/getUserInfo', method: 'post'}
+          // user: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/getUserInfo', method: 'post'}
         }
       }
     },

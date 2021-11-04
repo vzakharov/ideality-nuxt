@@ -161,7 +161,7 @@ export default {
 
     saveDisabled() { return !this.changed || this.saving },
 
-    apiUrl() { return 'https://b.ideality.app/api/1.1/obj/widget/' + this.widget.id },
+    apiUrl() { return process.env.NUXT_ENV_BUBBLE_URL + 'obj/widget/' + this.widget.id },
 
     setup() { return this.widget.setup },
     display() { return this.widget.display },
@@ -185,7 +185,7 @@ export default {
 
     async clone() {
       let { id } = this.widget
-      let { response: { newWidget }} = await this.$axios.$post('https://b.ideality.app/api/1.1/wf/cloneWidget', { id })
+      let { response: { newWidget }} = await this.$axios.$post(process.env.NUXT_ENV_BUBBLE_URL+'wf/cloneWidget', { id })
       console.log(newWidget)
       this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
     },

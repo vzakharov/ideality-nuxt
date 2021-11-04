@@ -9,8 +9,11 @@ function Bubble({$auth, token, admin } = {}) {
   if ( $auth )
     token = $auth.strategy.token.get()
 
+  let {NUXT_ENV_BUBBLE_URL} = process.env
+  console.log({NUXT_ENV_BUBBLE_URL})
+
   let axios = Axios.create({ 
-    baseURL: 'https://b.ideality.app/api/1.1/',
+    baseURL: process.env.NUXT_ENV_BUBBLE_URL,
     ...( token || admin ? {
       headers: {'Authorization': token || ( admin && 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20' )}
     } : {})
@@ -114,11 +117,16 @@ function Bubble({$auth, token, admin } = {}) {
 
     async go( workflow, body ) {
       body = omit(body, v => typeof v === 'undefined') 
-      console.log(this, workflow, body)
-      let { data: { response } } = await axios.post('/wf/'+workflow, body)
-      parse(response)
-      console.log(response)
-      return response
+      // console.log(this, workflow, body)
+      try {
+        let { data: { response } } = await axios.post('/wf/'+workflow, body)
+        parse(response)
+        // console.log(response)
+        return response
+      } catch({response, response: {data, request: { path }}}) {
+        // console.log({...data, path})
+        throw({...data, path})
+      }
     }
   
   })

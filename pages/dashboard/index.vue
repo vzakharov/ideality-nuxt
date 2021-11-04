@@ -26,7 +26,7 @@
       map
     },
 
-    created() {  }
+    created() {  },
 
   }
 

@@ -27,7 +27,7 @@
       if (!this.$auth.loggedIn)
       return false
       let response = await (
-        await fetch(`https://b.ideality.app/api/1.1/obj/${this.type}/`, {
+        await fetch(`${process.env.NUXT_ENV_BUBBLE_URL}obj/${this.type}/`, {
           headers: {
             'Authorization': this.$auth.strategy.token.get(),
             'Content-Type': 'application/json'
