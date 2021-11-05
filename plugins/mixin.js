@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { get, set, keys, mapValues, pickBy } from 'lodash'
+import { assign, get, set, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -23,22 +23,24 @@ Vue.mixin({
 
   mounted () {
 
-    Object.assign(this, {
-      window,
-      console: window.console
-    })
-
-    if (!window.vms)
-      window.vms = {}
-    
-    if (!window.vms[this._name])
-      window.vms[this._name] = []
-    
-    window.vms[this._name].push(this)
-
-    // console.log({axios})
-    if (!window.axios)
-      window.axios = axios
+    if (process.client) {
+      Object.assign(this, {
+        window,
+        console: window.console
+      })
+  
+      if (!window.vms)
+        window.vms = {}
+      
+      if (!window.vms[this._name])
+        window.vms[this._name] = []
+      
+      window.vms[this._name].push(this)
+  
+      // console.log({axios})
+      if (!window.axios)
+        window.axios = axios  
+    }
 
   },
 

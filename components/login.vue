@@ -37,7 +37,9 @@ export default {
     async login() {
       this.loggingIn = true
       let { email, password } = this
-      await this.$auth.loginWith('local', { data: { email, password } })
+      let { data: { response: user }} = await this.$auth.loginWith('local', { data: { email, password } })
+      console.log({user})
+      this.$auth.setUser(user)
       let then = this.$route.query.then || { name: 'dashboard' }
       this.$router.push(then)
       // this.$emit('login')

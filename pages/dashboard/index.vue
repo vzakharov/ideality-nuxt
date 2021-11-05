@@ -29,7 +29,7 @@
 
   export default {
 
-    middleware: 'loggedIn',
+    middleware: ['loggedIn', 'getUser'],
 
     data() {
       return {

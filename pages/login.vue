@@ -4,6 +4,10 @@
 
 <script>
 
+  export default {
+    middleware: ['getUser']
+  }
+
 </script>
 
 <style>

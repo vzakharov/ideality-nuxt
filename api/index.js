@@ -98,7 +98,7 @@ try {
     
   })
 
-  const users = {}
+  let users = {}
 
   async function getUser(token, ignoreErrors) {
     let user = users[token]
@@ -119,13 +119,16 @@ try {
     return user
   }
 
+  app.get('/auth/clear', () => users = {})
+  // app.get('/auth/list', (req, res) => res.send(users))
+
   app.get('/auth/user', async ( {headers: { authorization: token }}, res, next ) => {
     try {
       let user = await getUser(token)
       // console.log({users})
       res.send({user})
     } catch(err) {
-      next(log(err))
+      res.status(403).send(err)
     }
   })
 
