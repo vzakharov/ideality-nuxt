@@ -3,7 +3,7 @@ import { load } from 'js-yaml'
 import { assign, camelCase, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
-function Bubble({$auth, token, admin } = {}) {
+function Bubble({ $auth, token } = {}) {
 
   console.log($auth)
   if ( $auth )
@@ -14,9 +14,7 @@ function Bubble({$auth, token, admin } = {}) {
 
   let axios = Axios.create({ 
     baseURL: process.env.NUXT_ENV_BUBBLE_URL,
-    ...( token || admin ? {
-      headers: {'Authorization': token || ( admin && 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20' )}
-    } : {})
+    ...( token || {} )
   })
 
   console.log({token})
@@ -154,7 +152,6 @@ Bubble.asyncData = ( type, query, options ) =>
     return {...result, loaded: true}
   }
 
-Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
 
 function parse(object) {

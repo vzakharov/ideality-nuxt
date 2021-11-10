@@ -47,7 +47,7 @@
               { slug: 'template', caption: 'Template settings'}
             ].filter(item=>vm[item.slug]),
               { slug: 'stats', caption: 'Stats'},
-              { slug: 'test', caption: 'Try it out'},
+              { slug: 'test', caption: 'Preview'},
             ].filter(item=>!item.testing || queryTags.testing)"
             :key="item.slug"
           >
@@ -206,11 +206,6 @@ export default {
         let time = Date.now()
         await this.$axios.$patch(this.apiUrl, {
           ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name
-        }, {
-          headers: {
-            //TODO: Remove secret token to inner API!
-            'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'
-          }
         })
         this.changed = false
         this.saved = true
