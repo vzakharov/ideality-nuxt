@@ -53,8 +53,8 @@ const { filteredParameters } = require('../plugins/helpers')
 const ipInt = require('ip-to-int')
 
 const Bubble = require('../plugins/bubble')
-console.log(Bubble)
-const { default: { admin }} = Bubble
+const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
+// const { default: { admin }} = Bubble
 
 const jsyaml = require('js-yaml')
 
@@ -79,12 +79,6 @@ try {
 
   const baseURL = process.env.NUXT_ENV_BUBBLE_URL
   // console.log({baseURL})
-
-  // const admin = axios.create({ 
-  //   baseURL,
-  //   headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
-  // })
-
 
   const getIpInfo = ip => admin.get('/obj/ip', { params: {
       constraints: [{
