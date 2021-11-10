@@ -23,9 +23,9 @@
 
     computed: {
 
-      actionCountsByUser() {
+      actionCountsByActor() {
         return chain(this.events)
-          .groupBy('user')
+          .groupBy('actor')
           .mapValues(theirEvents => chain(theirEvents)
             .countBy('action').value()).value()
       },
@@ -34,7 +34,7 @@
         let actionCounts = chain(this.events)
           .groupBy('action')
           .mapValues(actions => 
-            uniqBy(actions, 'user')
+            uniqBy(actions, 'actor')
             .length
           )
           .map((count, action) => 

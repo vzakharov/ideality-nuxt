@@ -110,9 +110,18 @@ function Bubble({$auth, token, admin } = {}) {
 
     },
 
-    async patch(thing) {
-      debugger
-      axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id')))
+    patch: (type, thing) =>
+      axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id'))),
+
+    post: async (type, thing) => {
+      try {
+        let { data: { id }} = await axios.post(`obj/${type}`, thing)
+        return { id }
+      } catch(error) {
+        console.log(error.response.data)
+        let { statusCode, body } = error
+        throw({statusCode, ...body})
+      }
     },
 
     async go( workflow, body ) {

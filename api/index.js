@@ -42,6 +42,8 @@ Tweet about
 }
 
 const express = require('express')
+
+
 const axios = require('axios')
 const yaml = require('js-yaml')
 const { stripIndent } = require('common-tags')
@@ -49,7 +51,11 @@ const { parse } = JSON
 const { filteredParameters } = require('../plugins/helpers')
 // console.log(filteredParameters)
 const ipInt = require('ip-to-int')
+
 const Bubble = require('../plugins/bubble')
+console.log(Bubble)
+const { default: { admin }} = Bubble
+
 const jsyaml = require('js-yaml')
 
 const app = express()
@@ -74,10 +80,10 @@ try {
   const baseURL = process.env.NUXT_ENV_BUBBLE_URL
   // console.log({baseURL})
 
-  const admin = axios.create({ 
-    baseURL,
-    headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
-  })
+  // const admin = axios.create({ 
+  //   baseURL,
+  //   headers: {'Authorization': 'Bearer d51e2dc8a6dd89ef0fc9f36a9f3d5c20'} 
+  // })
 
 
   const getIpInfo = ip => admin.get('/obj/ip', { params: {
@@ -155,7 +161,7 @@ try {
       
       const widgetLoaded = 
         !( widget && widget.setup && widget.template )
-        && Bubble.default.admin.get('widget', id)
+        && admin.get('widget', id)
           .then( ({ setup, template, tie }) => 
             assign(widget, {
               setup: { ...setup, ...widget.setup },
@@ -171,7 +177,7 @@ try {
       }
       else {
         if ( !godMode ) {
-          quota = await Bubble.default.admin.go('runsLeft--', { ip, widget: widget.id })
+          quota = await admin.go('runsLeft--', { ip, widget: widget.id })
           console.log({quota})
           let quotaExceeded = keys(
             pickBy(
@@ -363,6 +369,22 @@ try {
         return res.status(500).send({error: { message, stack }})
       }
     }
+
+  })
+
+  app.post('/widget/track', async ({ 
+    headers: { authorization, referer }, 
+    body: { 
+      widget: { id }, actor, action
+    },
+    ip
+  }, res, next) => {
+
+    actor || ( actor = ip )
+
+    admin.post('widgetEvent', { widget: id, actor, action, referer })
+      .catch(next)
+      .then(({ id }) => res.send({ event: { id }}))
 
   })
 
