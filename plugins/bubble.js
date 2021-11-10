@@ -3,23 +3,22 @@ import { load } from 'js-yaml'
 import { assign, camelCase, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
 import { singular } from 'pluralize'
 
-function Bubble({ $auth, token } = {}) {
+function Bubble({$auth, token } = {}) {
 
-  console.log($auth)
   if ( $auth )
     token = $auth.strategy.token.get()
 
   let {NUXT_ENV_BUBBLE_URL} = process.env
-  console.log({NUXT_ENV_BUBBLE_URL})
 
   let axios = Axios.create({ 
     baseURL: process.env.NUXT_ENV_BUBBLE_URL,
-    ...( token || {} )
+    ...token ? {
+      headers: {Authorization: token }
+    } : {}
   })
 
-  console.log({token})
+  // console.log({token})
 
-  
   Object.assign(this, {
 
 
@@ -152,6 +151,7 @@ Bubble.asyncData = ( type, query, options ) =>
     return {...result, loaded: true}
   }
 
+// Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
 
 function parse(object) {
