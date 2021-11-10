@@ -68,6 +68,7 @@
             )
             : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
           target="_blank"
+          @click="track('cta')"
           v-text="display.CTA"
         />
         <p class="mt-2 lh-sm">
@@ -117,6 +118,7 @@
     // },
 
     mounted() {
+      this.track('open')
       if (this.queryTags.go || this.go)
         this.$nextTick(this.generate)
     },
@@ -130,6 +132,7 @@
         this.hide.error = false
 
         try {
+          this.track('run')
           let { id, setup, template, tie } = this.widget
           let { duringSetup, apiKey } = this
           
@@ -175,6 +178,14 @@
           this.generating = false
         }
 
+      },
+
+      track(action) {
+        let { widget } = this
+        this.$axios.post('api/widget/track', {
+          action,
+          widget
+        })
       }
 
     },
