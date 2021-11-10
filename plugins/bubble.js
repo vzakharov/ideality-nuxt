@@ -50,7 +50,9 @@ function Bubble({$auth, token, admin } = {}) {
             key: 'Slug', value: slug, constraint_type
           }] 
           : Object.entries(query).map(([key, value]) => ({
-            key, value, constraint_type
+            key, 
+            value: isObject(value) ? value.id : value, 
+            constraint_type
           }))
       )}
 

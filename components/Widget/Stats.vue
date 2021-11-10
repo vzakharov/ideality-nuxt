@@ -1,9 +1,12 @@
 <template>
   <div>
-    <b-table
+    <b-table v-if="actionCounts.length"
       :items="actionCounts"
     >
     </b-table>
+    <p v-else class="mt-4 text-center">
+      <em>No events for this widget yet ¯\_(ツ)_/¯</em>
+    </p>
   </div>
 </template>
 
@@ -16,8 +19,9 @@
     props: ['value'],
 
     data() {
+      let { events, widget } = this.value
       return {
-        ...this.value
+        events, widget
       }
     },
 
@@ -53,6 +57,16 @@
         return actionCounts
       }
 
+    },
+
+    async fetch() {
+      let { widget } = this
+      if ( widget ) {
+        this.events = await this.bubble.get('widgetEvents', {
+          widget
+        })
+        console.log(this.events)
+      }
     }
 
 

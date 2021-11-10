@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <WidgetStats v-model="stats"/>
+    <WidgetStats :value="{widget}"/>
     <b-form
       @submit.prevent="$axios.post('api/widget/track', event)"
     >
@@ -21,10 +21,12 @@
   export default {
 
     data() {
+      let widget = { id: '1634843315317x809437390242563100' }
       return {
+        widget,
         event: {
           action: 'open',
-          widget: { id: '1634843315317x809437390242563100' }
+          widget
         },
         stats: {
           events: [
