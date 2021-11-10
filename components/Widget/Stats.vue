@@ -1,12 +1,15 @@
 <template>
   <div>
-    <b-table v-if="actionCounts.length"
-      :items="actionCounts"
-    >
-    </b-table>
-    <p v-else class="mt-4 text-center">
-      <em>No events for this widget yet ¯\_(ツ)_/¯</em>
-    </p>
+    <Loading v-if="!events" message="Loading events..."/>
+    <template v-else>
+      <b-table v-if="events.length"
+        :items="actionCounts"
+      >
+      </b-table>
+      <p v-else class="mt-4 text-center">
+        <em>No events for this widget yet ¯\_(ツ)_/¯</em>
+      </p>
+    </template>
   </div>
 </template>
 
