@@ -9,6 +9,12 @@ function canRunWidget({code, godMode, apiKey, widget} = this) {
     return code && code.runsLeft > 0
 }
 
+function cast(f, ...targets) {
+  return function() {
+    return f(...targets, ...arguments)
+  }
+}
+
 function filteredParameters({setup, template, tie, onlyRecitals, duringGeneration}) {
   let { parameters } = template || tie
   if ( !parameters )
@@ -45,6 +51,7 @@ function parseKids(parent, keys) {
 export {
 
   canRunWidget,
+  cast,
   filteredParameters,
   parseKids
 
