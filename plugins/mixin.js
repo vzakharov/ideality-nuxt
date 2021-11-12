@@ -49,9 +49,6 @@ Vue.mixin({
       return new Bubble(this)
     },
     canRunWidget,
-    godMode() {
-      return this.queryTags.iddqd
-    },
     process() {
       return process
     },

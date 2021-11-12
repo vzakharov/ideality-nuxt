@@ -77,7 +77,7 @@
           <WidgetProper v-bind="{widget}"/>
         </WidgetBox>
 
-        <div v-if="section=='yaml' && queryTags.iddqd">
+        <div v-if="section=='yaml' && queryTags.testing">
           <textarea-autosize
             style="font-family: monospace!important; font-size: smaller;"
             class="text-monospace w-100"

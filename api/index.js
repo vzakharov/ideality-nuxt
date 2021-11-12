@@ -96,7 +96,7 @@ try {
 
       // console.log(req.ip)
       // console.log(req.body)
-      let { n, input, output, appendInput, duringSetup, widget, apiKey, code, iddqd: godMode, pr0n: allowUnsafe, fake_ip } = {
+      let { n, input, output, appendInput, duringSetup, widget, apiKey, code, pr0n: allowUnsafe, fake_ip } = {
         input: '', output: '', n: 1, 
         ...req.body
       }
@@ -118,45 +118,43 @@ try {
       
       let quota = {}
 
-      if ( godMode || apiKey || get(widget, 'template.apiKey') ) {
+      if ( apiKey || get(widget, 'template.apiKey') ) {
         allowUnsafe = true
       }
       else {
-        if ( !godMode ) {
-          quota = await admin.go('runsLeft--', { ip, widget: widget.id })
-          console.log({quota})
-          let quotaExceeded = keys(
-            pickBy(
-              quota, item => 
-              item.runsLeft <= 0
+        quota = await admin.go('runsLeft--', { ip, widget: widget.id })
+        console.log({quota})
+        let quotaExceeded = keys(
+          pickBy(
+            quota, item => 
+            item.runsLeft <= 0
+          )
+        )[0]
+        console.log({quotaExceeded})
+        if ( quotaExceeded ) {
+          let { authorization } = req.headers
+          let user = await
+            authorization ?
+              getUser(authorization) :
+              {}
+          let { owner } = quota
+          console.log({quota, quotaExceeded, user, code})
+          if ( !(
+            quotaExceeded == 'ip' && (
+              user.id == owner.id
+              || code && ( code == owner.code )
             )
-          )[0]
-          console.log({quotaExceeded})
-          if ( quotaExceeded ) {
-            let { authorization } = req.headers
-            let user = await
-              authorization ?
-                getUser(authorization) :
-                {}
-            let { owner } = quota
-            console.log({quota, quotaExceeded, user, code})
-            if ( !(
-              quotaExceeded == 'ip' && (
-                user.id == owner.id
-                || code && ( code == owner.code )
-              )
-            ))
-              return res.status(403).send({
-                error: {
-                  cause: 'quota', 
-                  message: ({
-                    ip: 'User',
-                    widget: 'Widget',
-                    owner: 'Widget owner'
-                  })[quotaExceeded] + ' quota exceeded.'
-                }
-              })
-          }
+          ))
+            return res.status(403).send({
+              error: {
+                cause: 'quota', 
+                message: ({
+                  ip: 'User',
+                  widget: 'Widget',
+                  owner: 'Widget owner'
+                })[quotaExceeded] + ' quota exceeded.'
+              }
+            })
         }
       }
 
