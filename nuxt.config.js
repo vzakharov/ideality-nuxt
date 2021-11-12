@@ -151,5 +151,5 @@ export default {
       type: 'text/javascript'
     }
   ],
-  ssr: false
+  ssr: true
 }

@@ -77,7 +77,7 @@ Vue.mixin({
       }
     },
 
-    element: window.document.getElementById,
+    element: process.client && window.document.getElementById,
 
     withElement(id, ...actions) {
       let element = window.document.getElementById(id)
