@@ -195,7 +195,6 @@
       isRetry() {
         return this.generated && this.output && ( this.usedInput == this.content.input )
       }
-      // canRunWidget() { return this.godMode || this.apiKey }
 
     },
 
