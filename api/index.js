@@ -118,7 +118,7 @@ try {
       
       let quota = {}
 
-      if ( godMode || isDemo || apiKey || get(widget, 'template.apiKey') ) {
+      if ( godMode || apiKey || get(widget, 'template.apiKey') ) {
         allowUnsafe = true
       }
       else {
@@ -283,8 +283,10 @@ try {
             [input] = input.split("\n")
         }
   
-        output = output.trim()
-        output = output.replace(/\n\n.*/, '')
+        if ( output ) {
+          output = output.trim()
+          output = output.replace(/\n\n.*/, '')
+        }
 
         return { input, output }
 
