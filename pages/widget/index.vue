@@ -10,8 +10,8 @@
         <strong>Ideality Widget encourages users to use your product by giving them ideas.</strong>
       </p>
 
-      <Heading id="examples">
-        Better shown than spoken
+      <Heading>
+        Examples
       </Heading>
       <p class="text-end form-text">
         <small>
