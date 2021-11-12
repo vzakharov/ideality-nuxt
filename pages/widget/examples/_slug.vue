@@ -11,68 +11,13 @@
         <div v-if="widget" class="px-3">
           <h1 class="display-4" v-text="widget.name"/>
 
-          <b-button variant="outline-secondary" size="sm" class="mb-4"
-            @click="invert('hide.allButWidget'); window.history.pushState(0,0,$router.resolve({...$route, query:{...$route.query, noinfo: hide.allButWidget ? null : undefined}}).href)"
-            v-text="hide.allButWidget ? 'About the widget' : 'Hide all but the widget'"
-          />
-
-          <template v-if="!hide.allButWidget">
-            <template v-if="widget.display.sampleDescription">
-              <Heading id="info">
-                Widget info
-              </Heading>
-              <div v-html="$md.render(widget.display.sampleDescription)"/>
-            </template>
-            <Heading id="demo">Widget demo</Heading>
-            <p>Here’s how your widget might look like in your app (you can customize the CSS and copy as you wish):</p>
-          </template>
+          <div v-if="widget.display.sampleDescription" v-html="$md.render(widget.display.sampleDescription)"/>
 
           <WidgetBox>
             <WidgetProper ref="widget" :key="widget.id" :omitDescription="true"
               v-bind="{widget, apiKey, code, go}"
               :value="content"
-            >
-            <b-alert v-if="!codeId && !canRunWidget || (apiKey && !hideApiKey)" :show="true" variant="warning" class="p-2 m-2 mb-0" style="cursor: pointer">
-              <p>
-                Enter your <a href="https://beta.openai.com/account/api-keys" target="_blank">OpenAI API key</a> 
-                to use the widget.
-                <a href="#" @click.prevent="showApiKeyExplanation=!showApiKeyExplanation">
-                  Why?
-                </a>
-              </p>
-              <p v-if="showApiKeyExplanation" class="mx-2 text-muted"><small>
-                While the app is still in beta, we cannot use our own API key for public purposes, but you
-                can use yours. One generation costs ~$0.003 
-                (~500 <a href="https://beta.openai.com/docs/engines/curie" target="_blank">Curie</a> tokens).
-                <b>We don’t store your API key and only use it ephemerally to send requests to OpenAI.</b>
-              </small></p>
-              <b-input
-                description="While the app is still in beta, we cannot use our own API key for public purposes.
-                  We don’t store your API key and just use it once when sending the request to OpenAI servers."
-                placeholder="sk-..."
-                id="apiKey"
-                ref="apiKey"
-                v-model="apiKey"
-              />
-              <LabeledInput type="boolean" caption="Store locally" 
-                :description="!apiKey ? '' : storeApiKeyLocally ? 
-                  'Now stored. Local storage only, so that you don’t have to retype it after page refresh.' : 
-                  'Now not stored. If it was stored previously, it has been deleted.'"
-                v-model="storeApiKeyLocally"
-                :disabled="!apiKey"
-              />
-              <p>Don’t have an API key but still want to try? <a href="#beta">Request</a> beta access.</p>
-              <div v-if="apiKey" class="d-flex flex-row-reverse">
-                <small @click="hideApiKey=true" class="text-muted align-right" style="cursor:pointer">Close this box</small>
-              </div>
-            </b-alert>
-            <div class="mt-2">
-              <small v-if="apiKey && hideApiKey" class="text-muted">
-                Using your API key, {{ apiKey.slice(0,10) }}…
-                <a href="#apiKey" @click="hideApiKey=false" class="pointer">(Change)</a>
-              </small>
-            </div>
-            </WidgetProper>
+            />
           </WidgetBox>
           <div v-if="codeId || code" class="d-flex flex-row-reverse px-4">
             <b-alert show class="mb-3 mw-25 fs-sm" 
