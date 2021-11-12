@@ -85,7 +85,8 @@ export default {
       }
     },
     redirect: {
-      logout: '/'
+      logout: '/',
+      login: false
     }
   },
 
@@ -151,5 +152,5 @@ export default {
       type: 'text/javascript'
     }
   ],
-  ssr: true
+  ssr: process.env.SSR || false
 }
