@@ -8,39 +8,25 @@
         <b-tabs pills>
           <b-tab size="sm" v-for="w in widgets" :key="w._id" :active="w==widget" @click="setWidget(w)" :title="w.name"/>
         </b-tabs>
-        <div v-if="widget" class="px-3">
+        <b-row v-if="widget" class="px-3">
           <h1 class="display-4" v-text="widget.name"/>
-
-          <div v-if="widget.display.sampleDescription" v-html="$md.render(widget.display.sampleDescription)"/>
-
-          <WidgetBox>
-            <WidgetProper ref="widget" :key="widget.id" :omitDescription="true"
-              v-bind="{widget, apiKey, code, go}"
-              :value="content"
-            />
-          </WidgetBox>
-          <div v-if="codeId || code" class="d-flex flex-row-reverse px-4">
-            <b-alert show class="mb-3 mw-25 fs-sm" 
-              :variant="(!code || 2 * code.runsLeft > code.runsMax) ? 'info' : (4 * code.runsLeft > code.runsMax) ? 'warning' : 'danger'"
-              style="color: gray; font-size: smaller"
-            >
-              <div v-if="codeId && !code">
-                Checking your promo code, please wait...
-              </div>
-              <div v-else>
-                <b>Widget runs remaining</b>
-                <b-progress :value="code.runsLeft" :max="code.runsMax" show-value
-                  style="max-width: 150px"
-                />
-                <b-button size="sm" variant="outline-secondary" class="mt-2"
-                  @click.prevent="code=undefined; codeId=undefined; $nextTick(()=>window.document.getElementById('apiKey').focus())"
-                >
-                  Use your own API key
-                </b-button>
-              </div>
-            </b-alert>
-          </div>
-
+          <b-col sm="12" md="5">
+            <Heading>
+              Info
+            </Heading>
+            <div v-if="widget.display.sampleDescription" v-html="$md.render(widget.display.sampleDescription)"/>
+          </b-col>
+          <b-col sm="12" md="7">
+            <Heading>
+              Preview
+            </Heading>
+            <WidgetBox>
+              <WidgetProper ref="widget" :key="widget.id" :omitDescription="true"
+                v-bind="{widget, apiKey, code, go}"
+                :value="content"
+              />
+            </WidgetBox>
+          </b-col>
           <template v-if="!hide.allButWidget">
             <Heading>Customization</Heading>
             <p>
@@ -73,9 +59,14 @@
             </template>
           </template>
 
-          <Heading id="access">Get the widget</Heading>
-          <TextAccess/>
-        </div>
+          <div>
+            <b-button size="lg" variant="primary" :to="{name: 'request-access', query: {
+              bio: `I am interested in the “${widget.name}” widget.`
+            }}">
+              Get this widget
+            </b-button>
+          </div>
+        </b-row>
       </b-col>
     </b-row>
   </b-container>

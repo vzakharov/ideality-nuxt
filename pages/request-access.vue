@@ -1,5 +1,8 @@
 <template>
   <FullBox>
+    <h2>
+      Beta access request
+    </h2>
     <template v-if="sent">
       <p class="lead">
         <b>Well received! We will get back to you as soon as we can.</b>
