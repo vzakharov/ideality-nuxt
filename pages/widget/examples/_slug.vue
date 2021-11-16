@@ -179,7 +179,7 @@
     },
 
     methods: {
-
+      
       requestBeta() {
         Bubble.anon.go('requestBeta', {
           ...this.betaRequest,

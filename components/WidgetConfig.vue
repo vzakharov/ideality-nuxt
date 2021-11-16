@@ -148,7 +148,7 @@ export default {
   computed: {
 
     embedRoute() {
-      return { name: 'widget-id-embed', params: { id: this.widget.slug }}
+      return { name: 'widget-id-embed', params: { id: this.widget.slug || this.widget.id }}
     },
 
     widgetYaml: {

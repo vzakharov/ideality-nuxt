@@ -203,7 +203,7 @@ try {
       if ( input && !appendInput || output)
         prompt += `\n\n${prefix.output}:\n${output}`
     
-      // console.log(prompt)
+      console.log(prompt)
 
       let stop = [
         prefix.input + ':', 
