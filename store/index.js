@@ -1,5 +1,6 @@
 export const state = () => ({
   path: '',
+  updatedRoute: null,
   tree: {
     children: [{ 
       body: 'Hello world', children: [{
@@ -27,6 +28,7 @@ export const state = () => ({
 export const mutations = {
 
   set(state, values) {
+    // debugger
     Object.assign(state, values)
   }
 
