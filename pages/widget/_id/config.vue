@@ -25,7 +25,7 @@ import Bubble from '@/plugins/bubble'
 
 export default {
 
-  middleware: ['loggedIn', 'getUser'],
+  middleware: ['loggedIn'],
 
   head() { return {
     title: `${get(this, 'widget.name') } 🔺 Ideality widget`

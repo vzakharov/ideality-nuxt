@@ -33,6 +33,15 @@ function filteredParameters({setup, template, tie, onlyRecitals, duringGeneratio
   })  
 }
 
+async function getUser({ $axios, store: { $auth } }) {
+  try {
+    let { data: { user }} = await $axios.get('api/auth/user')
+    $auth.setUser(user)
+  } catch(error) {
+    $auth.setUser(null)
+  }
+}
+
 function parseKids(parent, keys) {
   console.log(parent, keys)
   keys.forEach(key => {
@@ -49,6 +58,7 @@ export {
   canRunWidget,
   cast,
   filteredParameters,
+  getUser,
   parseKids
 
 }
