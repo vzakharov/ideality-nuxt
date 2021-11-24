@@ -74,13 +74,11 @@
 <script>
 
   export default {
-
     data() { return {
       show: {
         accessRequest: false
       }
     }}
-    
   }
 
 </script>
