@@ -1,11 +1,5 @@
 <template>
-  <div>
-    <div id="example"></div>
-    <script type="text/javascript" src="https://ideality.app/widget/just-add-ai/embed"></script>
-    <script>
-        var pymParent = new pym.Parent('example', 'child.html', {});
-    </script>
-  </div>
+  <iframe style="width:100%; height:100vh" src="http://localhost:3000/widget/just-add-ai/embed?box"/>
 </template>
 
 <script>
