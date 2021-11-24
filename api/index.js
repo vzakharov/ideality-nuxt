@@ -153,6 +153,7 @@ try {
                   widget: 'Widget',
                   owner: 'Widget owner'
                 })[quotaExceeded] + ' quota exceeded.'
+                + ( quotaExceeded == 'ip' ? ' Please come back in an hour.' : '' )
               }
             })
         }
