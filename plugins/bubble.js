@@ -53,15 +53,35 @@ function Bubble({$auth, token } = {}) {
           }))
       )}
 
-      
-      let { data: { response }} = await (
+      let doFetch = () => (
         ( id ) ? 
           axios.get(url + id) : 
           axios.get(url, { params })
       )
+
+      let { data: { response }} = await doFetch()
       
+      let { results } = response
+
+      if ( results ) {
+        let { remaining } = response
+        if ( remaining ) {
+          let promises = []
+          for ( let cursor = 100; cursor < remaining + 100 ; cursor += 100 ) {
+            Object.assign(params, { cursor, limit: 100 })
+            promises.push(new Promise(resolve =>
+              doFetch().then(
+                ( { data: { response: { results: moreResults }}} ) => resolve(moreResults)
+              )
+            ))
+          }
+          results = [...results, ...await Promise.all(promises)].flat()
+          console.log
+        }
+      }
+        
       let things = (
-        id ? [ response ] : response.results
+        id ? [ response ] : results
       ).map(thing => 
           mapKeys(
             mapValues(thing, value => {
