@@ -198,7 +198,7 @@ try {
       }
 
       if ( input )
-        prompt += input
+        prompt += ' ' + input
         
       if ( input && !appendInput || output)
         prompt += `\n\n${prefix.output}:\n${output}`
@@ -237,7 +237,7 @@ try {
           logprobs: 10
         }, {headers})
 
-      console.log({safetyChecked})
+      // console.log({safetyChecked})
 
       let engine = template.engine || 'curie-instruct-beta'
       let response = await axios.post(
@@ -248,7 +248,7 @@ try {
       if (!allowUnsafe) {
         let { data: { choices: [{ text: safetyLabel }]}} = await safetyChecked
         
-        // console.log(safetyLabel)
+        console.log({safetyLabel})
     
         if ( safetyLabel.match(/[12]/) )
           return res.status(403).send({
