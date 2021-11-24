@@ -193,7 +193,7 @@
     computed: {
 
       isRetry() {
-        return this.generated && this.output && ( this.usedInput == this.content.input )
+        return this.generated && this.content.output && ( this.usedInput == this.content.input )
       }
 
     },
