@@ -49,6 +49,25 @@ Vue.mixin({
       return new Bubble(this)
     },
     canRunWidget,
+
+    head() {
+      let { header } = this
+      if ( header ) {
+        let { title, description } = this.header
+        title += '🔺 Ideality, AI-powered ideation platform'
+        return {
+          title,
+          meta: [
+            { hid: 'description', name: 'description', content: description },
+            { hid: 'og:title', name: 'og:title', content: title},
+            { hid: 'og:description', name: 'og:description', content: title }
+          ]
+        }  
+      } else {
+        return {}
+      }
+    },
+
     process() {
       return process
     },
@@ -110,7 +129,8 @@ Vue.mixin({
         next()
       })
     },
-    
+
+
     hasQueryTag(tag) {
       return this.queryTags[tag]
     },

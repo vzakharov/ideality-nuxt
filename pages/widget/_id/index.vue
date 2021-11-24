@@ -1,14 +1,37 @@
+<template>
+  <WidgetBox>
+    <WidgetProper v-bind="{widget}"/>
+  </WidgetBox>
+</template>
+
 <script>
 
-export default {
- 
- middleware: ({ store: { $auth: { loggedIn }}, route, redirect}) =>
-  redirect({
-    ...route,
-    name: loggedIn ? 'widget-id-config' : 'widget-id-embed',
-    query: {...route.query, ...!loggedIn && { box: null }}
-  })
+  import Bubble from '@/plugins/bubble'
+  import { get } from 'lodash'
 
-}
+  export default {
+    
+    head() { return this.head },
+
+    asyncData: Bubble.asyncData('widget'),
+
+    computed: {
+      header() {
+        let { widget } = this
+        if ( widget ) {
+          let { name: title, description } = widget
+          return {
+            title, description 
+          }
+        }
+      }
+
+    }
+
+  }
 
 </script>
+
+<style>
+
+</style>
