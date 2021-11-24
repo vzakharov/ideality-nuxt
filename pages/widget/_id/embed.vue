@@ -15,6 +15,22 @@
 
   export default {
 
+    head() { 
+      let { adsenseId } = this.$route.query
+
+      let script = adsenseId && [
+        {
+          src: `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${adsenseId}`,
+          async: true,
+          crossorigin: 'anonymous'
+        }
+      ]
+
+      return {
+        script
+      }
+    },
+
     asyncData: Bubble.asyncData('widget')
 
   }
