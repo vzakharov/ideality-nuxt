@@ -75,7 +75,16 @@
           <small v-if="display.postCTA" v-text="display.postCTA" class="text-muted"/>
         </p>
       </div>
+
     </template>
+
+    <div class="text-end">
+      <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
+        <small>
+          Powered by ▲ Ideality
+        </small>
+      </a>
+    </div>
 
   </div>
 </template>
