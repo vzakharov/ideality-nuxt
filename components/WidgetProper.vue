@@ -22,7 +22,7 @@
 
     <template>
       <div v-if="!generating">
-        <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : 'Suggest'" 
+        <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
           :disabled="!content.input || !canRunWidget"
           @click="generate"
         />
