@@ -178,7 +178,7 @@ Bubble.anon = new Bubble()
 function parse(object) {
 
   const process = thing => mapKeys(
-    mapValues(thing, value => {
+    mapValues(thing, (value, key) => {
       const isString = typeof value === 'string'
       if (isString && value[0] == '{')
         try {

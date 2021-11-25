@@ -7,15 +7,28 @@
       <b-spinner small/>
     </div>
     <b-table hover v-else
-      :fields="[
-        'name',
+      :fields="(sortable = true, [
+        { 
+          key: 'name',
+          sortable
+        }, {
+          key: 'modifiedDate',
+          label: 'Modified',
+          formatter: value => {
+            let daysAgo = 
+            Math.round(( new Date() - new Date(value) )/1000/3600/24)
+            return daysAgo ? `${daysAgo} days ago` : 'today'
+          },
+          sortable
+        },
         {
           key: 'runsLeft',
-          label: 'Runs left'
+          label: 'Runs left',
+          sortable
         }
-      ]"
+      ])"
 
-      :items="widgets"
+      :items="orderBy(widgets, 'modifiedDate', 'desc')"
     >
       <template #cell(name)="data">
         <nuxt-link :to="{name: 'widget-id-config', params: {id: data.item.slug || data.item.id}}" v-text="data.item.name || '[Untitled]'"/>
@@ -28,11 +41,14 @@
 
   import Bubble from '@/plugins/bubble'
 
+  import { orderBy } from 'lodash'
+
   export default {
 
     data() {
       return {
-        widgets: null
+        widgets: null,
+        orderBy
       }
     },
 
@@ -41,6 +57,7 @@
       Object.assign(this, await new Bubble(this).go('getUserWidgets'))
         
     }
+
 
   }
 
