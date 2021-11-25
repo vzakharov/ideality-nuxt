@@ -22,7 +22,7 @@
           </b-dropdown-item>
         </b-dropdown>
         <WidgetBox v-if="widget">
-          <WidgetProper v-bind="{widget}"/>
+          <WidgetProper :key="widget.id" v-bind="{widget}"/>
         </WidgetBox>
       </b-col>
     </b-row>
