@@ -37,11 +37,15 @@
 
     data() {
       return {
-        widget: null
       }
     },
 
-    asyncData: Bubble.asyncData('widgets', { inToolbox: true }, { sortBy: 'name' })
+    async asyncData() {
+      let { widgets } = await
+        Bubble.asyncData('widgets', { inToolbox: true }, { sortBy: 'name' })(...arguments)
+      let widget = widgets[0]
+      return { widgets, widget }
+    }
 
   }
 
