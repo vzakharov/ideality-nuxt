@@ -10,9 +10,9 @@
           </b-col>
           <b-col class="text-end">
             <a href="#" style="color:gray"
-              @click.prevent="expanded = [...categories]"
+              @click.prevent="expanded = expanded.length==categories.length ? [] : [...categories]"
             >
-              <small>Expand all</small>
+              <small v-text="expanded.length==categories.length ? 'Collapse all' : 'Expand all'"/>
             </a>
           </b-col>
         </b-row>
