@@ -1,5 +1,6 @@
 export const state = () => ({
   path: '',
+  headers: null,
   updatedRoute: null,
   tree: {
     children: [{ 
@@ -28,8 +29,15 @@ export const state = () => ({
 export const mutations = {
 
   set(state, values) {
-    // debugger
+    console.log({state, values})
     Object.assign(state, values)
   }
 
+}
+
+export const actions = {
+  nuxtServerInit({ commit }, { req: { headers } }) {
+    // console.log({commit, req})
+    commit('set', { headers })
+  }
 }
