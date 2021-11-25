@@ -78,7 +78,7 @@
 
     </template>
 
-    <div class="text-end">
+    <div class="text-end pt-2">
       <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
         <small>
           Powered by ▲ Ideality
