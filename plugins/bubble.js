@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
 import { assign, camelCase, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
-import { singular } from 'pluralize'
+import { singular, plural } from 'pluralize'
 
 function Bubble({$auth, token } = {}) {
 
@@ -26,7 +26,7 @@ function Bubble({$auth, token } = {}) {
       // if (type=='code') debugger
       // console.log(options)
       let id = typeof idOrQuery === 'string' && idOrQuery
-      let query = !id && idOrQuery
+      let query = !id && idOrQuery || {}
       let slug = id && !id.match(/^\d/) && id
       if ( slug )
         id = undefined
@@ -167,7 +167,8 @@ Bubble.asyncData = ( type, query, options ) =>
     // console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-    result[type] = await bubble.get(type, query || id, options)    
+    let value = await bubble.get(type, query || id, options)    
+    result[type] = value
     return {...result, loaded: true}
   }
 

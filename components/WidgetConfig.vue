@@ -204,6 +204,7 @@ export default {
       try {
         this.saving = true
         let time = Date.now()
+        this.widget.display.name = this.widget.name
         await this.$axios.$patch(this.apiUrl, {
           ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name
         })
