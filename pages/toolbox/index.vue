@@ -16,7 +16,7 @@
             </a>
           </b-col>
         </b-row>
-        <b-list-group flush>
+        <b-list-group>
           <b-list-group-item v-for="category in categories" :key="category" 
             href="#" class="p-0"
             :style="expanded.includes(category) && 'color:#BBB'"
@@ -27,7 +27,7 @@
               {{ expanded.includes(category) ? '▾' : '▸' }}
               {{ category }} tools
             </div>
-            <b-list-group flush v-if="expanded.includes(category)"
+            <b-list-group v-if="expanded.includes(category)"
               class="ps-2"
             >
               <b-list-group-item v-for="w in filter(widgets, {category})" :key="w.id"
