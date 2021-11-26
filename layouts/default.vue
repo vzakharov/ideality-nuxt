@@ -16,11 +16,6 @@
   
   a {
     text-decoration: none;
-    color: initial;
-  }
-
-  a:hover {
-    color: initial;
   }
 
 </style>
