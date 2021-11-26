@@ -145,6 +145,14 @@ Vue.mixin({
       set(this, what, !get(this, what))
     },
 
+    assign(target, properties) {
+      if ( !properties ) {
+        properties = target
+        target = this         
+      }
+      Object.assign(target, properties)
+    },
+
 
     // redirectIfNotLoggedIn() {
     //   if ( !this.$auth.loggedIn )
