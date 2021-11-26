@@ -102,7 +102,7 @@
 
     data() { 
       let content = this.value || {}
-      console.log(content)
+      // console.log(content)
       let { display } = this.widget
       let data = {
         error: null,

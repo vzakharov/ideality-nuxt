@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import { load } from 'js-yaml'
-import { assign, camelCase, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
+import { assign, camelCase, chain, forEach, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
 import { singular, plural } from 'pluralize'
 
 function Bubble({$auth, token } = {}) {
@@ -79,38 +79,16 @@ function Bubble({$auth, token } = {}) {
           console.log
         }
       }
-        
-      let things = (
-        id ? [ response ] : results
-      ).map(thing => 
-          mapKeys(
-            mapValues(thing, value => {
-              const isString = typeof value === 'string'
-              if ( isString && value[0]=='{' )
-                try {
-                  return JSON.parse(value)
-                } catch {
-                  return value
-                }       
-              else {
-                if ( isString && value.match(/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/) )
-                  return new Date(value)
-                else
-                  return value
-              }
-            }),
-            (value, key) => {
-              switch(key) {
-                case 'Slug': return 'slug'
-                case 'template': return 'slate'
-                case '_id': return 'id'
-                default: return key
-              }
-            }
-          )
-      )
+      
+      let things = id ? [ response ] : results
+      let object = {}
+      object[type] = things
+      parse(object)
 
-      // console.log(things)
+      console.log({ object })
+
+      things = object[type]
+      console.log({ things })
 
       let result
       if ( fetchMany ) {
@@ -125,6 +103,8 @@ function Bubble({$auth, token } = {}) {
         keyedResult[type] = result
         result = keyedResult
       }
+      
+      console.log({result})
 
       return result
 
@@ -182,8 +162,9 @@ Bubble.anon = new Bubble()
 
 function parse(object) {
 
-  const process = ( thing, type, object ) => mapKeys(
-    mapValues(thing, value => {
+  const process = ( thing, type, object ) => {
+
+    thing = mapValues(thing, value => {
       const isString = typeof value === 'string'
       if (isString && value[0] == '{')
         try {
@@ -197,14 +178,22 @@ function parse(object) {
         else
           return value
       }
-    }),
-    (value, key) => {
-      if ( key == 'template' && singular(type) == 'widget' && !object.slate) {
-        key = 'slate'
-      }
-      return camelCase(key)
+    })
+
+    if ( singular(type) == 'widget' && thing.template ) {
+      thing.slate = thing.slate || thing.template
+      delete thing.template
     }
-  )
+
+    thing.slug = thing.Slug
+    thing.id = thing._id
+    delete thing.Slug
+    delete thing._id
+
+    console.log({thing})
+
+    return thing
+  }
 
   for ( let key of keys(object) ) {
     let value = object[key]
