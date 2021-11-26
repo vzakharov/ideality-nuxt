@@ -142,7 +142,7 @@
 
         try {
           this.track('run')
-          let { id, setup, template, tie } = this.widget
+          let { id, setup, slate, tie } = this.widget
           let { duringSetup, apiKey } = this
           
           let { code } = this.$route.query
@@ -162,7 +162,7 @@
           ) ? cut(output) : undefined
 
           let body = { 
-              input, output, appendInput, duringSetup, widget: {id, setup, template, tie }, 
+              input, output, appendInput, duringSetup, widget: {id, setup, slate, tie }, 
               apiKey, code, ...this.queryTags
             }
           

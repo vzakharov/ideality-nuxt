@@ -28,7 +28,7 @@
           />
         </b-nav-form>
         <b-nav-item-dropdown text="More" variant="outline-secondary">
-          <b-dropdown-item :to="{ name: 'widget-new', query: { template: widget.id }}">
+          <b-dropdown-item :to="{ name: 'widget-new', query: { slate: widget.id }}">
             Clone
           </b-dropdown-item>
           <b-dropdown-item @click="unlink" variant="danger">
@@ -44,7 +44,7 @@
             v-for="item in [...[
               { slug: 'display', caption: 'Display settings'},
               { slug: 'setup', caption: 'AI settings' },
-              { slug: 'template', caption: 'Template settings'}
+              { slug: 'slate', caption: 'Slate settings'}
             ].filter(item=>vm[item.slug]),
               { slug: 'stats', caption: 'Stats'},
               { slug: 'test', caption: 'Preview'},
@@ -68,7 +68,7 @@
           <WidgetDisplayConfig :context="{widget}" v-model="display"/>
         </template>
         <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
-        <TemplateConfig v-if="section=='template'" v-model="widget.template" v-bind="{widget}"/>
+        <SlateConfig v-if="section=='slate'" v-model="widget.slate" v-bind="{widget}"/>
 
 
         <WidgetStats :value="{widget}" v-if="section=='stats'"/>
@@ -165,7 +165,7 @@ export default {
 
     setup() { return this.widget.setup },
     display() { return this.widget.display },
-    template() { return this.widget.template },
+    slate() { return this.widget.slate },
 
     examples: {
       get() { return this.setup.examples || [] },
@@ -173,8 +173,8 @@ export default {
     },
 
     parameters: {
-      get() { return this.template.parameters || []},
-      set(value) { this.template.parameters = value }
+      get() { return this.slate.parameters || []},
+      set(value) { this.slate.parameters = value }
     }
 
 
@@ -206,7 +206,7 @@ export default {
         let time = Date.now()
         this.widget.display.name = this.widget.name
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.widget, ['setup', 'display', 'template', 'tie']), JSON.stringify), name: this.widget.name
+          ...mapValues(pick(this.widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify), name: this.widget.name
         })
         this.changed = false
         this.saved = true

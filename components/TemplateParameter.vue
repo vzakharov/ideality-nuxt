@@ -8,7 +8,7 @@
         multiline: { hide: parameter.type!='text', caption: 'Multiline', type: 'boolean'},
         choices: { hide: parameter.type!='choices', caption: 'Choices', placeholder: 'Comma-separated list', commaSeparated: true},
         recital: { caption: 'Recital', type: 'boolean' },
-        requires: { caption: 'Requires', choices: context.template.parameters.map(p=>p.name) },
+        requires: { caption: 'Requires', choices: context.slate.parameters.map(p=>p.name) },
         regex: { hide: !parameter.requires, caption: 'To match...', placeholder: 'Regular expression or empty (then requires to be defined)'}
       }"/>
       <!-- <LabeledInput v-if="parameter.type=='choices'"

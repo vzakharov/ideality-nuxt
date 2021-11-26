@@ -166,7 +166,7 @@
       },
 
       widget(widget) {
-        // let apiKey = get(widget, 'template.apiKey')
+        // let apiKey = get(widget, 'slate.apiKey')
         // if ( apiKey )
         //   assign(this, { apiKey })
         this.copied = false

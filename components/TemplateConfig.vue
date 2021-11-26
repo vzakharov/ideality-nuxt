@@ -3,7 +3,7 @@
 
     <!-- Basic settings (to be deleted probably) -->
 
-    <ObjectConfig v-model="template" :fields="{
+    <ObjectConfig v-model="slate" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...', multiline: true },
       inputPrefix: { caption: 'Prefix for input' },
@@ -33,9 +33,9 @@
     <h4>Parameters</h4>
     
     <ListOfComponents
-      v-model="template.parameters"
-      :context="{template}"
-      component="TemplateParameter"
+      v-model="slate.parameters"
+      :context="{slate}"
+      component="SlateParameter"
       title="parameter"
       :defaultItem="{
         type: 'text'
@@ -54,7 +54,7 @@
 
     data() { 
       return {
-        template: this.setDefaults(this.value, {
+        slate: this.setDefaults(this.value, {
           apiKey: '', 
           instruction: '', 
           inputPrefix: 'Input', 
@@ -67,12 +67,12 @@
     },
 
     watch: {
-      'template': {
+      'slate': {
         deep: true,
-        handler(template) {
+        handler(slate) {
           let { 
             parameters, inputPrefix, inputPrefixEditable, outputPrefix, outputPrefixEditable
-          } = template
+          } = slate
           this.$set(this.widget, 'tie', {
             parameters,
             ...inputPrefixEditable && { inputPrefix },

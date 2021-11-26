@@ -106,19 +106,19 @@ try {
       let { id } = widget
 
       const widgetLoaded = 
-        !( widget && widget.setup && widget.template )
+        !( widget && widget.setup && widget.slate )
         && admin.get('widget', id)
-          .then( ({ setup, template, tie }) => 
+          .then( ({ setup, slate, tie }) => 
             assign(widget, {
               setup: { ...setup, ...widget.setup },
-              template, tie,
+              slate, tie,
               ...widget
             })
           )
       
       let quota = {}
 
-      if ( apiKey || get(widget, 'template.apiKey') ) {
+      if ( apiKey || get(widget, 'slate.apiKey') ) {
         allowUnsafe = true
       }
       else {
@@ -160,11 +160,12 @@ try {
       }
 
       await widgetLoaded
-      let { setup, template, tie } = widget
-      ;( { apiKey } = template )
+
+      let { setup, slate, tie } = widget
+      ;( { apiKey } = slate )
       let { parameterValues, examples } = setup
-      let { instruction, inputPrefix, outputPrefix, omitExamples } = {...template, ...tie}
-      let { parameters } = template
+      let { instruction, inputPrefix, outputPrefix, omitExamples } = {...slate, ...tie}
+      let { parameters } = slate
 
       let prefix = {}
       
@@ -173,7 +174,7 @@ try {
         if ( parameter )
           prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /,'').toUpperCase()
         else
-          prefix[useAs] = template[useAs + 'Prefix']
+          prefix[useAs] = slate[useAs + 'Prefix']
       }
 
       // console.log({prefix})
@@ -181,11 +182,11 @@ try {
       if ( duringSetup )
         examples.pop()
 
-      // console.log(setup, template)
+      // console.log(setup, slate)
 
       let prompt = [
         instruction,
-        filteredParameters({setup, template, onlyRecitals: true, duringGeneration: true}).map(({ name }) =>
+        filteredParameters({setup, slate, onlyRecitals: true, duringGeneration: true}).map(({ name }) =>
           `${name}:\n${parameterValues[name]}`
         ).join('\n\n'),
         (examples || []).map(example =>
@@ -209,7 +210,7 @@ try {
       let stop = [
         prefix.input + ':', 
         ...(examples && examples.length) || omitExamples ? [] : ['\n'],
-        ...template.stop || []
+        ...slate.stop || []
       ]
 
       let payload = {
@@ -240,7 +241,7 @@ try {
 
       // console.log({safetyChecked})
 
-      let engine = template.engine || 'curie-instruct-beta'
+      let engine = slate.engine || 'curie-instruct-beta'
       let response = await axios.post(
         `https://api.openai.com/v1/engines/${engine}/completions`,
         payload, {headers}

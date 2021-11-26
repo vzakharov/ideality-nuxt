@@ -11,8 +11,8 @@ function cast(f, ...targets) {
   }
 }
 
-function filteredParameters({setup, template, tie, onlyRecitals, duringGeneration}) {
-  let { parameters } = template || tie
+function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration}) {
+  let { parameters } = slate || tie
   if ( !parameters )
     return []
   let { parameterValues } = setup
