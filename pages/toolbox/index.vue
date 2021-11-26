@@ -32,6 +32,7 @@
             >
               <b-list-group-item v-for="w in filter(widgets, {category})" :key="w.id"
                 href="#"
+                class="fw-bold"
                 :active="w == widget"
                 v-text="w.name"
                 @click.prevent="widget = w"
