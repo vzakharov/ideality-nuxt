@@ -96,9 +96,11 @@ try {
   async function complete(
     {
       body: { prompt, n, stop, allowUnsafe, engine, apiKey, temperature },
-      ip
+      ip,
+      ignoreQuotaCheck
     },
-    res
+    res,
+    next
   ) {
 
     try {
@@ -106,10 +108,12 @@ try {
       // console.log({ prompt })
 
       // Check quota
-      let { ip: { runsLeft }} = await admin.go('runsLeft--', { ip })
+      if ( !ignoreQuotaCheck ) {
+        let { ip: { runsLeft }} = await admin.go('runsLeft--', { ip })
 
-      if ( runsLeft <= 0 )
-      return res.status(403).send("Quota exceeded; please come back in an hour.")
+        if ( runsLeft <= 0 )
+        return res.status(403).send("Quota exceeded; please come back in an hour.")  
+      }
 
       // Only allow unsafe requests if sent with the user's own api key
       if ( !apiKey ) {
@@ -156,7 +160,7 @@ try {
 
       console.log({request})
 
-      let { data } = await axios.post(...request)
+      let response = await axios.post(...request)
       
       if (!allowUnsafe) {
 
@@ -174,8 +178,8 @@ try {
 
       }
       
-      console.log({ data })
-      return res.send(data)
+      // console.log({ response })
+      return response
 
     } catch (error) {
       console.log('error:', error)
@@ -309,56 +313,16 @@ try {
         ...slate.stop || []
       ]
 
-      let payload = {
-        prompt,
-        temperature: 0.75, 
-        max_tokens: 200, 
-        frequency_penalty: 1,
-        presence_penalty: 1,
-        n,
-        stop
-      }
-    
-      console.log(payload)
-
-      let headers = {
-        Authorization: `Bearer ${apiKey}`
-      }
-
-      let safetyChecked = 
-        !allowUnsafe && 
-        axios.post('https://api.openai.com/v1/engines/content-filter-alpha/completions', {
-          prompt: `<|endoftext|>${prompt}\n--\nLabel:`,
-          temperature: 0,
-          top_p: 0,
-          max_tokens: 1,
-          logprobs: 10
-        }, {headers})
-
-      // console.log({safetyChecked})
-
-      let engine = slate.engine || 'curie-instruct-beta'
-      let response = await axios.post(
-        `https://api.openai.com/v1/engines/${engine}/completions`,
-        payload, {headers}
+      let response = await complete(
+        {
+          body: { prompt, n, stop, allowUnsafe, apiKey},
+          ip,
+          ignoreQuotaCheck: true
+        },
+        res
       )
-      
-      if (!allowUnsafe) {
-        let { data: { choices: [{ text: safetyLabel }]}} = await safetyChecked
-        
-        console.log({safetyLabel})
     
-        if ( safetyLabel.match(/[12]/) )
-          return res.status(403).send({
-            error: {
-              cause: 'unsafe', 
-              message: 'Unsafe input, please consider revising.'
-            }
-          })
-    
-      }
-    
-      console.log(response.data)
+      console.log('response: ', response.data)
 
       // console.log({input, output})
 
