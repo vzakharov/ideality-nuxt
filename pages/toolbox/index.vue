@@ -16,25 +16,29 @@
             </a>
           </b-col>
         </b-row>
-        <b-row v-for="category in categories" :key="category" class="py-2">
-          <div
-            @click="expanded = expanded.includes(category) ? without(expanded, category) : [...expanded, category]"
-            :style="'cursor:pointer'"
+        <b-list-group flush>
+          <b-list-group-item v-for="category in categories" :key="category" 
+            href="#" class="p-0"
+            :style="expanded.includes(category) && 'color:#BBB'"
           >
-            {{ expanded.includes(category) ? '▾' : '▸' }}
-            {{ category }} tools
-          </div>
-          <div class="border" v-if="expanded.includes(category)">
-            <b-row v-for="w in filter(widgets, {category})" :key="w.id">
-              <b-button
-                :variant="w == widget ? 'secondary' : 'light'" block
+            <div
+              @click="expanded = expanded.includes(category) ? without(expanded, category) : [...expanded, category]"
+            >
+              {{ expanded.includes(category) ? '▾' : '▸' }}
+              {{ category }} tools
+            </div>
+            <b-list-group flush v-if="expanded.includes(category)"
+              class="ps-2"
+            >
+              <b-list-group-item v-for="w in filter(widgets, {category})" :key="w.id"
+                href="#"
+                :active="w == widget"
                 v-text="w.name"
                 @click.prevent="widget = w"
-                class="text-start"
               />
-            </b-row>
-          </div>
-        </b-row>
+            </b-list-group>
+          </b-list-group-item>
+        </b-list-group>
       </b-col>
       <b-col class="p-3">
         <b-dropdown class="d-sm-none" variant="outline-secondary" :text="widget ? widget.name : 'Choose a tool'">
@@ -94,5 +98,8 @@
 </script>
 
 <style>
+.list-group-item {
+  border: 0
+}
 
 </style>
