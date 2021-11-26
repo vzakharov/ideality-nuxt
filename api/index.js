@@ -1,3 +1,5 @@
+import { request } from 'express'
+
 const express = require('express')
 
 
@@ -88,6 +90,98 @@ try {
       res.status(403).send(err)
     }
   })
+
+  app.post('/complete', async (
+    {
+      body: { prompt, n, stop, allowUnsafe, engine, apiKey, temperature },
+      ip
+    },
+    res
+  ) => {
+
+    try {
+
+      // console.log({ prompt })
+
+      // Check quota
+      let { ip: { runsLeft }} = await admin.go('runsLeft--', { ip })
+
+      if ( runsLeft <= 0 )
+      return res.status(403).send("Quota exceeded; please come back in an hour.")
+
+      // Only allow unsafe requests if sent with the user's own api key
+      if ( !apiKey ) {
+        apiKey = process.env.OPENAI_KEY
+        allowUnsafe = false
+      }
+
+      // Check safety in the background if needed
+      let headers = {
+        Authorization: `Bearer ${apiKey}`
+      }
+
+      let safetyChecked = 
+        !allowUnsafe && 
+          axios.post('https://api.openai.com/v1/engines/content-filter-alpha/completions', {
+            prompt: `<|endoftext|>${prompt}\n--\nLabel:`,
+            temperature: 0,
+            top_p: 0,
+            max_tokens: 1,
+            logprobs: 10
+          }, { headers })
+
+      // Prepare request
+
+      engine = engine || 'curie-instruct-beta'
+      temperature = temperature || 0.75
+
+      let payload = {
+        prompt,
+        temperature, 
+        max_tokens: 200, 
+        frequency_penalty: 1,
+        presence_penalty: 1,
+        n,
+        stop
+      }  
+
+
+      // Send request
+      let request = [
+        `https://api.openai.com/v1/engines/${engine}/completions`,
+        payload, { headers}
+      ]
+
+      console.log({request})
+
+      let { data } = await axios.post(...request)
+      
+      if (!allowUnsafe) {
+
+        let { data: { choices: [{ text: safetyLabel }]}} = await safetyChecked
+
+        console.log({ safetyLabel })
+        
+        if ( safetyLabel.match(/[12]/) )
+          return res.status(403).send({
+            error: {
+              cause: 'unsafe', 
+              message: 'Unsafe input, please consider revising.'
+            }
+          })
+
+      }
+      
+      console.log({ data })
+      return res.send(data)
+
+    } catch (error) {
+      console.log('error:', error)
+      return res.status(500).send({error})
+    }
+
+  })
+
 
   app.post('/widget/generate', async (req, res, next) =>
   {
