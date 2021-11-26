@@ -91,13 +91,15 @@ try {
     }
   })
 
-  app.post('/complete', async (
+  app.post('/complete', complete)
+
+  async function complete(
     {
       body: { prompt, n, stop, allowUnsafe, engine, apiKey, temperature },
       ip
     },
     res
-  ) => {
+  ) {
 
     try {
 
@@ -180,7 +182,7 @@ try {
       return res.status(500).send({error})
     }
 
-  })
+  }
 
 
   app.post('/widget/generate', async (req, res, next) =>
