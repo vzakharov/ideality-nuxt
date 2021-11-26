@@ -15,7 +15,7 @@
     </b-navbar>
     <b-row style="height:100vh">
       <b-col class="bg-gray border p-2 d-none d-sm-block"
-        sm="4" md="3" lg="2"
+        sm="4" md="3" xl="2"
       >
         <ToolboxSidebar 
           v-bind="{ widget, widgets, categories, expanded }"
