@@ -15,7 +15,7 @@ const Bubble = require('../plugins/bubble')
 const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 // const { default: { admin }} = Bubble
 
-const { buildPrompt, parseResponse } = require('../plugins/build')
+const { buildPrompt, complete, parseResponse } = require('../plugins/build')
 
 const jsyaml = require('js-yaml')
 
@@ -93,9 +93,9 @@ try {
     }
   })
 
-  app.post('/complete', complete)
+  app.post('/complete', completeWithCheck)
 
-  async function complete(
+  async function completeWithCheck(
     {
       body: { prompt, n, stop, allowUnsafe, engine, apiKey, temperature },
       ip,
@@ -140,29 +140,7 @@ try {
 
       // Prepare request
 
-      engine = engine || 'curie-instruct-beta'
-      temperature = temperature || 0.75
-
-      let payload = {
-        prompt,
-        temperature, 
-        max_tokens: 200, 
-        frequency_penalty: 1,
-        presence_penalty: 1,
-        n,
-        stop
-      }  
-
-
-      // Send request
-      let request = [
-        `https://api.openai.com/v1/engines/${engine}/completions`,
-        payload, { headers}
-      ]
-
-      console.log({request})
-
-      let response = await axios.post(...request)
+      let response = await complete({ engine, temperature, prompt, n, stop, apiKey })
       
       if (!allowUnsafe) {
 
@@ -267,7 +245,7 @@ try {
 
       let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output })
       
-      let response = await complete(
+      let response = await completeWithCheck(
         {
           body: { prompt, n, stop, allowUnsafe, apiKey},
           ip,
@@ -283,6 +261,7 @@ try {
       let content = parseResponse({ input, output, appendInput, prefix, response, n })
       
       delete quota.ip
+      console.log({content})
 
       res.send({content, runsLeft: map(quota, 'runsLeft') })
     } catch(error) {

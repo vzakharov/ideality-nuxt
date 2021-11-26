@@ -1,11 +1,14 @@
 import { find, reject } from 'lodash'
 import { filteredParameters } from '../plugins/helpers'
+import axios from 'axios'
 
 
 function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output }) {
   let { parameterValues, examples } = setup
   let { instruction, omitExamples } = { ...slate, ...tie }
   let { parameters } = slate
+  input = input || ''
+  output = output || ''
 
   let prefix = {}
 
@@ -52,7 +55,40 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
   return { prompt, stop, prefix }
 }
 
+function complete({ prompt, engine, temperature, n, stop, apiKey }) {
+  let headers = {
+    Authorization: `Bearer ${apiKey}`
+  }
+  
+  engine = engine || 'curie-instruct-beta'
+  temperature = temperature || 0.75
+
+  let payload = {
+    prompt,
+    temperature,
+    max_tokens: 200,
+    frequency_penalty: 1,
+    presence_penalty: 1,
+    n,
+    stop
+  }
+
+
+  // Send request
+  let request = [
+    `https://api.openai.com/v1/engines/${engine}/completions`,
+    payload, { headers }
+  ]
+
+  console.log({ request })
+
+  return axios.post(...request)
+}
+
 function parseResponse({ input, output, appendInput, prefix, response, n }) {
+  input = input || ''
+  output = output || ''
+
   let starting = { input, output }
   function process(choice) {
 
@@ -79,7 +115,7 @@ function parseResponse({ input, output, appendInput, prefix, response, n }) {
   }
 
   let { choices } = response.data
-  let content = n == 1 ?
+  let content = choices.length == 1 ?
     process(choices[0])
     : choices.map(choice => process(choice))
   return content
@@ -87,5 +123,6 @@ function parseResponse({ input, output, appendInput, prefix, response, n }) {
 
 export {
   buildPrompt,
+  complete,
   parseResponse
 }

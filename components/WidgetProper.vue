@@ -93,6 +93,8 @@
 
   import { assign, get, last, pick} from 'lodash'
   import Bubble from '~/plugins/bubble'
+  import { buildPrompt, complete, parseResponse } from '~/plugins/build'
+
   // import { BIconDice5 } from 'bootstrap-vue'
 
   export default {
@@ -166,8 +168,21 @@
               apiKey, code, ...this.queryTags
             }
           
-          
-          let { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body)
+          console.log({setup, slate})
+
+          let content, runsLeft
+
+          if ( setup && slate ) {
+            console.log({ input, output })
+            let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, output, appendInput })
+            console.log({ prompt })
+            let response = await complete({ prompt, stop, apiKey: slate.apiKey })
+            console.log({ response })
+            content = parseResponse({ input, output, appendInput, prefix, response })
+            console.log({ content })
+          } else
+            ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
+
           assign(this, { content })
           // console.log(runsLeft)
           if ( runsLeft && this.code)
