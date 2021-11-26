@@ -22,7 +22,7 @@ const app = express()
 try {
 
   const _ = require('lodash')
-  const { assign, filter, find, get, keys, map, pickBy } = _
+  const { assign, filter, find, get, keys, map, pickBy, reject } = _
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
@@ -188,6 +188,55 @@ try {
 
   }
 
+  function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output }) {
+    let { parameterValues, examples } = setup
+    let { instruction, omitExamples } = { ...slate, ...tie }
+    let { parameters } = slate
+  
+    let prefix = {}
+  
+    for (let useAs of ['input', 'output']) {
+      let parameter = find(parameters, { useAs })
+      if (parameter)
+        prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /, '').toUpperCase()
+  
+      else
+        prefix[useAs] = slate[useAs + 'Prefix']
+    }
+  
+    // console.log({prefix})
+    if (duringSetup)
+      examples.pop()
+  
+    // console.log(setup, slate)
+    let prompt = [
+      instruction,
+      filteredParameters({ setup, slate, onlyRecitals: true, duringGeneration: true }).map(({ name }) => `${name}:\n${parameterValues[name]}`
+      ).join('\n\n'),
+      (examples || []).map(example => `${prefix.input}:\n- ${example.input}\n\n${prefix.output}:\n${example.output}`
+      ).join('\n\n'),
+      prefix.input + ':\n-'
+    ].filter(a => a).join('\n\n')
+  
+    for (let { name } of reject(parameters, { recital: true })) {
+      prompt = prompt.replace(`<${name}>`, parameterValues[name])
+    }
+  
+    if (input)
+      prompt += ' ' + input
+  
+    if (input && !appendInput || output)
+      prompt += `\n\n${prefix.output}:\n${output}`
+  
+    console.log(prompt)
+  
+    let stop = [
+      prefix.input + ':',
+      ...(examples && examples.length) || omitExamples ? [] : ['\n'],
+      ...slate.stop || []
+    ]
+    return { prompt, stop, prefix }
+  }  
 
   app.post('/widget/generate', async (req, res, next) =>
   {
@@ -263,56 +312,9 @@ try {
 
       let { setup, slate, tie } = widget
       ;( { apiKey } = slate )
-      let { parameterValues, examples } = setup
-      let { instruction, inputPrefix, outputPrefix, omitExamples } = {...slate, ...tie}
-      let { parameters } = slate
 
-      let prefix = {}
+      let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output })
       
-      for ( let useAs of ['input', 'output'] ) {
-        let parameter = find(parameters, { useAs })
-        if ( parameter )
-          prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /,'').toUpperCase()
-        else
-          prefix[useAs] = slate[useAs + 'Prefix']
-      }
-
-      // console.log({prefix})
-
-      if ( duringSetup )
-        examples.pop()
-
-      // console.log(setup, slate)
-
-      let prompt = [
-        instruction,
-        filteredParameters({setup, slate, onlyRecitals: true, duringGeneration: true}).map(({ name }) =>
-          `${name}:\n${parameterValues[name]}`
-        ).join('\n\n'),
-        (examples || []).map(example =>
-          `${prefix.input}:\n- ${example.input}\n\n${prefix.output}:\n${example.output}`
-        ).join('\n\n'),
-        prefix.input+':\n-'
-      ].filter(a=>a).join('\n\n')
-
-      for ( let { name } of _.reject(parameters, { recital: true })) {
-        prompt = prompt.replace(`<${name}>`, parameterValues[name])
-      }
-
-      if ( input )
-        prompt += ' ' + input
-        
-      if ( input && !appendInput || output)
-        prompt += `\n\n${prefix.output}:\n${output}`
-    
-      console.log(prompt)
-
-      let stop = [
-        prefix.input + ':', 
-        ...(examples && examples.length) || omitExamples ? [] : ['\n'],
-        ...slate.stop || []
-      ]
-
       let response = await complete(
         {
           body: { prompt, n, stop, allowUnsafe, apiKey},
@@ -398,9 +400,11 @@ try {
 
 } catch (err) {
   console.log(err)
+  throw(err)
 }
 
 export default {
   path: '/api',
   handler: app
 }
+
