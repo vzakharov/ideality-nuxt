@@ -182,7 +182,7 @@ Bubble.anon = new Bubble()
 
 function parse(object) {
 
-  const process = ( thing, type ) => mapKeys(
+  const process = ( thing, type, object ) => mapKeys(
     mapValues(thing, value => {
       const isString = typeof value === 'string'
       if (isString && value[0] == '{')
@@ -199,7 +199,7 @@ function parse(object) {
       }
     }),
     (value, key) => {
-      if ( key == 'template' && singular(type) == 'widget' ) {
+      if ( key == 'template' && singular(type) == 'widget' && !object.slate) {
         key = 'slate'
       }
       return camelCase(key)
@@ -209,9 +209,9 @@ function parse(object) {
   for ( let key of keys(object) ) {
     let value = object[key]
     if ( isArray(value) )
-      object[key] = map(value, value => process(value, key))
+      object[key] = map(value, value => process(value, key, object))
     else if ( isObject(value) )
-      object[key] = process(value, key)
+      object[key] = process(value, key, object)
   }
 
 }
