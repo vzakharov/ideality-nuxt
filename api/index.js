@@ -238,6 +238,39 @@ try {
     return { prompt, stop, prefix }
   }  
 
+  function parseResponse({ input, output, appendInput, prefix, response, n }) {
+    let starting = { input, output }
+    function process(choice) {
+  
+      let { input, output } = starting
+  
+      let { text } = choice
+  
+      // console.log(text)
+      if (input && !appendInput)
+        output += text.trimEnd()
+      else {
+        [input, output] = (input + text).trimEnd().split(prefix.output + ':').map(s => s.trim())
+        if (!output)
+          [input] = input.split("\n")
+      }
+  
+      if (output) {
+        output = output.trim()
+        output = output.replace(/\n\n.*/, '')
+      }
+  
+      return { input, output }
+  
+    }
+  
+    let { choices } = response.data
+    let content = n == 1 ?
+      process(choices[0])
+      : choices.map(choice => process(choice))
+    return content
+  }
+
   app.post('/widget/generate', async (req, res, next) =>
   {
     // console.log(req)
@@ -328,37 +361,7 @@ try {
 
       // console.log({input, output})
 
-      let starting = { input, output }
-      function process(choice) {
-
-        let { input, output } = starting
-
-        let { text } = choice
-    
-        // console.log(text)
-      
-        if ( input && !appendInput ) 
-          output += text.trimEnd()
-        else {
-          [input, output] = (input + text).trimEnd().split(prefix.output+':').map(s=>s.trim())
-          if ( !output )
-            [input] = input.split("\n")
-        }
-  
-        if ( output ) {
-          output = output.trim()
-          output = output.replace(/\n\n.*/, '')
-        }
-
-        return { input, output }
-
-      }
-
-      let { choices } = response.data
-      let content = 
-        n == 1 ?
-          process(choices[0])
-          : choices.map(choice => process(choice))
+      let content = parseResponse({ input, output, appendInput, prefix, response, n })
       
       delete quota.ip
 
@@ -407,4 +410,5 @@ export default {
   path: '/api',
   handler: app
 }
+
 
