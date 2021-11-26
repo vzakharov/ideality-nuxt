@@ -102,6 +102,7 @@ function Bubble({$auth, token } = {}) {
             (value, key) => {
               switch(key) {
                 case 'Slug': return 'slug'
+                case 'template': return 'slate'
                 case '_id': return 'id'
                 default: return key
               }
@@ -189,12 +190,17 @@ function parse(object) {
       else {
         if (isString && value.match(/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d\d\dZ$/))
           return new Date(value)
-
         else
           return value
       }
     }),
-    (value, key) => camelCase(key)
+    (value, key) => {
+      if ( key == 'template' && singular(type) == 'widget' ) {
+        debugger
+        key = 'slate'
+      }
+      return camelCase(key)
+    }
   )
 
   for ( let key of keys(object) ) {
