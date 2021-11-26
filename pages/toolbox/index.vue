@@ -60,8 +60,12 @@
   export default {
 
     data() {
+      let categories = [
+        'Startup', 'Social', 'Brainstorming', 'Personal', 'Fun'
+      ]
       return {
-        expanded: [],
+        categories,
+        expanded: [...categories],
         filter,
         without
       }
@@ -74,11 +78,11 @@
       return { widgets, widget }
     },
 
-    computed: {
-      categories({ widgets } = this) {
-        return chain(widgets).map('category').uniq().value()
-      }
-    },
+    // computed: {
+    //   categories({ widgets } = this) {
+    //     return chain(widgets).map('category').uniq().value()
+    //   }
+    // },
 
     methods: {
 
