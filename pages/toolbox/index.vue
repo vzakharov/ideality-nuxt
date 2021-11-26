@@ -9,7 +9,7 @@
             <h5>Tools</h5>
           </b-col>
           <b-col class="text-end">
-            <a href="#" style="color:gray"
+            <a href="#" style="color:#BBB"
               @click.prevent="expanded = expanded.length==categories.length ? [] : [...categories]"
             >
               <small v-text="expanded.length==categories.length ? 'Collapse all' : 'Expand all'"/>
