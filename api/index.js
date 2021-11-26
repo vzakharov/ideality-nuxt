@@ -255,7 +255,7 @@ try {
           return res.status(403).send({
             error: {
               cause: 'unsafe', 
-              message: 'Unsafe input'
+              message: 'Unsafe input, please consider revising.'
             }
           })
     
