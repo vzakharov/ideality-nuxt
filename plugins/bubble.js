@@ -152,9 +152,13 @@ function Bubble({$auth, token } = {}) {
         parse(response)
         // console.log(response)
         return response
-      } catch({response, response: {data, request: { path }}}) {
+      } catch({ response, ...error }) {
+        if ( response ) {
+          let {data, request: { path }} = response
+          throw({...data, path})
+        } else
+          throw(error)
         // console.log({...data, path})
-        throw({...data, path})
       }
     }
   
@@ -178,8 +182,8 @@ Bubble.anon = new Bubble()
 
 function parse(object) {
 
-  const process = thing => mapKeys(
-    mapValues(thing, (value, key) => {
+  const process = ( thing, type ) => mapKeys(
+    mapValues(thing, value => {
       const isString = typeof value === 'string'
       if (isString && value[0] == '{')
         try {
@@ -196,7 +200,6 @@ function parse(object) {
     }),
     (value, key) => {
       if ( key == 'template' && singular(type) == 'widget' ) {
-        debugger
         key = 'slate'
       }
       return camelCase(key)
@@ -206,9 +209,9 @@ function parse(object) {
   for ( let key of keys(object) ) {
     let value = object[key]
     if ( isArray(value) )
-      object[key] = map(value, process)
+      object[key] = map(value, value => process(value, key))
     else if ( isObject(value) )
-      object[key] = process(value)
+      object[key] = process(value, key)
   }
 
 }
