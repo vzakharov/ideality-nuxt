@@ -26,7 +26,7 @@
         <b-list-group v-if="expanded.includes(category)"
           class="ps-2"
         >
-          <b-list-group-item v-for="w in filter(widgets, {category})" :key="w.id"
+          <b-list-group-item variant="light" v-for="w in filter(widgets, {category})" :key="w.id"
             href="#"
             class="fw-bold"
             :active="w == widget"

@@ -185,10 +185,10 @@ function parse(object) {
       delete thing.template
     }
 
-    thing.slug = thing.Slug
-    thing.id = thing._id
-    delete thing.Slug
-    delete thing._id
+    for (let key of ['Slug', '_id', 'Modified Date', 'Created Date']) {
+      thing[camelCase(key)] = thing[key]
+      delete thing[key]
+    }
 
     console.log({thing})
 

@@ -20,6 +20,18 @@
       ref="input"
     />
 
+    <LabeledInput v-if="content.output || duringSetup" 
+      :id="widget.slug+'-widget-output'"
+      v-model="content.output"
+      v-bind="{
+        multiline: true,
+        caption: display.outputCaption,
+        disabled: generating
+      }"
+      rows="1"
+      @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
+    />
+    
     <template>
       <div v-if="!generating">
         <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
@@ -42,17 +54,7 @@
       >Got it</b-button>
     </b-alert>
 
-    <LabeledInput v-if="content.output || duringSetup" 
-      :id="widget.slug+'-widget-output'"
-      v-model="content.output"
-      v-bind="{
-        multiline: true,
-        caption: display.outputCaption,
-        disabled: generating
-      }"
-      rows="1"
-      @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
-    />
+
 
     <template v-if="display.CTA && generated && content.output && !duringSetup">
       <div v-if="showOutro">
