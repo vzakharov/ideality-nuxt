@@ -11,7 +11,7 @@
           <small v-text="aiHidden ? 'Show' : 'Hide'"/>
         </a>
       </b-col>
-      <AIConfig v-show="!aiHidden" :value="ai" v-on="$listeners" class="fs-small"/>
+      <AIConfig v-show="!aiHidden" :key="ai" :value="ai" v-on="$listeners" class="fs-small"/>
     </b-row>
     <hr>
     <b-row>
