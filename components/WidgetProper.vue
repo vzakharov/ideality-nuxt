@@ -31,7 +31,7 @@
       rows="1"
       @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
     />
-    
+
     <template>
       <div v-if="!generating">
         <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
@@ -102,7 +102,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
+    props: ['widget', 'value', 'duringSetup', 'ai', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
 
     data() { 
       let content = this.value || {}
@@ -147,7 +147,10 @@
         try {
           this.track('run')
           let { id, setup, slate, tie } = this.widget
-          let { duringSetup, apiKey } = this
+          let { duringSetup } = this
+          let { ai } = this
+          let { apiKey, engine, temperature } = ai
+          if ( !apiKey ) ({ apiKey } = this)
           
           let { code } = this.$route.query
 
@@ -174,11 +177,11 @@
 
           let content, runsLeft
 
-          if ( setup && slate ) {
+          if ( setup && slate && apiKey ) {
             console.log({ input, output })
             let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, output, appendInput })
             console.log({ prompt })
-            let response = await complete({ prompt, stop, apiKey: slate.apiKey })
+            let response = await complete({ prompt, engine, temperature, stop, apiKey })
             console.log({ response })
             content = parseResponse({ input, output, appendInput, prefix, response })
             console.log({ content })

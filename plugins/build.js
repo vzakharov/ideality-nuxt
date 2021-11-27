@@ -60,8 +60,8 @@ function complete({ prompt, engine, temperature, n, stop, apiKey }) {
     Authorization: `Bearer ${apiKey}`
   }
   
-  engine = engine || 'curie-instruct-beta'
-  temperature = temperature || 0.75
+  engine = engine || 'curie'
+  if (typeof temperature === 'undefined') temperature = 0.75
 
   let payload = {
     prompt,
@@ -76,7 +76,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey }) {
 
   // Send request
   let request = [
-    `https://api.openai.com/v1/engines/${engine}/completions`,
+    `https://api.openai.com/v1/engines/${engine}-instruct-beta/completions`,
     payload, { headers }
   ]
 

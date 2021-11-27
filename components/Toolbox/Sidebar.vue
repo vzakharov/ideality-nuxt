@@ -1,7 +1,21 @@
 <template>
   <div>
     <b-row>
-      <b-col cols="4">
+      <b-col col="5">
+        <h5>AI settings</h5>
+      </b-col>
+      <b-col class="text-end">
+        <a href="#" style="color:#BBB"
+          @click.prevent="$emit('assign', { aiHidden: !aiHidden })"
+        >
+          <small v-text="aiHidden ? 'Show' : 'Hide'"/>
+        </a>
+      </b-col>
+      <AIConfig v-show="!aiHidden" :value="ai" v-on="$listeners" class="fs-small"/>
+    </b-row>
+    <hr>
+    <b-row>
+      <b-col col="5">
         <h5>Tools</h5>
       </b-col>
       <b-col class="text-end">
@@ -45,7 +59,7 @@
 
   export default {
 
-    props: ['categories', 'widgets', 'widget', 'expanded'],
+    props: ['categories', 'widgets', 'widget', 'expanded', 'aiHidden', 'ai'],
 
     methods: {
       filter, without
