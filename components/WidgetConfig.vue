@@ -24,7 +24,7 @@
             :variant="saveDisabled ? 'light' : 'primary'" 
             :disabled="saveDisabled" 
             v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " 
-            @click="save"
+            @click="save()"
           />
         </b-nav-form>
         <b-nav-item-dropdown text="More" variant="outline-secondary">
@@ -41,11 +41,13 @@
       <div>
         <ul class="nav nav-tabs">
           <li class="nav-item" 
-            v-for="item in [...[
-              { slug: 'display', caption: 'Display settings'},
-              { slug: 'setup', caption: 'AI settings' },
-              { slug: 'slate', caption: 'Slate settings'}
-            ].filter(item=>vm[item.slug]),
+            v-for="item in [
+              ...( $auth.user.isAdmin ? [{ slug: 'admin', caption: 'Admin' }] : [] ),
+              ...[
+                { slug: 'display', caption: 'Display settings'},
+                { slug: 'setup', caption: 'AI settings' },
+                { slug: 'slate', caption: 'Slate settings'}
+              ].filter(item => vm[item.slug] && !item.hideIf),
               { slug: 'stats', caption: 'Stats'},
               { slug: 'test', caption: 'Preview'},
               { slug: 'yaml', caption: 'YAML', testing: true}
@@ -63,6 +65,8 @@
             />
           </li>
         </ul>
+
+        <WidgetAdmin v-f="section=='admin'" v-bind="control(widget)" v-on="{assign}"/>
 
         <template v-if="section=='display'">
           <LabeledInput v-model="widget.name" caption="Name" placeholder="Name for your own reference, not displayed for the user"/>
@@ -128,9 +132,9 @@ export default {
 
   watch: {
 
-    changed() {
-      // window.onbeforeunload = this.changed ? () => { return "" } : undefined
-    },
+    // changed() {
+    //   // window.onbeforeunload = this.changed ? () => { return "" } : undefined
+    // },
 
     widget: {
       deep: true,
@@ -201,13 +205,15 @@ export default {
       name: ''
     }]),
 
-    async save() {
+    async save({ widget } = this) {
       try {
+        console.log({ widget })
         this.saving = true
-        let time = Date.now()
-        this.widget.display.name = this.widget.name
+        widget.display.name = widget.name
+        let { name, runsLeft, inToolbox } = widget
         await this.$axios.$patch(this.apiUrl, {
-          ...mapValues(pick(this.widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify), name: this.widget.name
+          name, runsLeft, inToolbox,
+          ...mapValues(pick(widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify)
         })
         this.changed = false
         this.saved = true

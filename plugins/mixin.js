@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { assign, get, set, keys, mapValues, pickBy } from 'lodash'
+import { assign, chain, forEach, get, set, keys, mapValues, pickBy } from 'lodash'
 import { canRunWidget } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -98,6 +98,8 @@ Vue.mixin({
       }
     },
 
+    control: what => ({ key: what, value: what }),
+
     element: process.client && window.document.getElementById,
 
     withElement(id, ...actions) {
@@ -150,7 +152,8 @@ Vue.mixin({
         properties = target
         target = this         
       }
-      Object.assign(target, properties)
+      forEach(properties, ( value, key ) => this.$set(target, key, value))
+      // Object.assign(target, properties)
     },
 
 
