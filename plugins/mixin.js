@@ -98,7 +98,7 @@ Vue.mixin({
       }
     },
 
-    control: what => ({ key: what, value: what }),
+    control: what => ({ key: JSON.stringify(what), value: what }),
 
     element: process.client && window.document.getElementById,
 

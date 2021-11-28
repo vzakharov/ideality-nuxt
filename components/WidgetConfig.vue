@@ -66,7 +66,7 @@
           </li>
         </ul>
 
-        <WidgetAdmin v-f="section=='admin'" v-bind="control(widget)" v-on="{assign}"/>
+        <WidgetAdmin v-if="section=='admin'" v-bind="control(widget)" v-on="{assign}"/>
 
         <template v-if="section=='display'">
           <LabeledInput v-model="widget.name" caption="Name" placeholder="Name for your own reference, not displayed for the user"/>
