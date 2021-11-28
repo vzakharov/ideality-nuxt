@@ -61,9 +61,9 @@ try {
 
   let users = {}
 
-  async function getUser(token, ignoreErrors) {
-    let user = users[token]
-    if (!user) {
+  async function getUser(token, ignoreErrors, next) {
+    let user //= users[token]
+    // if (!user) {
       try {
         user = await (
           new Bubble.default({ token })
@@ -73,10 +73,12 @@ try {
           return undefined
         else
           throw(err)
+      } finally {
+        next()
       }
-      users[token] = user
-      setTimeout(() => delete users[token], 1000 * 3600 * 24)
-    }
+    //   users[token] = user
+    //   setTimeout(() => delete users[token], 1000 * 3600 * 24)
+    // }
     return user
   }
 
@@ -85,7 +87,7 @@ try {
 
   app.get('/auth/user', async ( {headers: { authorization: token }}, res, next ) => {
     try {
-      let user = await getUser(token)
+      let user = await getUser(token, null, next)
       // console.log({users})
       res.send({user})
     } catch(err) {
