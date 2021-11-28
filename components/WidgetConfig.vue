@@ -48,6 +48,7 @@
             ].filter(item=>vm[item.slug]),
               { slug: 'stats', caption: 'Stats'},
               { slug: 'test', caption: 'Preview'},
+              { slug: 'yaml', caption: 'YAML', testing: true}
             ].filter(item=>!item.testing || queryTags.testing)"
             :key="item.slug"
           >

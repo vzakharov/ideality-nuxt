@@ -57,7 +57,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
   return { prompt, stop, prefix }
 }
 
-function complete({ prompt, engine, temperature, n, stop, apiKey }) {
+function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
   let headers = {
     Authorization: `Bearer ${apiKey}`
   }
@@ -85,7 +85,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey }) {
       , 26: 1 // semicolon
     },
     stop,
-    logprobs: 10
+    logprobs
   }
 
 
@@ -122,7 +122,7 @@ function parseResponse({ input, output, appendInput, prefix, response, n }) {
 
     if (output) {
       output = output.trim()
-      output = output.replace(/\n\n[\s\S]*/, '')
+      // output = output.replace(/\n\n[\s\S]*/, '')
     }
 
     return { input, output }

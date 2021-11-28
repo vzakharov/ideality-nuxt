@@ -149,8 +149,8 @@
           let { id, setup, slate, tie } = this.widget
           let { duringSetup } = this
           let { ai } = this
-          let { apiKey, engine, temperature } = ai
-          if ( !apiKey ) ({ apiKey } = this)
+          let { engine, temperature } = ai || {}
+          let { apiKey } = {...slate, ...ai, ...this}
           
           let { code } = this.$route.query
 
@@ -173,7 +173,7 @@
               apiKey, code, ...this.queryTags
             }
           
-          console.log({setup, slate})
+          console.log({setup, slate, apiKey})
 
           let content, runsLeft
 
@@ -181,7 +181,7 @@
             console.log({ input, output })
             let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, output, appendInput })
             console.log({ prompt })
-            let response = await complete({ prompt, engine, temperature, stop, apiKey })
+            let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
             console.log({ response })
             content = parseResponse({ input, output, appendInput, prefix, response })
             console.log({ content })
