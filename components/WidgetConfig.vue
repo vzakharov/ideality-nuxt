@@ -28,7 +28,7 @@
           />
         </b-nav-form>
         <b-nav-item-dropdown text="More" variant="outline-secondary">
-          <b-dropdown-item :to="{ name: 'widget-new', query: { slate: widget.id }}">
+          <b-dropdown-item :to="{ name: 'widget-new', query: { template: widget.id }}">
             Clone
           </b-dropdown-item>
           <b-dropdown-item @click="unlink" variant="danger">
