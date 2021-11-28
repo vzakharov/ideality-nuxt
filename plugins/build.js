@@ -15,8 +15,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
   for (let useAs of ['input', 'output']) {
     let parameter = find(parameters, { useAs })
     if (parameter)
-      prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /, '').toUpperCase()
-
+      prefix[useAs] = parameterValues[parameter.name].replace(/^(an?|the) /, '')//.toUpperCase()
     else
       prefix[useAs] = slate[useAs + 'Prefix']
   }
@@ -30,9 +29,11 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
     instruction,
     filteredParameters({ setup, slate, onlyRecitals: true, duringGeneration: true }).map(({ name }) => `${name}:\n${parameterValues[name]}`
     ).join('\n\n'),
-    (examples || []).map(example => `${prefix.input}:\n- ${example.input}\n\n${prefix.output}:\n${example.output}`
-    ).join('\n\n'),
-    prefix.input + ':\n-'
+    'Examples:', '***',
+    (examples || []).map(example => `**${prefix.input}**\n- ${example.input}\n\n**${prefix.output}**\n${example.output}`
+    ).join('\n\n***\n\n'),
+    '***',
+    '**' + prefix.input + '**\n-'
   ].filter(a => a).join('\n\n')
 
   for (let { name } of reject(parameters, { recital: true })) {
@@ -43,12 +44,13 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
     prompt += ' ' + input
 
   if (input && !appendInput || output)
-    prompt += `\n\n${prefix.output}:\n${output}`
+    prompt += `\n\n**${prefix.output}**\n${output}`
 
   console.log(prompt)
 
   let stop = [
-    prefix.input + ':',
+    '**' + prefix.input + '**',
+    '***',
     ...(examples && examples.length) || omitExamples ? [] : ['\n'],
     ...slate.stop || []
   ]
@@ -66,17 +68,24 @@ function complete({ prompt, engine, temperature, n, stop, apiKey }) {
   let payload = {
     prompt,
     temperature,
-    max_tokens: 200,
-    frequency_penalty: 1,
+    max_tokens: 400,
+    frequency_penalty: 0,
     presence_penalty: 1,
     n,
-    stop
+    logit_bias: {
+      50256: -100, // end of text
+      8162: 1, // ***
+      1174: 1, // **
+      198: 1 // new line
+    },
+    stop,
+    logprobs: 10
   }
 
 
   // Send request
   let request = [
-    `https://api.openai.com/v1/engines/${engine}-instruct-beta/completions`,
+    `https://api.openai.com/v1/engines/${engine}/completions`,
     payload, { headers }
   ]
 
@@ -96,18 +105,18 @@ function parseResponse({ input, output, appendInput, prefix, response, n }) {
 
     let { text } = choice
 
-    // console.log(text)
+    console.log(text)
     if (input && !appendInput)
       output += text.trimEnd()
     else {
-      [input, output] = (input + text).trimEnd().split(prefix.output + ':').map(s => s.trim())
+      [input, output] = (input + text).trimEnd().split('**' + prefix.output + '**').map(s => s.trim())
       if (!output)
         [input] = input.split("\n")
     }
 
     if (output) {
       output = output.trim()
-      output = output.replace(/\n\n.*/, '')
+      output = output.replace(/\n\n[\s\S]*/, '')
     }
 
     return { input, output }

@@ -38,7 +38,7 @@
           :disabled="!content.input || !canRunWidget"
           @click="generate"
         />
-        <b-button class="text-muted" variant="light" v-text="'I’m feeling lucky'"
+        <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
           @click="content={}; generate()"
           :disabled="!canRunWidget"
         />

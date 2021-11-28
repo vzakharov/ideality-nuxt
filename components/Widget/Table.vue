@@ -47,8 +47,7 @@
 
     data() {
       return {
-        widgets: null,
-        orderBy
+        widgets: null
       }
     },
 
@@ -56,6 +55,10 @@
 
       Object.assign(this, await new Bubble(this).go('getUserWidgets'))
         
+    },
+
+    methods: {
+      orderBy
     }
 
 
