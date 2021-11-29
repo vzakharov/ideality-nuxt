@@ -11,6 +11,10 @@ function cast(f, ...targets) {
   }
 }
 
+function isDefined(what) {
+  return typeof what !== 'undefined'
+}
+
 function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration}) {
   let { parameters } = slate || tie
   if ( !parameters )
@@ -59,6 +63,7 @@ export {
   cast,
   filteredParameters,
   getUser,
+  isDefined,
   parseKids
 
 }

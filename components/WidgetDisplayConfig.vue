@@ -1,5 +1,11 @@
 <template>
   <div>
+      <ObjectConfig :value="widget"
+        indirect v-on="$listeners"
+        :fields="{
+          name: {}
+        }"
+      />
       <ObjectConfig v-model="display" :fields="{
         description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
         sampleDescription: { hide: !widget.isExample, caption: 'Description (for owners)', multiline: true},

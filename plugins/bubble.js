@@ -130,7 +130,7 @@ function Bubble({$auth, token } = {}) {
       try {
         let { data: { response } } = await axios.post('/wf/'+workflow, body)
         parse(response)
-        // console.log(response)
+        console.log({response})
         return response
       } catch({ response, ...error }) {
         if ( response ) {
@@ -160,6 +160,9 @@ Bubble.asyncData = ( type, query, options ) =>
 // Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
 
+Bubble.reservedProperties = ['Slug', '_id', 'Modified Date', 'Created Date', 'Created By']
+Bubble.camelcasedReservedProperties = map(Bubble.reservedProperties, camelCase)
+
 function parse(object) {
 
   const process = ( thing, type, object ) => {
@@ -185,7 +188,7 @@ function parse(object) {
       delete thing.template
     }
 
-    for (let key of ['Slug', '_id', 'Modified Date', 'Created Date']) {
+    for (let key of Bubble.reservedProperties) {
       thing[camelCase(key)] = thing[key]
       delete thing[key]
     }
@@ -197,10 +200,13 @@ function parse(object) {
 
   for ( let key of keys(object) ) {
     let value = object[key]
-    if ( isArray(value) )
-      object[key] = map(value, value => process(value, key, object))
-    else if ( isObject(value) )
+    if ( isArray(value) ) {
+      if ( value.length > 0 && isObject(value[0]) )
+        object[key] = map(value, value => process(value, key, object))
+    }
+    else if ( isObject(value) ) {
       object[key] = process(value, key, object)
+    }
   }
 
 }

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { assign, chain, forEach, get, set, keys, mapValues, pickBy } from 'lodash'
-import { canRunWidget } from '@/plugins/helpers'
+import { canRunWidget, isDefined } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 
@@ -71,6 +71,7 @@ Vue.mixin({
     process() {
       return process
     },
+
     queryTags() {
       return mapValues(
         pickBy(this.$route.query,
@@ -98,9 +99,19 @@ Vue.mixin({
       }
     },
 
-    control: what => ({ key: JSON.stringify(what), value: what }),
+    control(what) { 
+      return { 
+        key: JSON.stringify(what),
+        value: what,
+        // 'v-on': { assign: this.assign }
+      }
+    },
 
     element: process.client && window.document.getElementById,
+
+    hasProp(prop) {
+      return isDefined(this.$props[prop])
+    },
 
     withElement(id, ...actions) {
       let element = window.document.getElementById(id)
@@ -137,6 +148,10 @@ Vue.mixin({
       return this.queryTags[tag]
     },
 
+    please(doWhat) {
+      return doWhat.apply(this)
+    },
+
     pseudoRoute({ params, query, hash }) {
       window.history.pushState(null, null,
         this.$router.resolve(appendRoute({ params, query, hash })).href
@@ -147,13 +162,17 @@ Vue.mixin({
       set(this, what, !get(this, what))
     },
 
-    assign(target, properties) {
-      if ( !properties ) {
-        properties = target
-        target = this         
+    setField([target, key, value]) {
+      // debugger
+      this.$set(target, key, value)
+    },
+
+    setFields(target, fields) {
+      if ( fields ) {
+        forEach(fields, ( value, key ) => this.$set(target, key, value))  
+      } else {
+        Object.assign(this, fields)
       }
-      forEach(properties, ( value, key ) => this.$set(target, key, value))
-      // Object.assign(target, properties)
     },
 
 

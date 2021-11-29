@@ -1,5 +1,6 @@
 export const state = () => ({
   path: '',
+  toolCategories: null,
   headers: null,
   updatedRoute: null,
   tree: {
@@ -28,9 +29,11 @@ export const state = () => ({
 
 export const mutations = {
 
-  set(state, values) {
-    console.log({state, values})
-    Object.assign(state, values)
+  set(state, keyOrValues, value) {
+    if ( value )
+      state.keyOrValues = value
+    else
+      Object.assign(state, keyOrValues)
   }
 
 }

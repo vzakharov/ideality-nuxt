@@ -1,5 +1,5 @@
 <template>
-  <b-row>
+  <b-row>    
     <b-navbar>
       <b-navbar-nav>
         <b-nav-form>
@@ -24,7 +24,7 @@
             :variant="saveDisabled ? 'light' : 'primary'" 
             :disabled="saveDisabled" 
             v-text="saving ? 'Saving...' : saved && !changed ? 'Saved!' : 'Save' " 
-            @click="save()"
+            @click="save"
           />
         </b-nav-form>
         <b-nav-item-dropdown text="More" variant="outline-secondary">
@@ -42,15 +42,20 @@
         <ul class="nav nav-tabs">
           <li class="nav-item" 
             v-for="item in [
-              ...( $auth.user.isAdmin ? [{ slug: 'admin', caption: 'Admin' }] : [] ),
+              ...( $auth.user.isAdmin ? [
+                { slug: 'admin', caption: 'Admin' },
+                { slug: 'yaml', caption: 'YAML'}
+              ] : [] ),
+              ...[
+                { slug: 'native', caption: 'Native settings', hideIf: !widget.isNative },
+              ].filter(item => !item.hideIf),
               ...[
                 { slug: 'display', caption: 'Display settings'},
                 { slug: 'setup', caption: 'AI settings' },
                 { slug: 'slate', caption: 'Slate settings'}
-              ].filter(item => vm[item.slug] && !item.hideIf),
+              ].filter(item => vm[item.slug]),
               { slug: 'stats', caption: 'Stats'},
-              { slug: 'test', caption: 'Preview'},
-              { slug: 'yaml', caption: 'YAML', testing: true}
+              { slug: 'test', caption: 'Preview'}
             ].filter(item=>!item.testing || queryTags.testing)"
             :key="item.slug"
           >
@@ -66,11 +71,12 @@
           </li>
         </ul>
 
-        <WidgetAdmin v-if="section=='admin'" v-bind="control(widget)" v-on="{assign}"/>
+        <WidgetAdmin v-if="section=='admin'" v-bind="{widget}"/>
 
+        <WidgetNativeSettings v-if="section=='native'" v-on="{please}"/>
+        
         <template v-if="section=='display'">
-          <LabeledInput v-model="widget.name" caption="Name" placeholder="Name for your own reference, not displayed for the user"/>
-          <WidgetDisplayConfig :context="{widget}" v-model="display"/>
+          <WidgetDisplayConfig :context="{widget}" v-model="display" v-on="{please}"/>
         </template>
         <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
         <SlateConfig v-if="section=='slate'" v-model="widget.slate" v-bind="{widget}"/>
@@ -139,11 +145,12 @@ export default {
     widget: {
       deep: true,
       handler(widget, old) {
-        if ( old == this.oldConfig )
-          return
+        // // debugger
+        // if ( old == this.oldConfig )
+        //   return
         this.changed = true
-        this.oldConfig = this.widget
-        this.widget = {...widget}
+        // this.oldConfig = this.widget
+        // this.widget = {...widget}
         // this.$emit('input', this.widget)
       }
 
@@ -205,19 +212,21 @@ export default {
       name: ''
     }]),
 
-    async save({ widget } = this) {
+    async save() {
       try {
+        let { widget } = this
         console.log({ widget })
         this.saving = true
         widget.display.name = widget.name
-        let { name, runsLeft, inToolbox } = widget
         await this.$axios.$patch(this.apiUrl, {
-          name, runsLeft, inToolbox,
+          ...omit(widget, Bubble.camelcasedReservedProperties),
           ...mapValues(pick(widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify)
         })
         this.changed = false
         this.saved = true
         setTimeout(() => this.saved = false, 3000)
+      } catch(error) {
+        window.alert("Could not save: " + JSON.stringify(error))
       } finally {
         this.saving = false
       }

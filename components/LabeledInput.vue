@@ -5,9 +5,9 @@
       <p v-text="value" @click="blurred=false; $nextTick(() => { $refs.input.focus(); $refs.input.select() })"/>
     </template>
     <template v-else>
-      <div v-if="$caption && type!='boolean'"><label :for="uid" v-text="$caption" class="my-1 fw-bold"/></div>
-      <Choices v-if="choices" v-bind="{value, choices}" @input="$emit('input', $event)"/>
-      <div v-else-if="type=='boolean'" class="form-check">
+      <div v-if="$caption && !isBoolean"><label :for="uid" v-text="$caption" class="my-1 fw-bold"/></div>
+      <Choices v-if="typeof choices !== 'undefined'" v-bind="{value, choices}" @input="$emit('input', $event)"/>
+      <div v-else-if="isBoolean" class="form-check">
         <input class="form-check-input" type="checkbox" 
           v-bind="{checked: value, disabled}" 
           @input="console.log( $event.target.checked ); $emit('input', $event.target.checked || undefined)"
@@ -78,6 +78,10 @@
 
       $caption() {
         return this.caption || upperFirst(this.$key)
+      },
+
+      isBoolean() {
+        return this.type === 'boolean' || typeof this.value === 'boolean'
       },
 
       uid() {

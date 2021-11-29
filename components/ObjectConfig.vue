@@ -8,7 +8,7 @@
         $key: field.key,
         value: ( field.object || object )[field.key]
       }"
-      @input="$set(( field.object || object ), field.key, $event); if ( field.handler ) field.handler($event)"
+      @input="input(field, $event)"
     />
   </div>
 </template>
@@ -18,9 +18,10 @@
 // import LabeledInput from '@/components/LabeledInput.vue'
 
 export default {
-  props: ['fields', 'value'],
+  props: ['indirect', 'fields', 'value'],
 
   data() { 
+    // debugger
     return { object: this.value }
   },
 
@@ -29,10 +30,27 @@ export default {
       return Object.getOwnPropertyNames(this.fields).map(key => {
         let value = this.fields[key]
         if ( typeof value === 'string' ) {
-          value = { caption: value }
+          if ( value === 'boolean' )
+            value = { type: 'boolean' }
+          else
+            value = { caption: value }
         }
         return { key, ...value }
       })
+    }
+  },
+
+  methods: {
+    input(field, value) {
+      let { object, key } = { ...this, ...field }
+      if (this.hasProp('indirect')) {
+        // this.$emit('setField', [ this.value, key, value ])
+        this.$emit('please', () =>
+          this.$set(this.value, key, value)
+        )
+      } else
+        this.$set(object, key, value)
+      if ( field.handler ) field.handler(value)
     }
   }
 }

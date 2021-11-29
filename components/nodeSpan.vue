@@ -18,7 +18,7 @@ export default {
     }
   },
   mounted() {
-    debugger
+    // debugger
   }
 }
 </script>
