@@ -10,7 +10,7 @@
         description: { caption: 'Description (for end user)', placeholder: 'The text that will show up in the widget', multiline: true},
         sampleDescription: { hide: !widget.isExample, caption: 'Description (for owners)', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
-        inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”'},
+        inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”', multiline: true },
         suggestCaption: { caption: 'What to write instead of “Suggest” (optional)', placeholder: 'e.g. “Generate”, “Go”, etc.'},
         outputCaption: { caption: 'Caption for AI output', placeholder: 'e.g. “Here’s what our product can do for you”'},
         preCTA: { caption: 'Line before CTA button', placeholder: 'e.g. “Intrigued?”' },

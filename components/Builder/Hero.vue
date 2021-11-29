@@ -29,7 +29,7 @@
     data() {
 
       let match = this.content.output.match(
-        /(?<headline>^.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
+        /.*\n\n(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
       )
 
       let { groups } = match || { groups: {}}

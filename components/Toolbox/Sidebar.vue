@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row>
-      <b-col col="5">
+      <b-col cols="5">
         <h5>AI settings</h5>
       </b-col>
       <b-col class="text-end">
@@ -15,7 +15,7 @@
     </b-row>
     <hr>
     <b-row>
-      <b-col col="5">
+      <b-col cols="5">
         <h5>Tools</h5>
       </b-col>
       <b-col class="text-end">
@@ -40,7 +40,7 @@
         <b-list-group v-if="expanded.includes(category)"
           class="ps-2"
         >
-          <b-list-group-item variant="light" v-for="w in filter(widgets, {category})" :key="w.id"
+          <b-list-group-item variant="light" v-for="w in sortBy(filter(widgets, {category}), 'sortIndex')" :key="w.id"
             href="#"
             class="fw-bold"
             :active="w == widget"
@@ -55,14 +55,14 @@
 
 <script>
 
-  import { filter, without } from 'lodash'
+  import { filter, sortBy, without } from 'lodash'
 
   export default {
 
     props: ['categories', 'widgets', 'widget', 'expanded', 'aiHidden', 'ai'],
 
     methods: {
-      filter, without
+      filter, sortBy, without
     }
 
   }

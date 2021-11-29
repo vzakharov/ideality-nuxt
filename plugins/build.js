@@ -22,7 +22,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
 
   // console.log({prefix})
   if (duringSetup)
-    examples.pop()
+    examples = examples.slice(0, -1)
 
   // console.log(setup, slate)
   let prompt = [
@@ -30,10 +30,10 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
     filteredParameters({ setup, slate, onlyRecitals: true, duringGeneration: true }).map(({ name }) => `${name}:\n${parameterValues[name]}`
     ).join('\n\n'),
     'Examples:', '***',
-    (examples || []).map(example => `**${prefix.input}**\n- ${example.input}\n\n**${prefix.output}**\n${example.output}`
+    (examples || []).map(example => `**${prefix.input}**\n\n- ${example.input}\n\n**${prefix.output}**\n\n${example.output}`
     ).join('\n\n***\n\n'),
     '***',
-    '**' + prefix.input + '**\n-'
+    '**' + prefix.input + '**\n\n-'
   ].filter(a => a).join('\n\n')
 
   for (let { name } of reject(parameters, { recital: true })) {
@@ -44,7 +44,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
     prompt += ' ' + input
 
   if (input && !appendInput || output)
-    prompt += `\n\n**${prefix.output}**\n${output}`
+    prompt += `\n\n**${prefix.output}**\n\n${output}`
 
   console.log(prompt)
 
@@ -69,21 +69,21 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
   let payload = {
     prompt,
     temperature,
-    max_tokens: 400,
+    max_tokens: 250,
     frequency_penalty: 0,
     presence_penalty: 1,
     n,
     logit_bias: {
-      // 50256: -100 // end of text
-      // , 8162: 1 // ***
-      // , 1174: 1 // **
-      // , 198: 1 // new line,
-      // , 25: 1 // colon
-      // , 13: 1 // period
-      // , 0: 1 // bang
-      // , 30: 1 // question
-      // , 11: 1 // comma
-      // , 26: 1 // semicolon
+      50256: -100 // end of text
+      , 8162: 1 // ***
+      , 1174: 1 // **
+      , 198: 1 // new line,
+      , 25: 1 // colon
+      , 13: 1 // period
+      , 0: 1 // bang
+      , 30: 1 // question
+      , 11: 1 // comma
+      , 26: 1 // semicolon
     },
     stop,
     logprobs

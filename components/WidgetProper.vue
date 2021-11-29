@@ -13,10 +13,11 @@
           labelTag: 'h3',
           disabled: generating,
           multiline: true,
-          removeNewLines: true,
+          removeNewLines: !widget.slate.multilineInput,
           rows: 1
         }"
-        @keydown.native.enter="generate"
+        @keydown.native.enter="!widget.slate.multilineInput && generate()"
+        @keydown.native.ctrl.enter="widget.slate.multilineInput && generate()"
         @input="changed=true"
         ref="input"
       />
@@ -96,18 +97,13 @@
       </template>
 
       <div class="text-end pt-2">
-        <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
-          <small>
+        <small>
+          <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
             Powered by ▲ Ideality
-          </small>
-        </a>
+          </a>
+          <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.id }}" v-text="'(edit)'"/>
+        </small>
       </div>
-    </div>
-
-    <div v-if='isAdmin' class="text-end">
-      <nuxt-link :to="{name: 'widget-id-config', params: { id: widget.id }}">
-        <small class="text-secondary">edit</small>
-      </nuxt-link>
     </div>
   </div>
 </template>
@@ -198,6 +194,7 @@
 
           if ( setup && slate && apiKey ) {
             console.log({ input, output })
+            console.log({ setup, slate, tie, duringSetup, input, output, appendInput })
             let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, output, appendInput })
             console.log({ prompt })
             let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })

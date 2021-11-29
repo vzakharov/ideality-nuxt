@@ -65,7 +65,8 @@
     },
 
     mounted() {
-      this.ai = JSON.parse(localStorage.getItem('ai'))
+      let ai = JSON.parse(localStorage.getItem('ai'))
+      if ( ai ) Object.assign(this, {ai})
     },
 
     // computed: {
