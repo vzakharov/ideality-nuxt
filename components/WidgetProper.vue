@@ -4,6 +4,7 @@
       <template v-if="!duringSetup">
         <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
       </template>
+
       <LabeledInput
         v-model="content.input"
         v-bind="{
