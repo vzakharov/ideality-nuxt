@@ -24,16 +24,18 @@ export const state = () => ({
         body: 'Test'
       }]
     }]
-  }
+  },
+  imagePromises: {}
 })
 
 export const mutations = {
 
-  set(state, keyOrValues, value) {
-    if ( value )
-      state.keyOrValues = value
-    else
-      Object.assign(state, keyOrValues)
+  set(state, values) {
+    Object.assign(state, values)
+  },
+
+  setFields(state, [ key, values ]) {
+    Object.assign(state[key], values)
   }
 
 }

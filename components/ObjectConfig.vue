@@ -44,7 +44,6 @@ export default {
     input(field, value) {
       let { object, key } = { ...this, ...field }
       if (this.hasProp('indirect')) {
-        // this.$emit('setField', [ this.value, key, value ])
         this.$emit('please', () =>
           this.$set(this.value, key, value)
         )

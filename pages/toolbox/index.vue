@@ -8,7 +8,7 @@
         <b-modal id="tools-modal" title="Toolbox settings" no-fade hide-footer>
           <ToolboxSidebar 
             v-bind="{ widget, widgets, categories, expanded, ai, aiHidden }"
-            v-on="{ assign }"
+            v-on="{ setFields }"
           />
         </b-modal>
       </b-navbar-nav>
@@ -19,7 +19,7 @@
       >
         <ToolboxSidebar 
           v-bind="{ widget, widgets, categories, expanded, ai, aiHidden }"
-          v-on="{ assign }"
+          v-on="{ setFields }"
         />
       </b-col>
       <b-col class="p-3">

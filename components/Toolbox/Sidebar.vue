@@ -6,7 +6,7 @@
       </b-col>
       <b-col class="text-end">
         <a href="#" style="color:#BBB"
-          @click.prevent="$emit('assign', { aiHidden: !aiHidden })"
+          @click.prevent="$emit('setFields', { aiHidden: !aiHidden })"
         >
           <small v-text="aiHidden ? 'Show' : 'Hide'"/>
         </a>
@@ -20,7 +20,7 @@
       </b-col>
       <b-col class="text-end">
         <a href="#" style="color:#BBB"
-          @click.prevent="$emit('assign', { expanded: expanded.length==categories.length ? [] : [...categories] })"
+          @click.prevent="$emit('setFields', { expanded: expanded.length==categories.length ? [] : [...categories] })"
         >
           <small v-text="expanded.length==categories.length ? 'Collapse all' : 'Expand all'"/>
         </a>
@@ -32,7 +32,7 @@
         :style="expanded.includes(category) && 'color:#BBB'"
       >
         <div
-          @click="$emit('assign', { expanded: expanded.includes(category) ? without(expanded, category) : [...expanded, category] })"
+          @click="$emit('setFields', { expanded: expanded.includes(category) ? without(expanded, category) : [...expanded, category] })"
         >
           {{ expanded.includes(category) ? '▾' : '▸' }}
           {{ category }} tools
@@ -45,7 +45,7 @@
             class="fw-bold"
             :active="w == widget"
             v-text="w.name"
-            @click.prevent="$emit('assign', { widget: w })"
+            @click.prevent="$emit('setFields', { widget: w })"
           />
         </b-list-group>
       </b-list-group-item>

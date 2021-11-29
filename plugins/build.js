@@ -62,8 +62,9 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     Authorization: `Bearer ${apiKey}`
   }
   
+  // console.log({temperature})
   engine = engine || 'curie'
-  if (typeof temperature === 'undefined') temperature = 0.75
+  if (typeof temperature === 'undefined') temperature = 0.5
 
   let payload = {
     prompt,
@@ -73,16 +74,16 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     presence_penalty: 1,
     n,
     logit_bias: {
-      50256: -100 // end of text
-      , 8162: 1 // ***
-      , 1174: 1 // **
-      , 198: 1 // new line,
-      , 25: 1 // colon
-      , 13: 1 // period
-      , 0: 1 // bang
-      , 30: 1 // question
-      , 11: 1 // comma
-      , 26: 1 // semicolon
+      // 50256: -100 // end of text
+      // , 8162: 1 // ***
+      // , 1174: 1 // **
+      // , 198: 1 // new line,
+      // , 25: 1 // colon
+      // , 13: 1 // period
+      // , 0: 1 // bang
+      // , 30: 1 // question
+      // , 11: 1 // comma
+      // , 26: 1 // semicolon
     },
     stop,
     logprobs

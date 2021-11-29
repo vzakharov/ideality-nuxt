@@ -68,6 +68,10 @@ Vue.mixin({
       }
     },
 
+    isAdmin() {
+      return this.$auth.user && this.$auth.user.isAdmin
+    },
+
     process() {
       return process
     },
@@ -143,7 +147,6 @@ Vue.mixin({
       })
     },
 
-
     hasQueryTag(tag) {
       return this.queryTags[tag]
     },
@@ -162,17 +165,8 @@ Vue.mixin({
       set(this, what, !get(this, what))
     },
 
-    setField([target, key, value]) {
-      // debugger
-      this.$set(target, key, value)
-    },
-
-    setFields(target, fields) {
-      if ( fields ) {
-        forEach(fields, ( value, key ) => this.$set(target, key, value))  
-      } else {
-        Object.assign(this, fields)
-      }
+    setFields(fields) {
+      Object.assign(this, fields)
     },
 
 

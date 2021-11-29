@@ -10,7 +10,7 @@
       <div v-else-if="isBoolean" class="form-check">
         <input class="form-check-input" type="checkbox" 
           v-bind="{checked: value, disabled}" 
-          @input="console.log( $event.target.checked ); $emit('input', $event.target.checked || undefined)"
+          @input="console.log( $event.target.checked ); $emit('input', $event.target.checked)"
           :id="uid"
         >
         <label :for="uid" class="form-check-label"> {{$caption}} </label>

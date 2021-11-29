@@ -37,7 +37,7 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
   })  
 }
 
-async function getUser({ $axios, store: { $auth } }) {
+async function getUser({ $axios, $auth }) {
   try {
     let { data: { user }} = await $axios.get('api/auth/user')
     $auth.setUser(user)

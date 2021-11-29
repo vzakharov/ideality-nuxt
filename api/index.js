@@ -21,7 +21,7 @@ const jsyaml = require('js-yaml')
 
 const app = express()
 
-try {
+// try {
 
   const _ = require('lodash')
   const { assign, filter, find, get, keys, map, pickBy, reject } = _
@@ -59,7 +59,7 @@ try {
     
   })
 
-  let users = {}
+  // let users = {}
 
   async function getUser(token, ignoreErrors, next) {
     let user //= users[token]
@@ -73,9 +73,10 @@ try {
           return undefined
         else
           throw(err)
-      } finally {
-        next()
-      }
+      } 
+      // finally {
+      //   next()
+      // }
     //   users[token] = user
     //   setTimeout(() => delete users[token], 1000 * 3600 * 24)
     // }
@@ -169,6 +170,30 @@ try {
     }
 
   }
+
+  app.post('/getImage', async (
+    {
+      body: {
+        query
+      }
+    },
+    res
+  ) => {
+    try {
+      console.log({query})
+      let { data: {
+        photos: [ photo ]
+      }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=1`, {
+        headers: { Authorization: process.env.PEXELS_KEY }
+      })
+      console.log({photo})
+      
+      return res.send(photo)
+    } catch(error) {
+      console.log({error})
+      return res.status(500).send({error})
+    }
+  })
 
   app.post('/widget/generate', async (req, res, next) =>
   {
@@ -296,15 +321,15 @@ try {
     actor || ( actor = ip )
 
     admin.post('widgetEvent', { widget: id, actor, action, referer })
-      .catch(next)
-      .then(({ id }) => res.send({ event: { id }}))
+
+    res.send(null)
 
   })
 
-} catch (err) {
-  console.log(err)
-  throw(err)
-}
+// } catch (err) {
+//   console.log(err)
+//   // throw(err)
+// }
 
 export default {
   path: '/api',

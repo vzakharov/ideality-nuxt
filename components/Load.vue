@@ -10,7 +10,7 @@
           if (this.hasProp('store'))
             $store.commit('set', result)
           else
-            this.$emit('assign', result)
+            this.$emit('setFields', result)
         })
     },
 

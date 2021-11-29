@@ -1,107 +1,114 @@
 <template>
-  <div class="bg-light p-2">
-    <template v-if="!duringSetup">
-      <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
-    </template>
-    <LabeledInput
-      v-model="content.input"
-      v-bind="{
-        id: 'widget-input',
-        caption: display.inputCaption,
-        placeholder: display.inputPlaceholder,
-        labelTag: 'h3',
-        disabled: generating,
-        multiline: true,
-        removeNewLines: true,
-        rows: 1
-      }"
-      @keydown.native.enter="generate"
-      @input="changed=true"
-      ref="input"
-    />
+  <div>
+    <div class="bg-light p-2">
+      <template v-if="!duringSetup">
+        <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
+      </template>
+      <LabeledInput
+        v-model="content.input"
+        v-bind="{
+          id: 'widget-input',
+          caption: display.inputCaption,
+          placeholder: display.inputPlaceholder,
+          labelTag: 'h3',
+          disabled: generating,
+          multiline: true,
+          removeNewLines: true,
+          rows: 1
+        }"
+        @keydown.native.enter="generate"
+        @input="changed=true"
+        ref="input"
+      />
 
-    <LabeledInput v-if="content.output || duringSetup" 
-      :id="widget.slug+'-widget-output'"
-      v-model="content.output"
-      v-bind="{
-        multiline: true,
-        caption: display.outputCaption,
-        disabled: generating
-      }"
-      rows="1"
-      @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
-    />
+      <LabeledInput v-if="content.output || duringSetup" 
+        :id="widget.slug+'-widget-output'"
+        v-model="content.output"
+        v-bind="{
+          multiline: true,
+          caption: display.outputCaption,
+          disabled: generating
+        }"
+        rows="1"
+        @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
+      />
 
-    <template>
-      <div v-if="!generating">
-        <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
-          :disabled="!content.input || !canRunWidget"
-          @click="generate"
-        />
-        <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
-          @click="content={}; generate()"
-          :disabled="!canRunWidget"
-        />
-      </div>
-      <b-spinner v-else class="spinner-grow text-danger"/>
-    </template>
-    <slot/>
-    <b-alert show v-if="error && !hide.error" variant="danger">
-      <h5>Oops!</h5>
-      <p v-html="$md.render(error.message || JSON.stringify(error))"/>
-      <b-button variant="outline-secondary" size="sm"
-        @click="$set(hide, 'error', true)"
-      >Got it</b-button>
-    </b-alert>
+      <template>
+        <div v-if="!generating">
+          <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
+            :disabled="!content.input || !canRunWidget"
+            @click="generate"
+          />
+          <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
+            @click="content={}; generate()"
+            :disabled="!canRunWidget"
+          />
+        </div>
+        <b-spinner v-else class="spinner-grow text-danger"/>
+      </template>
+      <slot/>
+      <b-alert show v-if="error && !hide.error" variant="danger">
+        <h5>Oops!</h5>
+        <p v-html="$md.render(error.message || JSON.stringify(error))"/>
+        <b-button variant="outline-secondary" size="sm"
+          @click="$set(hide, 'error', true)"
+        >Got it</b-button>
+      </b-alert>
 
 
 
-    <template v-if="display.CTA && generated && content.output">
+      <template v-if="display.CTA && generated && content.output">
 
-      <div v-if="showOutro">
-        <h4 class="pt-3" v-text="display.preCTA"/>
+        <div v-if="showOutro">
+          <h4 class="pt-3" v-text="display.preCTA"/>
 
-        <template v-if="widget.isNative && display.native.componentName">
-          <b-button variant="primary" size="lg"          
-            v-b-modal.output-preview
+          <template v-if="widget.isNative && display.native.componentName">
+            <b-button variant="primary" size="lg"          
+              v-b-modal.output-preview
+              v-text="display.CTA"
+            />
+            <b-modal id="output-preview" size="xl" hide-footer hide-header>
+              <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+            </b-modal>
+          </template>
+
+          <b-button variant="primary" size="lg"
+            v-else
+            :href="
+              display.CTAType=='link' ?
+              encodeURI(
+                display.CTAContent
+                .replace('<input>', content.input)
+                .replace('<output>', content.output)
+                .replace('<query>', new window.URLSearchParams($route.query).toString())
+              )
+              : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
+            target="_blank"
+            @click="track('cta')"
             v-text="display.CTA"
           />
-          <b-modal id="output-preview" size="xl">
-            <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
-          </b-modal>
-        </template>
+          <p class="mt-2 lh-sm">
+            <small v-if="display.postCTA" v-text="display.postCTA" class="text-muted"/>
+          </p>
 
-        <b-button variant="primary" size="lg"
-          v-else
-          :href="
-            display.CTAType=='link' ?
-            encodeURI(
-              display.CTAContent
-              .replace('<input>', content.input)
-              .replace('<output>', content.output)
-              .replace('<query>', new window.URLSearchParams($route.query).toString())
-            )
-            : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
-          target="_blank"
-          @click="track('cta')"
-          v-text="display.CTA"
-        />
-        <p class="mt-2 lh-sm">
-          <small v-if="display.postCTA" v-text="display.postCTA" class="text-muted"/>
-        </p>
+        </div>
+        
+      </template>
 
+      <div class="text-end pt-2">
+        <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
+          <small>
+            Powered by ▲ Ideality
+          </small>
+        </a>
       </div>
-      
-    </template>
-
-    <div class="text-end pt-2">
-      <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
-        <small>
-          Powered by ▲ Ideality
-        </small>
-      </a>
     </div>
 
+    <div v-if='isAdmin' class="text-end">
+      <nuxt-link :to="{name: 'widget-id-config', params: { id: widget.id }}">
+        <small class="text-secondary">edit</small>
+      </nuxt-link>
+    </div>
   </div>
 </template>
 
@@ -110,6 +117,7 @@
   import { assign, get, last, pick} from 'lodash'
   import Bubble from '~/plugins/bubble'
   import { buildPrompt, complete, parseResponse } from '~/plugins/build'
+  import { getUser } from '~/plugins/helpers'
 
   // import { BIconDice5 } from 'bootstrap-vue'
 
@@ -135,14 +143,11 @@
       return data
     },
 
-    // async fetch() {
-    //   console.log(this)
-    //   debugger
-    //   if ( this.load ) {
-    //     let { widget } = await new Bubble(this).get('widget', this.widget.id)
-    //     assign(this.widget, { ...widget })
-    //   }
-    // },
+    async fetch() {
+      if ( this.queryTags.admin ) {
+        await getUser(this)
+      }
+    },
 
     mounted() {
       this.track('open')
