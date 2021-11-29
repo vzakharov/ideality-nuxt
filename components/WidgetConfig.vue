@@ -73,7 +73,7 @@
 
         <WidgetAdmin v-if="section=='admin'" v-bind="{widget}"/>
 
-        <WidgetNativeSettings v-if="section=='native'" v-on="{please}"/>
+        <WidgetNativeConfig v-if="section=='native'" v-bind="{widget}" v-on="{please}"/>
         
         <template v-if="section=='display'">
           <WidgetDisplayConfig :context="{widget}" v-model="display" v-on="{please}"/>

@@ -56,10 +56,23 @@
 
 
 
-    <template v-if="display.CTA && generated && content.output && !duringSetup">
+    <template v-if="display.CTA && generated && content.output">
+
       <div v-if="showOutro">
         <h4 class="pt-3" v-text="display.preCTA"/>
+
+        <template v-if="widget.isNative && display.native.componentName">
+          <b-button variant="primary" size="lg"          
+            v-b-modal.output-preview
+            v-text="display.CTA"
+          />
+          <b-modal id="output-preview" size="xl">
+            <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+          </b-modal>
+        </template>
+
         <b-button variant="primary" size="lg"
+          v-else
           :href="
             display.CTAType=='link' ?
             encodeURI(
@@ -76,8 +89,9 @@
         <p class="mt-2 lh-sm">
           <small v-if="display.postCTA" v-text="display.postCTA" class="text-muted"/>
         </p>
-      </div>
 
+      </div>
+      
     </template>
 
     <div class="text-end pt-2">
@@ -220,7 +234,7 @@
     },
 
     computed: {
-
+      get,
       isRetry() {
         return this.generated && this.content.output && ( this.usedInput == this.content.input )
       }
