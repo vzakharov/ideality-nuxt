@@ -39,7 +39,7 @@
 
 <script>
 
-  import { chain, filter, without } from 'lodash'
+  import { chain, filter, find, without } from 'lodash'
   import Bubble from '~/plugins/bubble'
 
   export default {
@@ -67,7 +67,8 @@
     async asyncData() {
       let { widgets } = await
         Bubble.asyncData('widgets', { inToolbox: true }, { sortBy: ['sortIndex', 'name'] })(...arguments)
-      let widget = widgets[0]
+      let { slug } = this.$route.params
+      let widget = find(widgets, {slug})
       return { widgets, widget }
     },
 
