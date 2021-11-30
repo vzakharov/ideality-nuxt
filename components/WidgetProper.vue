@@ -71,7 +71,7 @@
               v-b-modal.output-preview
               v-text="display.CTA"
             />
-            <b-modal id="output-preview" size="xl" hide-footer hide-header>
+            <b-modal id="output-preview" size="xl" hide-footer>
               <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
             </b-modal>
           </template>
