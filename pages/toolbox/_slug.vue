@@ -44,6 +44,8 @@
 
   export default {
 
+    head() { return this.widgetHeader },
+
     data() {
       let ai = {
         engine: 'curie',
@@ -64,11 +66,10 @@
       }
     },
 
-    async asyncData() {
+    async asyncData({ route: { params: { slug }}}) {
       let { widgets } = await
         Bubble.asyncData('widgets', { inToolbox: true }, { sortBy: ['sortIndex', 'name'] })(...arguments)
-      let { slug } = this.$route.params
-      let widget = find(widgets, {slug})
+      let widget = slug ? find(widgets, {slug}) : widgets[0]
       return { widgets, widget }
     },
 

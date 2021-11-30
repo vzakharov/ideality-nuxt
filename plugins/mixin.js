@@ -68,6 +68,16 @@ Vue.mixin({
       }
     },
 
+    widgetHeader() {
+      let { widget } = this
+      if ( widget ) {
+        let { name: title, description } = widget
+        return {
+          title, description 
+        }
+      }
+    },
+
     isAdmin() {
       return this.$auth.user && this.$auth.user.isAdmin
     },
@@ -101,6 +111,10 @@ Vue.mixin({
         params: { ...$route.params, ...params },
         hash: hash || $route.hash
       }
+    },
+
+    appendedUrl() {
+      return this.$router.resolve(this.appendRoute(...arguments)).href
     },
 
     control(what) { 
@@ -159,7 +173,7 @@ Vue.mixin({
 
     pseudoRoute({ params, query, hash }) {
       window.history.pushState(null, null,
-        this.$router.resolve(appendRoute({ params, query, hash })).href
+        this.appendedUrl({ params, query, hash })
       )
     },
 

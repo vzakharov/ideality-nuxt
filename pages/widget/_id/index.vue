@@ -11,22 +11,9 @@
 
   export default {
     
-    head() { return this.head },
+    head() { return this.widgetHeader },
 
     asyncData: Bubble.asyncData('widget'),
-
-    computed: {
-      header() {
-        let { widget } = this
-        if ( widget ) {
-          let { name: title, description } = widget
-          return {
-            title, description 
-          }
-        }
-      }
-
-    }
 
   }
 

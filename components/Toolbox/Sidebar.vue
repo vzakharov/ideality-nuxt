@@ -39,13 +39,14 @@
         </div>
         <b-list-group v-if="expanded.includes(category)"
           class="ps-2"
-        >
+        > 
+          <!-- <a :href="appendedUrl({ params: {slug: 'blabla'}})">Bla</a> -->
           <b-list-group-item variant="light" v-for="w in sortBy(filter(widgets, {category}), 'sortIndex')" :key="w.id"
-            href="#"
+            :href="appendedUrl({ params: { slug: w.slug }})"
             class="fw-bold"
             :active="w == widget"
             v-text="w.name"
-            @click.prevent="$emit('setFields', { widget: w })"
+            @click.prevent="pseudoRoute({ params: { slug: w.slug }}); $emit('setFields', { widget: w })"
           />
         </b-list-group>
       </b-list-group-item>

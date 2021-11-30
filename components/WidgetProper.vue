@@ -43,7 +43,7 @@
             :disabled="!content.input || !canRunWidget"
             @click="isRetry ? tryAgain() : generate()"
           />
-          <b-button class="text-muted" variant="light" v-text="'Show me!'"
+          <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
             @click="inspire"
             :disabled="!canRunWidget"
           />
