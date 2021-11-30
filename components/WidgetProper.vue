@@ -17,8 +17,9 @@
           removeNewLines: !widget.slate.multilineInput,
           rows: 1
         }"
-        @keydown.native.enter="!widget.slate.multilineInput && generate()"
-        @keydown.native.ctrl.enter="widget.slate.multilineInput && generate()"
+        @keydown.native.enter.exact="!widget.slate.multilineInput && generate()"
+        @keydown.native.ctrl.enter="generate()"
+        @keydown.native.alt.enter="isRetry && tryAgain()"
         @input="changed=true"
         ref="input"
       />
@@ -33,16 +34,17 @@
         }"
         rows="1"
         @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
+        @keydown.native.alt.enter="isRetry && tryAgain()"
       />
 
       <template>
         <div v-if="!generating">
           <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
             :disabled="!content.input || !canRunWidget"
-            @click="generate"
+            @click="isRetry ? tryAgain() : generate()"
           />
           <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
-            @click="content={}; generate()"
+            @click="inspire"
             :disabled="!canRunWidget"
           />
         </div>
@@ -114,7 +116,7 @@
   import { assign, get, last, pick} from 'lodash'
   import Bubble from '~/plugins/bubble'
   import { buildPrompt, complete, parseResponse } from '~/plugins/build'
-  import { getUser } from '~/plugins/helpers'
+  import { clone, getUser } from '~/plugins/helpers'
 
   // import { BIconDice5 } from 'bootstrap-vue'
 
@@ -132,6 +134,9 @@
         generating: false,
         generated: false,
         usedInput: '',
+        usedOutput: '',
+        generatedInput: '',
+        generatedOutput: '',
         showOutro: true,
         hide: {},
         content,
@@ -154,7 +159,18 @@
 
     methods: {
       last,
-      async generate() {
+
+      inspire() {
+        return this.generate({})
+      },
+
+      tryAgain() {
+        let usedContent = { input: this.usedInput, output: this.usedOutput }
+        assign(this, { content: usedContent })
+        return this.generate(usedContent)
+      },
+
+      async generate(content) {
 
         this.generating = true
         this.error = null
@@ -170,7 +186,12 @@
           
           let { code } = this.$route.query
 
-          let { input, output } = this.content
+          if ( !content ) (
+            { content } = this 
+          )
+          let { input, output } = content
+          this.usedInput = input
+          this.usedOutput = output
 
           const append = what => last(what) == '-'
           const cut = what => what.slice(0, -1)
@@ -183,7 +204,7 @@
           output = (
             !appendInput && append(output)
           ) ? cut(output) : undefined
-
+          
           let body = { 
               input, output, appendInput, duringSetup, widget: {id, setup, slate, tie }, 
               apiKey, code, ...this.queryTags
@@ -191,7 +212,7 @@
           
           console.log({setup, slate, apiKey})
 
-          let content, runsLeft
+          let runsLeft
 
           if ( setup && slate && apiKey ) {
             console.log({ input, output })
@@ -211,7 +232,8 @@
             this.$set(this.code, 'runsLeft', runsLeft.code)
           
           this.generated = true
-          this.usedInput = this.content.input
+          this.generatedInput = this.content.input
+          this.generatedOutput = this.content.output
           this.$emit('generated')
           if ( content.output && !this.dontFocusOnOutput)
             this.focus(this.widget.slug+'-widget-output')
@@ -239,7 +261,9 @@
     computed: {
       get,
       isRetry() {
-        return this.generated && this.content.output && ( this.usedInput == this.content.input )
+        return this.generated && this.content.output &&
+          this.generatedInput == this.content.input &&
+          this.generatedOutput == this.content.output        
       }
 
     },
