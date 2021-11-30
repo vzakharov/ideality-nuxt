@@ -11,6 +11,10 @@ function cast(f, ...targets) {
   }
 }
 
+function clone(object) {
+  return JSON.parse(JSON.stringify(object))
+}
+
 function isDefined(what) {
   return typeof what !== 'undefined'
 }
@@ -61,6 +65,7 @@ export {
 
   canRunWidget,
   cast,
+  clone,
   filteredParameters,
   getUser,
   isDefined,
