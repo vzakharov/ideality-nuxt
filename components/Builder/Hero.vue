@@ -14,7 +14,7 @@
         </b-button>
       </div>
     </b-col>
-    <b-col cols="6" xl="4" class="d-none d-lg-block">
+    <b-col cols="6" lg="4" xl="3" class="d-none d-lg-block">
       <PexelsImage :query="imageQuery" orientation="portrait"/>
     </b-col>
     <!-- <b-col cols="3" align-self="center" class="d-none d-lg-block">
