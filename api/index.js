@@ -69,10 +69,11 @@ const app = express()
           new Bubble.default({ token })
         ).go('getUserInfo')  
       } catch (err) {
-        if ( ignoreErrors )
+        console.log({err})
+        // if ( ignoreErrors )
           return undefined
-        else
-          throw(err)
+        // else
+        //   throw(err)
       } 
       // finally {
       //   next()
@@ -187,7 +188,7 @@ const app = express()
       }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=${orientation}&per_page=1`, {
         headers: { Authorization: process.env.PEXELS_KEY }
       })
-      console.log({photo})
+      // console.log({photo})
       
       return res.send(photo)
     } catch(error) {
