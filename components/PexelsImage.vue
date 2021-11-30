@@ -28,10 +28,11 @@
 
     async fetch({ $axios, query, orientation, $store } = this) {
       let body = { query, orientation }
-      let promise = $store.state.imagePromises[JSON.stringify(body)]
+      let key = JSON.stringify(body)
+      let promise = $store.state.imagePromises[key]
       if ( !promise ) {
         let fields = {}
-        fields[query] = promise = $axios.post('api/getImage', body)
+        fields[key] = promise = $axios.post('api/getImage', body)
         $store.commit('setFields', [ 'imagePromises', fields ])
       }
       let { data: photo } = await promise

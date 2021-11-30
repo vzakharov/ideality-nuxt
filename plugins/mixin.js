@@ -133,6 +133,8 @@ Vue.mixin({
     focus(id, ...furtherActions) {
       this.$nextTick(() => {
         let element = window.document.getElementById(id)
+        if ( !element )
+          return
         element.focus()
         const next = () => {
           if ( furtherActions.length ) {

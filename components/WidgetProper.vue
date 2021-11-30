@@ -43,7 +43,7 @@
             :disabled="!content.input || !canRunWidget"
             @click="isRetry ? tryAgain() : generate()"
           />
-          <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
+          <b-button class="text-muted" variant="light" v-text="'Show me!'"
             @click="inspire"
             :disabled="!canRunWidget"
           />
@@ -68,10 +68,10 @@
 
           <template v-if="widget.isNative && display.native.componentName">
             <b-button variant="primary" size="lg"          
-              v-b-modal.output-preview
+              v-b-modal.content-preview
               v-text="display.CTA"
             />
-            <b-modal id="output-preview" size="xl" hide-footer :title="`${widget.name} preview`">
+            <b-modal id="content-preview" size="xl" hide-footer :title="`${widget.name} preview`">
               <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
               <PoweredByIdeality/>
             </b-modal>
@@ -271,7 +271,7 @@
     watch: {
       content: {
         deep: true, 
-        handler () { this.$emit('input', this.content )}
+        handler () { if ( this.content.input || this.content.output ) this.$emit('input', this.content )}
       }
     }
 
