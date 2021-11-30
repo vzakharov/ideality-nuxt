@@ -1,7 +1,14 @@
 <template>
   <div>
     <template v-if="photo">
-      <img :src="photo.src.medium" style="width: 100%;"/>
+        <img :src="photo.src.medium" style="width: 100%;"/>
+        <figcaption class="figure-caption">
+          <small>
+            <a style="color: #CCC" :href="photo.url" target="_blank">
+              Photo by {{ photo.photographer }} on Pexels
+            </a>
+          </small>
+        </figcaption>
     </template>
     <!-- <Loading v-else message="Loading image..."/> -->
   </div>
@@ -11,7 +18,7 @@
 
   export default {
 
-    props: ['query'],
+    props: ['query', 'orientation'],
 
     data() {
       return {
@@ -19,11 +26,12 @@
       }
     },
 
-    async fetch({ $axios, query, $store } = this) {
-      let promise = $store.state.imagePromises[query]
+    async fetch({ $axios, query, orientation, $store } = this) {
+      let body = { query, orientation }
+      let promise = $store.state.imagePromises[JSON.stringify(body)]
       if ( !promise ) {
         let fields = {}
-        fields[query] = promise = $axios.post('api/getImage', { query })
+        fields[query] = promise = $axios.post('api/getImage', body)
         $store.commit('setFields', [ 'imagePromises', fields ])
       }
       let { data: photo } = await promise

@@ -71,8 +71,9 @@
               v-b-modal.output-preview
               v-text="display.CTA"
             />
-            <b-modal id="output-preview" size="xl" hide-footer>
+            <b-modal id="output-preview" size="xl" hide-footer :title="`${widget.name} preview`">
               <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+              <PoweredByIdeality/>
             </b-modal>
           </template>
 
@@ -101,10 +102,9 @@
 
       <div class="text-end pt-2">
         <small>
-          <a style="color:#BBB" href="https://ideality.app/widget" target="_blank">
-            Powered by ▲ Ideality
-          </a>
-          <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.id }}" v-text="'(edit)'"/>
+          <PoweredByIdeality target="widget">
+            <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.id }}" v-text="'(edit)'"/>
+          </PoweredByIdeality>
         </small>
       </div>
     </div>

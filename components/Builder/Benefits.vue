@@ -22,7 +22,7 @@
       )
 
       let outputMatch = this.content.output.match(
-        /.*\n+(?<benefits>[\s\S]*)$/m
+        /(Brief.*\n+)?(?<benefits>[\s\S]*)$/m
       )
 
       console.log({inputMatch, outputMatch})

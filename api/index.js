@@ -174,16 +174,17 @@ const app = express()
   app.post('/getImage', async (
     {
       body: {
-        query
+        query, orientation
       }
     },
     res
   ) => {
     try {
+      !orientation && ( orientation = 'landscape' )
       console.log({query})
       let { data: {
         photos: [ photo ]
-      }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=1`, {
+      }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=${orientation}&per_page=1`, {
         headers: { Authorization: process.env.PEXELS_KEY }
       })
       console.log({photo})
