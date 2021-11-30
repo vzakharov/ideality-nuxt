@@ -1,5 +1,6 @@
 <template>
   <b-row align-h="center" class="gx-4" v-if="loaded">
+    <h1 v-if="title" class="fw-bold display-4 text-center mb-5">{{ title }}</h1>
     <b-col cols="12" lg="6" xl="5" align-self="center" class="text-center text-lg-start">
       <h1 class="display-5 mb-3">
         <strong>
@@ -33,7 +34,7 @@
 
       try {
         let match = this.content.output.match(
-          /(Brief.*\n+)?(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
+          /(Brief.*\n+)?# +((?<title>.*?)\. )?(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
         )
 
         let { groups } = match
