@@ -223,7 +223,7 @@ const app = express()
           )
       
       let quota = {}
-
+      
       if ( apiKey || get(widget, 'slate.apiKey') ) {
         allowUnsafe = true
       }
@@ -269,6 +269,9 @@ const app = express()
 
       let { setup, slate, tie } = widget
       ;( { apiKey } = slate )
+
+      if ( slate.allowUnsafe )
+        allowUnsafe = true
 
       let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output })
       
