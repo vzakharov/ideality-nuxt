@@ -118,7 +118,7 @@ const app = express()
         let { ip: { runsLeft }} = await admin.go('runsLeft--', { ip })
 
         if ( runsLeft <= 0 )
-        return res.status(403).send("Quota exceeded; please come back in an hour or add “?apiKey=[your OpenAI key]” to the URL. (We don’t store your API key, it will be used to make a request directly from your browser.)")  
+        return res.status(403).send("Quota exceeded; please come back in an hour or add “?apiKey=[your OpenAI key starting with ‘sk-’]” to the URL. (We don’t store your API key, it will be used to make a request directly from your browser.)")  
       }
 
       // Only allow unsafe requests if sent with the user's own api key
