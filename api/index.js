@@ -67,11 +67,11 @@ const app = express()
       try {
         user = await (
           new Bubble.default({ token })
-        ).go('getUserInfo')  
+        ).go('getUserInfo')
       } catch (err) {
-        console.log({err})
+        next(err)
         // if ( ignoreErrors )
-          return undefined
+          // return undefined
         // else
         //   throw(err)
       } 
@@ -93,7 +93,7 @@ const app = express()
       // console.log({users})
       res.send({user})
     } catch(err) {
-      res.status(403).send(err)
+      next(err)
     }
   })
 
@@ -166,8 +166,7 @@ const app = express()
       return response
 
     } catch (error) {
-      console.log('error:', error)
-      return res.status(500).send({error})
+      next(error)
     }
 
   }
@@ -192,8 +191,7 @@ const app = express()
       
       return res.send(photo)
     } catch(error) {
-      console.log({error})
-      return res.status(500).send({error})
+      next(error)
     }
   })
 
@@ -303,13 +301,22 @@ const app = express()
             message,
             path
           }
-        })  
+        })
       } catch(err) {
         let { message, stack } = error
         return res.status(500).send({error: { message, stack }})
       }
     }
 
+  })
+
+  app.post('/error', async (req, res, next) => {
+    try {
+      await Bubble.default.anon.go('nope')
+    } catch(error) {
+      console.log({error})
+      res.status(403).send(error)
+    }
   })
 
   app.post('/widget/track', async ({ 
