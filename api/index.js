@@ -260,7 +260,7 @@ const app = express()
                   widget: 'Widget',
                   owner: 'Widget owner'
                 })[quotaExceeded] + ' quota exceeded.'
-                + ( quotaExceeded == 'ip' ? ' Please come back in an hour.' : '' )
+                + ( quotaExceeded == 'ip' ? ' Please come back in an hour or add “?apiKey=[your OpenAI key starting with ‘sk-’]” to the URL. (We don’t store your API key, it will be used to make a request directly from your browser.)' : '' )
               }
             })
         }
