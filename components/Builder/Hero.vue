@@ -1,7 +1,13 @@
 <template>
   <b-row align-h="center" class="gx-4" v-if="loaded">
     <h1 v-if="title" class="fw-bold display-4 text-center mb-5">{{ title }}</h1>
-    <b-col cols="12" lg="6" xl="5" align-self="center" class="text-center text-lg-start">
+    <b-col 
+      v-bind="cols({
+        xs: 12,
+        md: 6,
+        xl: 5
+      })" align-self="center" class="text-center text-lg-start"
+    >
       <h1 class="display-5 mb-3">
         <strong>
           {{ headline }}
@@ -26,9 +32,11 @@
 
 <script>
 
+  import { chain, forEach, indexOf, mapKeys } from 'lodash'
+
   export default {
 
-    props: ['content'],
+    props: ['content', 'size'],
 
     data() {
 
@@ -45,6 +53,54 @@
       }
 
     },
+
+    methods: {
+
+      cols(breakpoints, { size } = this) {
+
+        // let replacements = {
+        //   xs: {
+        //     xs: 'xl',
+        //     sm: 'xxl',
+        //     md: 'xxl',
+        //     lg: 'xxl',
+        //     xxl: 'xxl'
+        //   },
+        //   sm: {
+        //     xs: 'lg',
+        //     sm: 'xl',
+        //     md: 'xxl',
+        //     lg: 'xxl',
+        //     xxl: 'xxl'
+        //   },
+        // }
+
+
+        debugger
+        let defaultSize = 'xl'
+        if ( !size ) size = defaultSize
+        let sizes = ['xs', 'sm', 'md', 'xl', 'xxl']
+        let getIndex = size => indexOf(sizes, size)
+        
+        let allCols = {}
+
+        forEach(breakpoints, (cols, breakpoint) => {
+          let index = getIndex(breakpoint)
+          let parentIndex = getIndex(size)
+          let diff = parentIndex - index
+          if ( diff < 0 )
+            !allCols['xxl'] & ( allCols['xxl'] = cols )
+          else if ( diff == 0 )
+            allCols['xl'] = cols
+          else
+            allCols[sizes[index + diff || 'cols']] = cols
+        })
+
+        return allCols
+
+      }
+
+    }
 
   }
 
