@@ -122,7 +122,7 @@ const app = express()
       }
 
       // Only allow unsafe requests if sent with the user's own api key
-      if ( !apiKey ) {
+      if ( !allowUnsafe && !apiKey ) {
         apiKey = process.env.OPENAI_KEY
         allowUnsafe = false
       }
@@ -156,7 +156,8 @@ const app = express()
           return res.status(403).send({
             error: {
               cause: 'unsafe', 
-              message: 'Unsafe input, please consider revising.'
+              allowUnsafe,
+              message: 'Unsafe input, please consider revising...'
             }
           })
 
@@ -268,20 +269,25 @@ const app = express()
       await widgetLoaded
 
       let { setup, slate, tie } = widget
-      ;( { apiKey } = slate )
+      // ;( { apiKey } = slate )
+      if ( !apiKey )
+        apiKey = process.env.OPENAI_KEY
 
       if ( slate.allowUnsafe )
         allowUnsafe = true
 
       let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output })
       
+      // console.log({allowUnsafe})
+
       let response = await completeWithCheck(
         {
           body: { prompt, n, stop, allowUnsafe, apiKey},
           ip,
           ignoreQuotaCheck: true
         },
-        res
+        res,
+        next
       )
     
       console.log('response: ', response.data)
