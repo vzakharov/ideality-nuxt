@@ -3,10 +3,10 @@
     <h1 v-if="title" class="fw-bold display-4 text-center mb-5">{{ title }}</h1>
     <b-col 
       v-bind="cols({
-        xs: 12,
+        cols: 12,
         md: 6,
         xl: 5
-      })" align-self="center" class="text-center text-lg-start"
+      }, { root: true })" align-self="center" class="text-center text-lg-start"
     >
       <h1 class="display-5 mb-3">
         <strong>
@@ -40,6 +40,7 @@
 
     data() {
 
+      debugger
       try {
         let match = this.content.output.match(
           /(Brief.*\n+)?# +((?<title>.*?)\. )?(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
@@ -56,46 +57,35 @@
 
     methods: {
 
-      cols(breakpoints, { size } = this) {
-
-        // let replacements = {
-        //   xs: {
-        //     xs: 'xl',
-        //     sm: 'xxl',
-        //     md: 'xxl',
-        //     lg: 'xxl',
-        //     xxl: 'xxl'
-        //   },
-        //   sm: {
-        //     xs: 'lg',
-        //     sm: 'xl',
-        //     md: 'xxl',
-        //     lg: 'xxl',
-        //     xxl: 'xxl'
-        //   },
-        // }
-
+      cols(breakpoints, { root }) {
 
         debugger
+        let widths = [ 540, 720, 960, 1140, 1320 ]
+        let { size } = this
         let defaultSize = 'xl'
         if ( !size ) size = defaultSize
-        let sizes = ['xs', 'sm', 'md', 'xl', 'xxl']
+        let sizes = ['cols', 'sm', 'md', 'xl', 'xxl']
         let getIndex = size => indexOf(sizes, size)
         
         let allCols = {}
-
+  
         forEach(breakpoints, (cols, breakpoint) => {
+
+          if ( breakpoint == 'cols' )
+            return allCols[breakpoint] = cols
+
           let index = getIndex(breakpoint)
-          let parentIndex = getIndex(size)
-          let diff = parentIndex - index
-          if ( diff < 0 )
-            !allCols['xxl'] & ( allCols['xxl'] = cols )
-          else if ( diff == 0 )
-            allCols['xl'] = cols
-          else
-            allCols[sizes[index + diff || 'cols']] = cols
+          let defaultIndex = getIndex(defaultSize)
+          let diff = defaultIndex - index
+          let newIndex = index + diff
+
+          if ( newIndex > 4)
+            return
+
+          allCols[sizes[newIndex]] = root ? Math.ceil(cols*widths[index]/widths[defaultIndex]) : cols
         })
 
+        console.log({allCols})
         return allCols
 
       }

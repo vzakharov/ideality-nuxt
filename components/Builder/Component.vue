@@ -1,12 +1,12 @@
 <template>
-  <component :is="'Builder' + name" v-bind="{content}" :key="content.input + content.output"/>
+  <component :is="'Builder' + name" v-bind="{content, size}" :key="content.input + content.output"/>
 </template>
 
 <script>
 
   export default {
 
-    props: ['name', 'content']
+    props: ['name', 'content', 'size']
 
   }
 

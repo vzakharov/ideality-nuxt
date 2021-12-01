@@ -18,4 +18,12 @@
     text-decoration: none;
   }
 
+  a.gray {
+    color: #bbb
+  }
+
+  .small {
+    font-size: 0.75em;
+  }
+
 </style>

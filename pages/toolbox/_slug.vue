@@ -22,15 +22,20 @@
           v-on="{ setFields }"
         />
       </div>
-      <b-col class="p-3">
-        <WidgetBox v-if="widget">
-          <WidgetProper :key="widget.id" v-bind="{ widget, ai }" v-model="content[widget.id]"/>
-        </WidgetBox>
-      </b-col>
-      <b-col v-if="widget.isNative && content[widget.id]" class="d-none d-md-block mt-3">
-        <h5>{{ widget.name }} preview</h5>
-        <b-row class="border p-2 mt-3 me-2 shadow">
-          <BuilderComponent style="zoom: 50%" :name="widget.display.native.componentName" :content="content[widget.id]"/>
+      <b-col>
+        <b-row>
+          <b-col class="p-3">
+            <WidgetBox v-if="widget">
+              <WidgetProper :key="widget.id" v-bind="{ widget, ai }" v-model="content[widget.id]"/>
+            </WidgetBox>
+          </b-col>
+          <b-col v-if="widget.isNative && content[widget.id]" class="d-none d-md-block mt-3" :cols="previewExpanded ? 8 : 4">
+            <h5>{{ widget.name }} preview</h5>
+            <!-- <a href="#" class="small gray" v-text="previewExpanded ? 'smaller' : 'bigger'" @click.prevent="previewExpanded = !previewExpanded"/> -->
+            <b-row class="border p-2 mt-3 me-2 shadow">
+              <BuilderComponent :name="widget.display.native.componentName" :content="content[widget.id]" :size="previewExpanded ? 'sm' : 'xs'"/>
+            </b-row>
+          </b-col>
         </b-row>
       </b-col>
     </b-row>
@@ -61,6 +66,7 @@
         categories,
         content: {},
         expanded: [...categories],
+        previewExpanded: true,
         filter,
         without
       }

@@ -5,7 +5,7 @@
         <figcaption class="figure-caption">
           <small>
             <a style="color: #CCC" :href="photo.url" target="_blank">
-              Photo by {{ photo.photographer }} on Pexels
+              Photo: {{ photo.photographer }} / Pexels
             </a>
           </small>
         </figcaption>
