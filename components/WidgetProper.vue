@@ -182,7 +182,7 @@
           let { duringSetup } = this
           let { ai } = this
           let { engine, temperature } = ai || {}
-          let { apiKey } = {...slate, ...ai, ...this}
+          let { apiKey } = {...slate, ...ai, ...this, ...this.$route.query}
           
           let { code } = this.$route.query
 

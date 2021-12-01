@@ -29,11 +29,19 @@
               <WidgetProper :key="widget.id" v-bind="{ widget, ai }" v-model="content[widget.id]"/>
             </WidgetBox>
           </b-col>
-          <b-col v-if="widget.isNative && content[widget.id]" class="d-none d-md-block mt-3" :cols="previewExpanded ? 8 : 4">
+          <b-col v-if="widget.isNative && content[widget.id]" class="d-none d-md-block mt-3" 
+            :cols="6"
+            :lg="previewExpanded ? 7 : 4"
+          >
             <h5>{{ widget.name }} preview</h5>
             <!-- <a href="#" class="small gray" v-text="previewExpanded ? 'smaller' : 'bigger'" @click.prevent="previewExpanded = !previewExpanded"/> -->
-            <b-row class="border p-2 mt-3 me-2 shadow">
-              <BuilderComponent :name="widget.display.native.componentName" :content="content[widget.id]" :size="previewExpanded ? 'sm' : 'xs'"/>
+            <b-row
+                class="border p-2 mt-3 me-2 shadow"
+            >
+              <BuilderComponent
+                class="scaled"
+                :name="widget.display.native.componentName" :content="content[widget.id]"
+              />
             </b-row>
           </b-col>
         </b-row>
@@ -108,8 +116,18 @@
 </script>
 
 <style>
-.list-group-item {
-  border: 0
-}
+
+  .list-group-item {
+    border: 0
+  }
+
+  @media (min-width: 992px) {
+    
+    .scaled {
+      /* transform: scale(90%) */
+      zoom: 65%
+    }
+
+  }
 
 </style>
