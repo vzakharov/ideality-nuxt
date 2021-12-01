@@ -1,13 +1,7 @@
 <template>
   <b-row align-h="center" class="gx-4" v-if="loaded">
     <h1 v-if="title" class="fw-bold display-4 text-center mb-5">{{ title }}</h1>
-    <b-col 
-      v-bind="cols({
-        cols: 12,
-        md: 6,
-        xl: 5
-      }, { root: true })" align-self="center" class="text-center text-lg-start"
-    >
+    <b-col cols="12" md="6" xl="5" align-self="center" class="text-center text-lg-start">
       <h1 class="display-5 mb-3">
         <strong>
           {{ headline }}
@@ -54,43 +48,6 @@
       }
 
     },
-
-    methods: {
-
-      cols(breakpoints, { root }) {
-
-        debugger
-        let widths = [ 540, 720, 960, 1140, 1320 ]
-        let { size } = this
-        let defaultSize = 'xl'
-        if ( !size ) size = defaultSize
-        let sizes = ['cols', 'sm', 'md', 'xl', 'xxl']
-        let getIndex = size => indexOf(sizes, size)
-        
-        let allCols = {}
-  
-        forEach(breakpoints, (cols, breakpoint) => {
-
-          if ( breakpoint == 'cols' )
-            return allCols[breakpoint] = cols
-
-          let index = getIndex(breakpoint)
-          let defaultIndex = getIndex(defaultSize)
-          let diff = defaultIndex - index
-          let newIndex = index + diff
-
-          if ( newIndex > 4)
-            return
-
-          allCols[sizes[newIndex]] = root ? Math.ceil(cols*widths[index]/widths[defaultIndex]) : cols
-        })
-
-        console.log({allCols})
-        return allCols
-
-      }
-
-    }
 
   }
 
