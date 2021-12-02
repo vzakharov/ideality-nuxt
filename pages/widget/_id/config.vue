@@ -1,17 +1,17 @@
 <template>
-  <Container>
+  <div>
     <div v-if="!canAdmin">
       You don’t have access to edit this widget.
     </div>
     <template v-else>
-        <WidgetConfig v-model="widget" v-bind="{id: widget.id}"
-          v-on="{
-            loadFromYaml,
-            deleted: () => { $router.push({name: 'dashboard'}) }
-          }"
-        />
+      <WidgetConfig v-model="widget" v-bind="{id: widget.id}"
+        v-on="{
+          loadFromYaml,
+          deleted: () => { $router.push({name: 'dashboard'}) }
+        }"
+      />
     </template>
-  </Container>
+  </div>
 </template>
 
 <script>

@@ -103,12 +103,13 @@ Vue.mixin({
 
   methods: {
 
-    appendRoute({ params, query, hash }) {
+    appendRoute({ params, query, hash, reset }) {
       let { $route } = this
+      reset = reset || {}
       return {
         ...$route,
-        query: { ...$route.query, ...query },
-        params: { ...$route.params, ...params },
+        query: { ...reset.query ? {} : $route.query, ...query },
+        params: { ...reset.params ? {} : $route.params, ...params },
         hash: hash || $route.hash
       }
     },
@@ -171,8 +172,9 @@ Vue.mixin({
       return doWhat.apply(this)
     },
 
-    pseudoRoute({ params, query, hash }) {
-      window.history.pushState(null, null,
+    pseudoRoute({ params, query, hash, replace }) {
+      let action = replace ? 'replaceState' : 'pushState'
+      window.history[action](null, null,
         this.appendedUrl({ params, query, hash })
       )
     },

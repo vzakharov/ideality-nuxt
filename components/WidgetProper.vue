@@ -2,9 +2,10 @@
   <div>
     <div class="bg-light p-2">
       <template v-if="!duringSetup">
+        <h4 v-text="widget.name" class="mb-3"/>
         <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
       </template>
-
+            
       <LabeledInput
         v-model="content.input"
         v-bind="{
@@ -80,7 +81,7 @@
           <b-button variant="primary" size="lg"
             v-else
             :href="
-              display.CTAType=='link' ?
+              display.CTAType=='link' || !display.CTAType ?
               encodeURI(
                 display.CTAContent
                 .replace('<input>', content.input)

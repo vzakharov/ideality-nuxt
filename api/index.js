@@ -178,7 +178,8 @@ const app = express()
         query, orientation
       }
     },
-    res
+    res,
+    next
   ) => {
     try {
       !orientation && ( orientation = 'landscape' )

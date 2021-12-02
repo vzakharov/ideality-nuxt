@@ -3,6 +3,7 @@
     <em v-if="copied">
       copied!
     </em>
+    <slot v-else-if="$slots.default"/>
     <template v-else>
       {{ value }}
     </template>
@@ -13,7 +14,7 @@
 
   export default {
 
-    props: ["value"],
+    props: ["value", "label"],
 
     data() {
       return {

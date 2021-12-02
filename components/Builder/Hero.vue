@@ -1,6 +1,6 @@
 <template>
   <b-row align-h="center" class="gx-4" v-if="loaded">
-    <h1 v-if="title" class="fw-bold display-4 text-center mb-5">{{ title }}</h1>
+    <h1 v-if="title" class="fw-bold display-6 text-center mb-5">{{ title }}</h1>
     <b-col>
       <b-row align-h="center">
         <b-col 
@@ -8,7 +8,7 @@
             cols: 12,
             md: 5
           })" align-self="center" class="text-center text-lg-start">
-          <h1 class="display-5 mb-3">
+          <h1 class="display-6 mb-3">
             <strong>
               {{ headline }}
             </strong>
@@ -44,7 +44,6 @@
 
     data() {
 
-      debugger
       try {
         let match = this.content.output.match(
           /(Brief.*\n+)?# +((?<title>.*?)\. )?(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
@@ -63,7 +62,6 @@
 
       cols(breakpoints, { root } = {}) {
 
-        debugger
         let widths = [ 540, 720, 960, 1140, 1320 ]
         let { size } = this
         let defaultSize = 'xl'

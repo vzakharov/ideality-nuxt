@@ -18,7 +18,7 @@
     text-decoration: none;
   }
 
-  a.gray {
+  .gray {
     color: #bbb
   }
 
