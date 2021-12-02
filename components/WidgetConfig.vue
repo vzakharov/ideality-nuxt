@@ -18,7 +18,7 @@
               @click="save"
             />
           </b-nav-form>
-          <b-nav-form v-if="ephemeral && href">
+          <b-nav-form v-if="ephemeral && href && !changed">
             <b-button
               variant="secondary-outline"
               v-text="'Preview in new tab'"

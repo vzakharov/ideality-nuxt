@@ -1,27 +1,46 @@
 <template>
-  <div>
-    <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
-      <div class="text-end">
-        <small>
-          <Copiable :fetch="getShortlink" class="gray">
-            Copy short link
-          </Copiable>
-        </small>
-      </div>
-    </WidgetConfig>
-    <template v-else>
-      <WidgetBox>
-        <WidgetProper v-bind="{widget}"/>
+  <b-container>
+    <b-row align-h="center">
+      <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
         <div class="text-end">
           <small>
-            <nuxt-link :to="appendRoute({params: { action: undefined }})" class="gray">
-              Edit this widget
-            </nuxt-link>
+            <Copiable :fetch="getShortlink" class="gray">
+              Copy short link
+            </Copiable>
           </small>
         </div>
-      </WidgetBox>
-    </template>
-  </div>
+      </WidgetConfig>
+      <template v-else>
+        <WidgetBox class="mt-5">
+          <WidgetProper v-bind="{widget}"/>
+          <div class="text-end">
+            <small>
+              <nuxt-link :to="appendRoute({params: { action: undefined }})" class="gray">
+                Edit this widget
+              </nuxt-link>
+            </small>
+          </div>
+        </WidgetBox>
+        <b-col class="text-center mt-5" style="max-width:600px">
+          <h2 class="mb-3 display-6">Make your own AI widget!</h2>
+          <div class="lead">
+            <p>This is an ephemeral widget, meaning that <strong>its whole configuration is stored in the URL</strong>.
+              Feel free to
+              <strong><nuxt-link :to="appendRoute({params: { action: undefined }})">
+                tinker with it, or even create a new one
+              </nuxt-link></strong>, and later share it with others!
+            </p>
+            <strong>
+              Yours,
+              <nuxt-link to="/">
+                Ideality 🔺
+              </nuxt-link>
+            </strong>
+          </div>
+        </b-col>
+      </template>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -135,12 +154,13 @@
 
     methods: {
 
-      saver(widget) {
+      async saver(widget) {
         let { name, setup, display } = widget
         let cutWidget = { name, setup, display }
         let yaml = jsyaml.dump(cutWidget)
         let code = JSONCrush.crush(JSON.stringify(yaml))
         Object.assign(this, { code, yaml })
+        await this.getShortlink()
         this.pseudoRoute({ query: { code }})
       },
 
