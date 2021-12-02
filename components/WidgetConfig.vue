@@ -42,7 +42,7 @@
       <ul class="nav nav-pills ms-4">
         <li :class="{'nav-item': true, 'd-md-none': item.slug=='test'}"
           v-for="item in [
-            ...( $auth.user && $auth.user.isAdmin ? [
+            ...( isAdmin ? [
               { slug: 'admin', caption: 'Admin' },
             ] : [] ),
             { slug: 'yaml', caption: 'YAML'},
@@ -54,7 +54,7 @@
               { slug: 'display', caption: 'Display settings'},
             ].filter(item => vm[item.slug]),
             ... ephemeral ? [] : [
-            { slug: 'slate', caption: 'Slate settings'},
+            { slug: 'slate', caption: 'Slate settings', hideIf: !this.isAdmin},
             { slug: 'stats', caption: 'Stats'},
             ],
             { slug: 'test', caption: 'Preview'}
@@ -184,7 +184,15 @@ export default {
     },
 
     widgetYaml: {
-      get() { return yaml.dump(omit(this.widget, 'tie')) },
+      get({ isAdmin } = this) { 
+        console.log({isAdmin})
+        let cutWidget = pick(this.widget, [
+          'name', 'display', 'setup',
+          ...isAdmin ? ['slate'] : []
+        ])
+        console.log({cutWidget})
+        return yaml.dump(cutWidget) 
+      },
 
       set(value) { assign(this.widget, yaml.load(value)) }
     },
