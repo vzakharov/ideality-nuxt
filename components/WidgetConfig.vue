@@ -18,6 +18,16 @@
               @click="save"
             />
           </b-nav-form>
+          <b-nav-form v-if="ephemeral && href">
+            <b-button
+              variant="secondary-outline"
+              v-text="'Preview in new tab'"
+              target="_blank"
+              size="small"
+              class="gray"
+              v-bind={href}
+            />
+          </b-nav-form>
           <b-nav-item-dropdown v-if="!ephemeral" text="Actions" variant="outline-secondary">
             <b-dropdown-item :to="{ name: 'widget-new', query: { template: widget.id }}">
               Clone
@@ -137,7 +147,7 @@ import Bubble from '~/plugins/bubble'
 
 export default {
 
-  props: ['id', 'value', 'ephemeral', 'saver'],
+  props: ['id', 'href', 'value', 'ephemeral', 'saver'],
 
   data() { 
 

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{saver}" :ephemeral="true" class="mt-5">
+    <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
       <div class="text-end">
         <small>
-          <Copiable :value="$axios.defaults.baseURL.slice(0,-1) + appendedUrl({ query: { code }, params: { action: 'view' }, reset: { query: true }})" class="gray">
+          <Copiable :value="href" class="gray">
             Copy link to widget
           </Copiable>
         </small>
@@ -109,6 +109,12 @@
     },
 
     computed: {
+
+      href({ $axios, code } = this) {
+        debugger
+        return $axios.defaults.baseURL.slice(0,-1) + 
+          this.appendedUrl({ query: { code }, params: { action: 'view' }, reset: { query: true }})
+      },
 
       widget() {
         let widget = jsyaml.load(this.yaml)
