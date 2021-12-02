@@ -14,7 +14,7 @@
         <WidgetProper v-bind="{widget}"/>
         <div class="text-end">
           <small>
-            <nuxt-link :to="appendRoute({query: { edit: null }})" class="gray">
+            <nuxt-link :to="appendRoute({params: { action: undefined }})" class="gray">
               Edit this widget
             </nuxt-link>
           </small>
