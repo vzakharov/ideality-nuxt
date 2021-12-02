@@ -166,9 +166,10 @@
       },
 
       tryAgain() {
-        let usedContent = { input: this.usedInput, output: this.usedOutput }
-        assign(this, { content: usedContent })
-        return this.generate(usedContent)
+        let content = { input: this.usedInput || this.content.input, output: this.usedOutput }
+        console.log({content})
+        assign(this, { content })
+        return this.generate(content)
       },
 
       async generate(content) {
