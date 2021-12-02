@@ -30,12 +30,17 @@
                 tinker with it, or even create a new one
               </nuxt-link></strong>, and later share it with others!
             </p>
-            <strong>
-              Yours,
-              <nuxt-link to="/">
-                Ideality 🔺
-              </nuxt-link>
-            </strong>
+            <p>
+              <strong>It’s free — and no sign up required!</strong>
+            </p>
+            <p>
+              <strong>
+                Yours,
+                <nuxt-link to="/">
+                  Ideality 🔺
+                </nuxt-link>
+              </strong>
+            </p>
           </div>
         </b-col>
       </template>
