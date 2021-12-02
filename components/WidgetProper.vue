@@ -124,7 +124,7 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'ai', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
+    props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
 
     data() { 
       let content = this.value || {}
@@ -180,10 +180,10 @@
         try {
           this.track('run')
           let { id, setup, slate, tie } = this.widget
-          let { duringSetup } = this
+          let { duringSetup, exampleIndex } = this
           let { ai } = this
-          let { engine, temperature } = ai || {}
-          let { apiKey } = {...slate, ...ai, ...this, ...this.$route.query}
+          // let { engine, temperature } = ai || {}
+          let { apiKey, engine, temperature } = {...slate, ...ai, ...this, ...this.$route.query} || {}
           
           let { code } = this.$route.query
 
@@ -207,7 +207,7 @@
           ) ? cut(output) : undefined
           
           let body = { 
-              input, output, appendInput, duringSetup, widget: {id, setup, slate, tie }, 
+              input, output, appendInput, duringSetup, exampleIndex, widget: {id, setup, slate, tie }, 
               apiKey, code, ...this.queryTags
             }
           
@@ -217,8 +217,8 @@
 
           if ( setup && slate && apiKey ) {
             console.log({ input, output })
-            console.log({ setup, slate, tie, duringSetup, input, output, appendInput })
-            let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, output, appendInput })
+            console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
+            let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
             console.log({ prompt })
             let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
             console.log({ response })

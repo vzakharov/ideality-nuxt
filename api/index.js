@@ -204,7 +204,7 @@ const app = express()
 
       // console.log(req.ip)
       // console.log(req.body)
-      let { n, input, output, appendInput, duringSetup, widget, apiKey, code, pr0n: allowUnsafe, fake_ip } = {
+      let { n, input, output, appendInput, duringSetup, exampleIndex, widget, apiKey, code, pr0n: allowUnsafe, fake_ip } = {
         input: '', output: '', n: 1, 
         ...req.body
       }
@@ -277,7 +277,7 @@ const app = express()
       if ( slate.allowUnsafe )
         allowUnsafe = true
 
-      let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output })
+      let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appendInput, output })
       
       // console.log({allowUnsafe})
 

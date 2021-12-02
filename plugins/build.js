@@ -1,9 +1,9 @@
-import { find, reject } from 'lodash'
+import { find, reject, shuffle, without } from 'lodash'
 import { filteredParameters } from '../plugins/helpers'
 import axios from 'axios'
 
 
-function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, output }) {
+function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appendInput, output }) {
   let { parameterValues, examples } = setup
   let { instruction, omitExamples } = { ...slate, ...tie }
   let { parameters } = slate
@@ -21,8 +21,13 @@ function buildPrompt({ setup, slate, tie, duringSetup, input, appendInput, outpu
   }
 
   // console.log({prefix})
-  if (duringSetup)
-    examples = examples.slice(0, -1)
+  if (duringSetup) {
+    examples = without(examples, examples[exampleIndex])
+  }
+
+  if ( examples.length > 5 ) {
+    examples = shuffle(examples).slice(0, 5)
+  }
 
   // console.log(setup, slate)
   let prompt = [
