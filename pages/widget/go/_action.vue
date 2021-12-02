@@ -93,7 +93,7 @@
     }
   }
   
-  import JSONCrush from 'jsoncrush'
+  import JSONCrush from '~/plugins/jsoncrush'
   import jsyaml from 'js-yaml'
 
   export default {
