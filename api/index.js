@@ -178,8 +178,7 @@ const app = express()
         query, orientation
       }
     },
-    res,
-    next
+    res
   ) => {
     try {
       !orientation && ( orientation = 'landscape' )
@@ -193,6 +192,7 @@ const app = express()
       
       return res.send(photo)
     } catch(error) {
+      console.log({error})
       next(error)
     }
   })

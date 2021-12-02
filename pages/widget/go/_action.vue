@@ -3,8 +3,8 @@
     <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
       <div class="text-end">
         <small>
-          <Copiable :value="href" class="gray">
-            Copy link to widget
+          <Copiable :fetch="getShortlink" class="gray">
+            Copy short link
           </Copiable>
         </small>
       </div>
@@ -95,6 +95,7 @@
   
   import JSONCrush from '~/plugins/jsoncrush'
   import jsyaml from 'js-yaml'
+  import Bubble from '~/plugins/bubble'
 
   export default {
 
@@ -104,16 +105,22 @@
       let code = this.$route.query['code']
       let yaml = code ? JSON.parse(JSONCrush.uncrush(code)) : jsyaml.dump(defaultWidget)
       return {
-        yaml, code,
+        yaml, code, shortlink: null
       }
     },
 
     computed: {
 
-      href({ $axios, code } = this) {
-        debugger
-        return $axios.defaults.baseURL.slice(0,-1) + 
-          this.appendedUrl({ query: { code }, params: { action: 'view' }, reset: { query: true }})
+      baseUrl() {
+        return this.$axios.defaults.baseURL
+      },
+
+      href() {
+        return this.shortlink || this.baseUrl + this.url          
+      },
+
+      url({ code } = this) {
+        return this.appendedUrl({ query: { code }, params: { action: 'view' }, reset: { query: true }}).slice(1)
       },
 
       widget() {
@@ -135,6 +142,13 @@
         let code = JSONCrush.crush(JSON.stringify(yaml))
         Object.assign(this, { code, yaml })
         this.pseudoRoute({ query: { code }})
+      },
+
+      async getShortlink({ shortlink, url } = this) {
+        if ( shortlink )
+          return shortlink
+        let { tail } = await Bubble.anon.go('shortlink', { url })
+        return this.shortlink = `${this.baseUrl}to/${tail}`
       }
       
     }
