@@ -25,8 +25,8 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     examples = without(examples, examples[exampleIndex])
   }
 
-  if ( examples.length > 5 ) {
-    examples = shuffle(examples).slice(0, 5)
+  if ( examples.length > 4 ) {
+    examples = shuffle(examples).slice(0, 4)
   }
 
   // console.log(setup, slate)
@@ -49,7 +49,10 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     prompt += ' ' + input
 
   if (input && !appendInput || output)
-    prompt += `\n\n**${prefix.output}**\n\n${output}`
+    prompt += `\n\n**${prefix.output}**`
+  
+  if (output)
+    prompt += `\n\n${output.trimEnd()}`
 
   console.log(prompt)
 
