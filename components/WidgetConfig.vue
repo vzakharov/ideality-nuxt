@@ -197,8 +197,8 @@ export default {
       get({ isAdmin } = this) { 
         console.log({isAdmin})
         let cutWidget = pick(this.widget, [
-          'name', 'display', 'setup',
-          ...isAdmin ? ['slate'] : []
+          'name', 'display', 'setup', 'slate'
+          // ...isAdmin ? ['slate'] : []
         ])
         console.log({cutWidget})
         return yaml.dump(cutWidget) 
