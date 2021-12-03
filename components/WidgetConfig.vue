@@ -89,7 +89,7 @@
           <div v-if="section!='test'">
 
             <div class="bg-light p-3 mt-3 border shadow">
-              <WidgetAdmin v-if="section=='admin'" v-bind="{widget}"/>
+              <WidgetAdmin v-if="section=='admin'" v-bind="{widget}" v-on="{please}"/>
 
               <WidgetNativeConfig v-if="section=='native'" v-bind="{widget}" v-on="{please}"/>
               

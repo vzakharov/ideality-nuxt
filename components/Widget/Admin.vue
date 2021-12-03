@@ -18,6 +18,11 @@
       :value="widget"
       :fields="{name:{}}"
     />
+    <b-button class="mt-5" variant="danger"
+      @click="$emit('please', destroy)"
+    >
+      Delete forever
+    </b-button>
   </div>
 </template>
 
@@ -40,6 +45,18 @@
       })
 
       return { settings }
+    },
+
+    methods: {
+
+      async destroy() {
+        if ( window.prompt('Are you sure? Type in DELETE to confirm') == 'DELETE' ) {
+          console.log(this)
+          await this.bubble.destroy('widget', this.widget)
+          this.$emit('deleted')
+        }
+      }
+      
     }
     
     

@@ -110,7 +110,10 @@ function Bubble({$auth, token } = {}) {
 
     },
 
-    patch: (type, thing) =>
+    destroy: (type, thing) =>
+      axios.delete(`obj/${type}/${thing.id}`),
+
+    patch: (type, thing) => 
       axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id'))),
 
     post: async (type, thing) => {
