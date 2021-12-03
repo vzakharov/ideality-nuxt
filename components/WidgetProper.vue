@@ -148,7 +148,9 @@
 
     async fetch() {
       if ( this.queryTags.admin ) {
-        await getUser(this)
+        if ( !await getUser(this) ) {
+          this.$router.push({name: 'login', query: { then: this.$route.fullPath }})
+        } 
       }
     },
 

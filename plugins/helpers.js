@@ -42,18 +42,20 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
 }
 
 async function getUser({ $axios, $auth }) {
-  // try {
-    // let { data: { user }} = await $axios.get('api/auth/user')
+  try {
+  //   let { data: { user }} = await $axios.get('api/auth/user')
     console.log('Fetching user...')
     let user = await (
       new Bubble({$auth, token: $auth.strategy.token.get()}).go('getUserInfo')
     )
     console.log({user})
     $auth.setUser(user)
-  // } catch(error) {
-  //   console.log({error})
-  //   $auth.setUser(null)
-  // }
+    return user
+  } catch(error) {
+    // debugger
+    console.log({error})
+    $auth.setUser(null)
+  }
 }
 
 function parseKids(parent, keys) {

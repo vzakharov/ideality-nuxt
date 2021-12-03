@@ -44,7 +44,7 @@ export default {
   asyncData: Bubble.asyncData('widget'),
 
   computed: {
-    canAdmin() { return get(this, '$auth.user.id') == get(this, 'widget.owner') }
+    canAdmin() { return this.isAdmin || get(this, '$auth.user.id') == get(this, 'widget.owner') }
   },
 
   mounted() {

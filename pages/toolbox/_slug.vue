@@ -15,7 +15,7 @@
     </b-navbar>
     <b-row style="height:100vh">
       <div class="bg-gray border p-2 d-none d-sm-block"
-        style="width: 200px"
+        style="font-size: smaller; width: 250px; height: 100vh; overflow:hidden; overflow-y:auto"
       >
         <ToolboxSidebar 
           v-bind="{ widget, widgets, categories, expanded, ai, aiHidden }"
