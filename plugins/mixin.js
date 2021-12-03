@@ -126,7 +126,7 @@ Vue.mixin({
       }
     },
 
-    element: process.client && window.document.getElementById,
+    element: () => process.client && window.document.getElementById,
 
     hasProp(prop) {
       return isDefined(this.$props[prop])
