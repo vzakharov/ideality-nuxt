@@ -104,7 +104,7 @@
       <div class="text-end pt-2">
         <small>
           <PoweredByIdeality target="widget">
-            <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.id }}" v-text="'(edit)'"/>
+            <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.slug }}" v-text="'(edit)'"/>
           </PoweredByIdeality>
         </small>
       </div>
