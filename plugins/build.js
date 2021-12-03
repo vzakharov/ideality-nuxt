@@ -25,8 +25,8 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     examples = without(examples, examples[exampleIndex])
   }
 
-  if ( examples.length > 4 ) {
-    examples = shuffle(examples).slice(0, 4)
+  if ( examples.length > 6 ) {
+    examples = shuffle(examples).slice(0, 6)
   }
 
   // console.log(setup, slate)
