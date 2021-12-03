@@ -180,7 +180,7 @@ const app = express()
     },
     res
   ) => {
-    try {
+    // try {
       !orientation && ( orientation = 'landscape' )
       console.log({query})
       let { data: {
@@ -191,10 +191,10 @@ const app = express()
       // console.log({photo})
       
       return res.send(photo)
-    } catch(error) {
-      console.log({error})
-      next(error)
-    }
+    // } catch(error) {
+    //   console.log({error})
+    //   next(error)
+    // }
   })
 
   app.post('/widget/generate', async (req, res, next) =>
@@ -330,7 +330,7 @@ const app = express()
   })
 
   app.post('/widget/track', async ({ 
-    headers: { authorization, referer }, 
+    headers: { referer }, 
     body: { 
       widget: { id }, actor, action
     },
