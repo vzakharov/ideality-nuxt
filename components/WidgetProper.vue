@@ -15,10 +15,10 @@
           labelTag: 'h3',
           disabled: generating,
           multiline: true,
-          removeNewLines: !widget.slate.multilineInput,
+          removeNewLines: !multilineInput,
           rows: 1
         }"
-        @keydown.native.enter.exact="!widget.slate.multilineInput && generate()"
+        @keydown.native.enter.exact="!multilineInput && generate()"
         @keydown.native.ctrl.enter="generate()"
         @keydown.native.alt.enter="isRetry && tryAgain()"
         @input="changed=true"
@@ -268,6 +268,10 @@
         return this.generated && this.content.output &&
           this.generatedInput == this.content.input &&
           this.generatedOutput == this.content.output        
+      },
+
+      multilineInput() {
+        return get(this.widget, 'slate.multilineInput')
       }
 
     },
