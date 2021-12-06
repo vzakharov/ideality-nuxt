@@ -4,8 +4,8 @@
       v-for="item in value"
       :key="item.id"
     >
-      <b-card :title="item.name || `Untitled ${item}`">
-        <nuxt-link class="stretched-link" :to="{ name: [routePrefix, item].join('-'), params: params(id) }"/>
+      <b-card :title="item.name || `Untitled ${type}`">
+        <nuxt-link class="stretched-link" :to="{ name: [routePrefix, item].join('-'), params: params(item.id) }"/>
       </b-card>
       <b-button size="sm" variant="light" class="gray"
         @click="$emit('input', without(value, item))"
@@ -25,7 +25,7 @@
         />
         <b-button type="submit" variant="outline-primary"
           @click="
-            $emit('input', [...value, item])
+            $emit('input', [...value, newItem])
             newItem = getNewItem()
           "
         >
