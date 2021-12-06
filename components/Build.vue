@@ -2,7 +2,7 @@
   <b-container class="mt-5">
     <b-row>
       <b-col>
-        <b-textarea v-model="code"/>
+        <CodeInput v-model="code"/>
       </b-col>
       <b-col>
       </b-col>

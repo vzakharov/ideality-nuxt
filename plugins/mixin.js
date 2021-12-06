@@ -172,6 +172,10 @@ Vue.mixin({
       return doWhat.apply(this)
     },
 
+    propFlag(flag) {
+      return typeof this.$props[flag] !== 'undefined'
+    },
+
     pseudoRoute({ params, query, hash, replace }) {
       let action = replace ? 'replaceState' : 'pushState'
       window.history[action](null, null,

@@ -100,7 +100,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
 
   // Send request
   let request = [
-    `https://api.openai.com/v1/engines/${engine}/completions`,
+    `https://api.openai.com/v1/engines/${engine}-instruct-beta/completions`,
     payload, { headers }
   ]
 

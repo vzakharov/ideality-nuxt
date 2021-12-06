@@ -70,7 +70,7 @@
       ]
       return {
         ai,
-        aiHidden: false,
+        aiHidden: true,
         categories,
         content: {},
         expanded: [...categories],

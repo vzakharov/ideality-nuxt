@@ -6,19 +6,21 @@
       v-bind="{
         ...field,
         $key: field.key,
-        value: ( field.object || object )[field.key]
+        value: ( field.object || object )[field.key],
+        lazy
       }"
-      @input="input(field, $event)"
+      @input="!propFlag('lazy') && input(field, $event)"
+      @change="propFlag('lazy') && input(field, $event)"
     />
   </div>
 </template>
 
 <script>
 
-// import LabeledInput from '@/components/LabeledInput.vue'
+import { isArray, upperFirst } from 'lodash'
 
 export default {
-  props: ['indirect', 'fields', 'value'],
+  props: ['indirect', 'fields', 'value', 'lazy'],
 
   data() { 
     // debugger
@@ -26,17 +28,25 @@ export default {
   },
 
   computed: {
-    fieldArray() { 
-      return Object.getOwnPropertyNames(this.fields).map(key => {
-        let value = this.fields[key]
-        if ( typeof value === 'string' ) {
-          if ( value === 'boolean' )
-            value = { type: 'boolean' }
-          else
-            value = { caption: value }
-        }
-        return { key, ...value }
-      })
+    fieldArray({ fields } = this) { 
+      if ( isArray(fields) ) {
+        return fields.map(key => ({
+          key,
+          caption: upperFirst(key),
+          type: 'string'
+        }))
+      }
+      else 
+        return Object.getOwnPropertyNames(this.fields).map(key => {
+          let value = this.fields[key]
+          if ( typeof value === 'string' ) {
+            if ( value === 'boolean' )
+              value = { type: 'boolean' }
+            else
+              value = { caption: value }
+          }
+          return { key, ...value }
+        })
     }
   },
 

@@ -6,7 +6,7 @@
       :fields="{
         apiKey: { caption: 'API key', type: 'password'},
         engine: { choices: ['davinci', 'curie'] },
-        temperature: { choices: [0, 0.2, 0.4, 0.6, 0.8] }
+        temperature: { choices: [0, 0.25, 0.5, 0.75] }
       }"
     />
   </div>
