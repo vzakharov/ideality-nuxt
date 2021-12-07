@@ -5,7 +5,7 @@
       :key="item.id"
     >
       <b-card :title="item.name || `Untitled ${type}`">
-        <nuxt-link class="stretched-link" :to="{ name: [routePrefix, item].join('-'), params: params(item.id) }"/>
+        <nuxt-link class="stretched-link" :to="{ name: routeName, params: params(item) }"/>
       </b-card>
       <b-button size="sm" variant="light" class="gray"
         @click="$emit('input', without(value, item))"
@@ -23,7 +23,7 @@
             name: { placeholder: 'Enter name or keep empty'}
           }"
         />
-        <b-button type="submit" variant="outline-primary"
+        <b-button variant="outline-primary"
           @click="
             $emit('input', [...value, newItem])
             newItem = getNewItem()
@@ -52,6 +52,14 @@
 
     },
 
+    computed: {
+
+      routeName() {
+        return [this.routePrefix, this.type].join('-')
+      }
+
+    },
+
     methods: {      
 
       getNewItem() {
@@ -61,8 +69,10 @@
       },
 
       params(item) {
+        debugger
         let out = {}
         out[this.type] = item.id
+        return out
       },
 
       without

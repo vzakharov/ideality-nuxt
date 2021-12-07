@@ -7,31 +7,17 @@
 
 <script>
 
-  import { without } from 'lodash'
+  import locallyStored from '~/plugins/locallyStored'
 
   export default {
 
-    data() {
+    mixins: [ locallyStored('builder') ],
 
+    data() {
       return {
         projects: []
       }
-
-    },
-
-    mounted() {
-
-      this.projects = JSON.parse(localStorage.getItem('builder.projects') || '[]')
-
-    },
-
-    watch: {
-      projects(projects) {
-        if (process.client)
-          localStorage.setItem('builder.projects', JSON.stringify(projects))
-      }
-    },
-
+    }
   }
 
 </script>

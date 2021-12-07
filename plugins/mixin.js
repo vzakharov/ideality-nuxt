@@ -168,6 +168,27 @@ Vue.mixin({
       return this.queryTags[tag]
     },
 
+    locallyStored(what, key, defaultValue) {
+      debugger
+      key = key || what
+
+      this.mounted = function() {
+        this.mounted()
+        debugger
+        console.log({what})
+        this[what] = JSON.parse(localStorage.getItem(key) || defaultValue)
+      }
+
+      this.watch = this.watch || {}
+
+      this.watch[key] = function(value) {
+        if ( process.client )
+          localStorage.setItem(key, JSON.stringify(value))
+      }
+
+      return defaultValue
+    },
+
     please(doWhat) {
       return doWhat.apply(this)
     },
