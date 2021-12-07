@@ -1,33 +1,28 @@
 <template>
   <b-row cols="1" cols-sm="2" cols-md="3" cols-lg="4" cols-xl="5" class="g-3">
     <b-col
-      v-for="item in value"
+      v-for="item in items || []"
       :key="item.id"
     >
       <b-card :title="item.name || `Untitled ${type}`">
-        <nuxt-link class="stretched-link" :to="{ name: routeName, params: params(item) }"/>
+        <nuxt-link class="stretched-link" :to="{ name: routeName, params: { [type]: item.id } }"/>
       </b-card>
       <b-button size="sm" variant="light" class="gray"
-        @click="$emit('input', without(value, item))"
+        @click="$emit('input', without(items, item))"
       >
         delete
       </b-button>
     </b-col>
     <b-col>
-      <h5>Create new:</h5>
+      <p>Create new:</p>
       <b-form>
-        <ObjectConfig
-          v-model="newItem"
-          :key="newItem.id"
-          :fields="{
-            name: { placeholder: 'Enter name or keep empty'}
-          }"
+        <LabeledInput
+          v-model="newItemName"
+          placeholder="Enter name"
         />
         <b-button variant="outline-primary"
-          @click="
-            $emit('input', [...value, newItem])
-            newItem = getNewItem()
-          "
+          type="submit"
+          @click.prevent="create()"
         >
           Create
         </b-button>
@@ -38,7 +33,7 @@
 
 <script>
 
-  import { without } from 'lodash'
+  import { find, kebabCase, without, values } from 'lodash'
 
   export default {
 
@@ -47,13 +42,14 @@
     data() {
 
       return {
-        newItem: this.getNewItem()
+        newItemName: ''
       }
 
     },
 
     computed: {
 
+      items() { return this.value },
       routeName() {
         return [this.routePrefix, this.type].join('-')
       }
@@ -62,20 +58,21 @@
 
     methods: {      
 
-      getNewItem() {
-        return {
-          id: Date.now().toString()
+      create({ newItemName: name, items } = this) {
+        let id = kebabCase(name)
+        let i = 1
+        while ( find(items, { id }) ) {
+          id = [ kebabCase(name), i++ ].join('-')
         }
+        this.$emit('input', [ ...items, { id, name } ])
+        this.newItemName = ''
       },
 
-      params(item) {
-        debugger
-        let out = {}
-        out[this.type] = item.id
-        return out
-      },
+      params({ id }) { return {
+        [type]: id
+      }},
 
-      without
+      without, values
 
     }
 
