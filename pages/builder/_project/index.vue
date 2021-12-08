@@ -1,7 +1,9 @@
 <template>
   <Container>
     <h1>{{ name }}</h1>
-    <LabeledInput v-model="name"/>
+    <LabeledInput caption='Name' v-model="name"/>
+    <h2>Assets</h2>
+    <Cards v-model="builds" type="build" route-prefix="builder-project"/>
   </Container>
 </template>
 
@@ -14,12 +16,13 @@
     data() {
       return {
         name: null,
-        id: this.$route.params.project
+        slug: this.$route.params.project,
+        builds: []
       }
     },
 
-    mounted({ id } = this) {
-      this.loadLocal( data => find(data.builder.projects, { id }) )
+    mounted({ slug } = this) {
+      this.loadLocal( data => find(data.builder.projects, { slug }) )
     }
   }
 

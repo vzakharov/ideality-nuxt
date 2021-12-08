@@ -161,25 +161,27 @@ Vue.mixin({
 
     loadLocal(pathOrFunction) {
 
-      let local
-      const getLocal = () => local = load(localStorage.getItem('data'))
+      let local, data
+      const getLocal = () => local = load(localStorage.getItem('data')) || {}
 
-      const getData = () => typeof pathOrFunction === 'string'
-        ? get( getLocal(), pathOrFunction )
-        : pathOrFunction(getLocal())
+      const getData = () => (
+        getLocal(),
+        data = 
+          typeof pathOrFunction === 'string'
+            ? (
+              get( local, pathOrFunction ) 
+              || get ( set ( local, pathOrFunction, {} ), pathOrFunction )
+            )
+            : pathOrFunction(getLocal())
+      )
 
-      forEach( getData(), ( value, key ) => {
+      Object.assign(this, getData())
 
-        this[key] = value
+      this.$watch('data', { deep: true, handler(value) {
+        Object.assign( getData(), value )
+        localStorage.setItem('data', dump(local))
+      }})
 
-        this.$watch(key, { deep: true, handler(value) {
-
-          set( getData(), key, value )
-          localStorage.setItem('data', dump(local))
-
-        }})
-
-      })
 
     },
 

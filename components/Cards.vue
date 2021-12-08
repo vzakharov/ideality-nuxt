@@ -5,7 +5,7 @@
       :key="item.id"
     >
       <b-card :title="item.name || `Untitled ${type}`">
-        <nuxt-link class="stretched-link" :to="{ name: routeName, params: { [type]: item.id } }"/>
+        <nuxt-link class="stretched-link" :to="{ name: routeName, params: { [type]: item.slug } }"/>
       </b-card>
       <b-button size="sm" variant="light" class="gray"
         @click="$emit('input', without(items, item))"
@@ -59,12 +59,13 @@
     methods: {      
 
       create({ newItemName: name, items } = this) {
-        let id = kebabCase(name)
+        let slug = kebabCase(name)
+        let id = ( Date.now() + Math.random() ).toString()
         let i = 1
-        while ( find(items, { id }) ) {
-          id = [ kebabCase(name), i++ ].join('-')
+        while ( find(items, { slug }) ) {
+          slug = [ kebabCase(name), i++ ].join('-')
         }
-        this.$emit('input', [ ...items, { id, name } ])
+        this.$emit('input', [ ...items, { id, slug, name } ])
         this.newItemName = ''
       },
 
