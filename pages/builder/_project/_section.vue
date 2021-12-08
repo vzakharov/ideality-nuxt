@@ -30,15 +30,11 @@
   export default {
 
     data() {
-      let { $route: { params: { section }} } = this
-      console.log({section})
-      // section = section || 'assets'
       return {
         name: null,
         slug: null,
         assets: [],
-        builds: [],
-        section
+        builds: []
       }
     },
     
@@ -52,6 +48,10 @@
         getItems: local => local.builder.projects,
         slugParam: 'project'
       })
+    },
+
+    computed: {
+      section() { return this.$route.params.section }
     },
 
     methods: {
