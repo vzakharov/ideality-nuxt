@@ -4,8 +4,11 @@
       v-for="item in items || []"
       :key="item.id"
     >
-      <b-card :title="item.name || `Untitled ${type}`">
-        <nuxt-link class="stretched-link" :to="{ name: routeName, params: { [type]: item.slug } }"/>
+      <b-card>
+        <template #header>
+          <component :is="item.name ? 'strong' : 'em'" v-text="item.name || item.slug"/>
+        </template>
+        <nuxt-link class="stretched-link" :to="getRoute(item)"/>
       </b-card>
       <b-button size="sm" variant="light" class="gray"
         @click="$emit('input', without(items, item))"
@@ -34,6 +37,7 @@
 <script>
 
   import { find, kebabCase, without, values } from 'lodash'
+  import { slugify } from '~/plugins/helpers'
 
   export default {
 
@@ -59,18 +63,18 @@
     methods: {      
 
       create({ newItemName: name, items } = this) {
-        let slug = kebabCase(name)
+        let slug = slugify(name || ( 'New ' + this.type ), items)
         let id = ( Date.now() + Math.random() ).toString()
-        let i = 1
-        while ( find(items, { slug }) ) {
-          slug = [ kebabCase(name), i++ ].join('-')
-        }
         this.$emit('input', [ ...items, { id, slug, name } ])
-        this.newItemName = ''
+        this.$router.push(this.getRoute({ slug }))
       },
 
       params({ id }) { return {
         [type]: id
+      }},
+
+      getRoute({ slug }, { routeName: name, type } = this) { return {
+        name, params: { [type]: slug } 
       }},
 
       without, values

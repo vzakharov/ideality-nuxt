@@ -135,7 +135,7 @@
       },
 
       inputOrChange({type, target, value}) {
-        if ( !type || !this.lazy == ( type == 'change' ))
+        if ( !type || !this.propFlag('lazy') == ( type == 'change' ))
           return
         if ( typeof value == 'undefined')
           ( {value} = target )

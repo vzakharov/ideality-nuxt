@@ -1,10 +1,9 @@
 import Vue from 'vue'
-import { assign, chain, forEach, get, set, keys, mapValues, pickBy } from 'lodash'
-import { canRunWidget, isDefined } from '@/plugins/helpers'
+import { assign, chain, find, forEach, get, kebabCase, set, keys, mapValues, pickBy } from 'lodash'
+import { canRunWidget, isDefined, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
-import { thisTypeAnnotation } from '@babel/types'
 
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
@@ -159,28 +158,48 @@ Vue.mixin({
       return isDefined(this.$props[prop])
     },
 
-    loadLocal(pathOrFunction) {
+    loadLocal(pathOrOptions) {
 
-      let local, data
+      let local, data, getItems, item, id, items, slug, slugParam, path
       const getLocal = () => local = load(localStorage.getItem('data')) || {}
 
       const getData = () => (
         getLocal(),
         data = 
-          typeof pathOrFunction === 'string'
-            ? (
-              get( local, pathOrFunction ) 
-              || get ( set ( local, pathOrFunction, {} ), pathOrFunction )
+          typeof pathOrOptions === 'string'
+            ? ( path = pathOrOptions,
+              get( local, path ) 
+              || get ( set ( local, path, {} ), path )
             )
-            : pathOrFunction(getLocal())
+            : (
+              { getItems, slugParam } = pathOrOptions,
+              items = getItems(local),
+              slug = this.$route.params[slugParam],
+              item = find(items, id ? { id } : { slug }),
+              { id } = item
+            )
       )
 
       Object.assign(this, getData())
+      
+      forEach(this.$data, (value, key) =>
+        this.$watch(key, { deep: true, handler(value) {
 
-      this.$watch('data', { deep: true, handler(value) {
-        Object.assign( getData(), value )
-        localStorage.setItem('data', dump(local))
-      }})
+          if ( key == 'name' ) {
+            slugify()
+            Object.assign(this, { slug: slugify(value, items) })
+            return
+          }
+
+          Object.assign( getData(), this.$data)
+          localStorage.setItem('data', dump(local))
+
+          if ( key == 'slug' ) {
+            this.$router.push(this.appendRoute({ params: { [slugParam]: this.slug }}))
+          }
+
+        }})
+      )
 
 
     },

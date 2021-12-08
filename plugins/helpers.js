@@ -1,4 +1,4 @@
-import { filter, isObject, pick, get, keys } from 'lodash'
+import { filter, find, kebabCase, isObject, pick, get, keys } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function canRunWidget({code, apiKey, widget} = this) {
@@ -68,6 +68,15 @@ function parseKids(parent, keys) {
   return parent
 }
 
+function slugify(name, items) {
+  let slug = kebabCase(name)
+  let i = 1
+  while (find(items, { slug })) {
+    slug = [kebabCase(name), i++].join('-')
+  }
+  return slug
+}
+
 export {
 
   canRunWidget,
@@ -76,6 +85,7 @@ export {
   filteredParameters,
   getUser,
   isDefined,
-  parseKids
+  parseKids,
+  slugify
 
 }
