@@ -7,17 +7,21 @@
 
 <script>
 
-  import locallyStored from '~/plugins/locallyStored'
-
+  import { dump } from 'js-yaml'
+  import { get } from 'lodash'
+  
   export default {
 
-    mixins: [ locallyStored('builder') ],
-
-    data() {
+    data() { 
       return {
         projects: []
       }
+    },
+
+    mounted() {
+      this.loadLocal('builder')
     }
+
   }
 
 </script>

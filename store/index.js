@@ -1,30 +1,14 @@
+import { get, set } from 'lodash'
+
 export const state = () => ({
   path: '',
+  local: {
+    pending: true
+  },
   toolCategories: null,
   headers: null,
   updatedRoute: null,
-  tree: {
-    children: [{ 
-      body: 'Hello world', children: [{
-        body: '! My name is', children: [{
-          body:' Vova', children: [{
-            body: '. Bye-bye!'
-          }]}, {
-            body: ' Jack.'
-          }
-        ]
-      }, {
-        body: '. How are you?',
-        children: [{
-          body: " I'm okay"
-        }]
-      }, {
-        body: '? Hmm...'
-      }, {
-        body: 'Test'
-      }]
-    }]
-  },
+  tree: {  },
   imagePromises: {}
 })
 
@@ -35,7 +19,7 @@ export const mutations = {
   },
 
   setFields(state, [ key, values ]) {
-    Object.assign(state[key], values)
+    Object.assign(get(state, key), values)
   }
 
 }

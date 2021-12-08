@@ -3,6 +3,8 @@ import { assign, chain, forEach, get, set, keys, mapValues, pickBy } from 'lodas
 import { canRunWidget, isDefined } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
+import { load, dump } from 'js-yaml'
+import { thisTypeAnnotation } from '@babel/types'
 
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
@@ -24,6 +26,7 @@ Vue.mixin({
   mounted () {
 
     if (process.client) {
+
       Object.assign(this, {
         window,
         console: window.console
@@ -39,7 +42,26 @@ Vue.mixin({
   
       // console.log({axios})
       if (!window.axios)
-        window.axios = axios  
+        window.axios = axios 
+      
+      // Only set this once for the root component
+      if ( !this.$parent && this.$store.state.local.pending ) {
+
+        this.$store.commit('set', {
+          local: load(localStorage.getItem('data')) || {}
+        })
+  
+        this.$watch('$store.state.local', {
+          deep: true,
+          handler(value) {
+            debugger
+            localStorage.setItem('data', dump(value))
+          }
+        })
+
+      }
+
+
     }
 
   },
@@ -48,7 +70,13 @@ Vue.mixin({
     bubble() {
       return new Bubble(this)
     },
+
     canRunWidget,
+
+    data() {
+      return this.$data
+    },
+
 
     head() {
       let { header } = this
@@ -132,6 +160,36 @@ Vue.mixin({
       return isDefined(this.$props[prop])
     },
 
+    loadLocal(storePath) {
+
+      const getLocal = () => localStorage.getItem('local')
+
+      forEach( get( load(getLocal()), storePath ), ( value, key ) => {
+
+        this[key] = value
+
+        this.$watch(key, { deep: true, handler(value) {
+
+          let local = getLocal()
+          debugger
+          set( local, storePath + key, value )
+          localStorage.setItem('local', local)
+
+        }})
+
+      })
+
+        this.$watch('data', { deep: true, handler(data) {
+          debugger
+          this.$store.commit('setFields', ['local', {
+            [storePath]: data
+          }])
+        }})
+
+      }})
+
+    },
+
     withElement(id, ...actions) {
       let element = window.document.getElementById(id)
       const next = () =>
@@ -166,27 +224,6 @@ Vue.mixin({
 
     hasQueryTag(tag) {
       return this.queryTags[tag]
-    },
-
-    locallyStored(what, key, defaultValue) {
-      debugger
-      key = key || what
-
-      this.mounted = function() {
-        this.mounted()
-        debugger
-        console.log({what})
-        this[what] = JSON.parse(localStorage.getItem(key) || defaultValue)
-      }
-
-      this.watch = this.watch || {}
-
-      this.watch[key] = function(value) {
-        if ( process.client )
-          localStorage.setItem(key, JSON.stringify(value))
-      }
-
-      return defaultValue
     },
 
     please(doWhat) {
