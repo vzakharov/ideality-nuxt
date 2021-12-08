@@ -41,7 +41,7 @@
 
   export default {
 
-    props: ['value', 'type', 'routePrefix'],
+    props: ['value', 'type', 'routePrefix', 'routePattern'],
 
     data() {
 
