@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { assign, chain, find, forEach, get, kebabCase, set, keys, mapValues, pickBy } from 'lodash'
-import { canRunWidget, isDefined, slugify } from '@/plugins/helpers'
+import { appendRoute, canRunWidget, isDefined, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
@@ -129,16 +129,7 @@ Vue.mixin({
 
   methods: {
 
-    appendRoute({ params, query, hash, reset }) {
-      let { $route } = this
-      reset = reset || {}
-      return {
-        ...$route,
-        query: { ...reset.query ? {} : $route.query, ...query },
-        params: { ...reset.params ? {} : $route.params, ...params },
-        hash: hash || $route.hash
-      }
-    },
+    appendRoute,
 
     appendedUrl() {
       return this.$router.resolve(this.appendRoute(...arguments)).href
