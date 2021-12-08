@@ -8,21 +8,19 @@
 <script>
 
   import { find } from 'lodash'
-  import locallyStored from '~/plugins/locallyStored'
-
+  
   export default {
 
     data() {
       return {
         name: null,
-        id: null
+        id: this.$route.params.project
       }
     },
 
-    mixins: [ locallyStored('builder', {
-      path: ['project']
-    })]
-
+    mounted({ id } = this) {
+      this.loadLocal( data => find(data.builder.projects, { id }) )
+    }
   }
 
 </script>
