@@ -44,22 +44,21 @@ Vue.mixin({
       if (!window.axios)
         window.axios = axios 
       
-      // Only set this once for the root component
-      if ( !this.$parent && this.$store.state.local.pending ) {
+      // // Only set this once for the root component
+      // if ( !this.$parent && this.$store.state.local.pending ) {
 
-        this.$store.commit('set', {
-          local: load(localStorage.getItem('data')) || {}
-        })
+      //   this.$store.commit('set', {
+      //     local: load(localStorage.getItem('data')) || {}
+      //   })
   
-        this.$watch('$store.state.local', {
-          deep: true,
-          handler(value) {
-            debugger
-            localStorage.setItem('data', dump(value))
-          }
-        })
-
-      }
+      //   this.$watch('$store.state.local', {
+      //     deep: true,
+      //     handler(value) {
+      //       debugger
+      //       localStorage.setItem('data', dump(value))
+      //     }
+      //   })
+      // }
 
 
     }
@@ -162,31 +161,22 @@ Vue.mixin({
 
     loadLocal(storePath) {
 
-      const getLocal = () => localStorage.getItem('local')
+      const getLocal = () => load(localStorage.getItem('data'))
 
-      forEach( get( load(getLocal()), storePath ), ( value, key ) => {
+      forEach( get( getLocal(), storePath ), ( value, key ) => {
 
         this[key] = value
 
         this.$watch(key, { deep: true, handler(value) {
 
-          let local = getLocal()
           debugger
-          set( local, storePath + key, value )
-          localStorage.setItem('local', local)
+          let local = getLocal()
+          set( local, [storePath, key].join('.'), value )
+          localStorage.setItem('data', dump(local))
 
         }})
 
       })
-
-        this.$watch('data', { deep: true, handler(data) {
-          debugger
-          this.$store.commit('setFields', ['local', {
-            [storePath]: data
-          }])
-        }})
-
-      }})
 
     },
 
