@@ -27,10 +27,10 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     examples = without(examples, examples[exampleIndex])
   }
 
-  let minExampleCount = 2
+  let minExampleCount = 3
   if ( examples.length > minExampleCount ) {
     examples = shuffle(examples)
-    let examplesChars = sumBy(examples.slice(0, minExampleCount), example => example.length)
+    let examplesChars = sumBy(examples.slice(0, minExampleCount), example => example.input.length + example.output.length)
     let i
     for ( i = minExampleCount; i < examples.length && examplesChars < 3000; i++ )
       examplesChars += examples[i].length
@@ -42,7 +42,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     instruction,
     filteredParameters({ setup, slate, onlyRecitals: true, duringGeneration: true }).map(({ name }) => `${name}:\n${parameterValues[name]}`
     ).join('\n\n'),
-    (examples || []).map(example => `//// ${prefix.input}: ${example.input}\n\n//// ${prefix.output}:\n\n${example.output}`
+    (examples || []).map(example => `//// ${prefix.input}:\n\n${example.input}\n\n//// ${prefix.output}:\n\n${example.output}`
     ).join('\n\n'),
     `//// ${prefix.input}:`
   ].filter(a => a).join('\n\n')
@@ -84,14 +84,15 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     prompt,
     temperature,
     max_tokens: 300,
-    frequency_penalty: 0,
-    presence_penalty: 0,
+    // frequency_penalty: 0,
+    // presence_penalty: 1,
     n,
     logit_bias: {
-      50256: -100 // end of text
+      // 50256: -100 // end of text
     //   , 8162: 1 // ***
     //   , 1174: 1 // **
-    //   , 198: 1 // new line,
+      // , 198: 1 // new line,
+    //  628: 1 // double new line
     //   , 25: 1 // colon
     //   , 13: 1 // period
     //   , 0: 1 // bang
@@ -106,7 +107,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
 
   // Send request
   let request = [
-    `https://api.openai.com/v1/engines/${engine}-instruct-beta/completions`,
+    `https://api.openai.com/v1/engines/${engine}/completions`,
     payload, { headers }
   ]
 

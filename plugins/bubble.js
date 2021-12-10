@@ -187,6 +187,7 @@ function parse(object) {
     })
 
     if ( singular(type) == 'widget' && thing.template ) {
+      // debugger
       thing.slate = thing.slate || thing.template
       delete thing.template
     }

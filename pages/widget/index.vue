@@ -138,6 +138,10 @@
       let { widgets } = (
         await Bubble.anon.go('getWidgetLandingWidgets')
       )
+
+      console.log({widgets})
+
+      // debugger
       
       widgets = widgets.map(widget => omit(widget, 'display.description'))
       Object.assign(this, { widgets })

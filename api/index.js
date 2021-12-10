@@ -153,7 +153,7 @@ const app = express()
 
         console.log({ safetyLabel })
         
-        if ( safetyLabel.match(/[12]/) )
+        if ( safetyLabel.match(/[1]/) )
           return res.status(403).send({
             error: {
               cause: 'unsafe', 
@@ -281,20 +281,20 @@ const app = express()
         next
       )
     
-      console.log('response: ', response.data)
+      // console.log('response: ', response.data)
 
       // console.log({input, output})
 
       let content = parseResponse({ input, output, appendInput, prefix, response, n })
       
       delete quota.ip
-      console.log({content})
+      // console.log({content})
       
       let decrement = ( prompt.length + content.output.length ) / 2000
 
       console.log({ decrement })
 
-      admin.go('runsLeft--', { ip, widget: widget.id, decrement }).then(runsLeftResponse => console.log({ runsLeftResponse }))
+      admin.go('runsLeft--', { ip, widget: widget.id, decrement })//.then(runsLeftResponse => console.log({ runsLeftResponse }))
 
       res.send({content, runsLeft: map(quota, 'runsLeft') })
     } catch(error) {
@@ -303,7 +303,7 @@ const app = express()
         let { statusCode, body: {status, message, path }} = error
         return res.status(statusCode).send({
           error: {
-            cause: 'bubbleError', 
+            cause: 'bubble_error', 
             status,
             message,
             path
