@@ -27,13 +27,15 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     examples = without(examples, examples[exampleIndex])
   }
 
-  let minExampleCount = 3
+  examples = shuffle(examples)
+
+  let minExampleCount = 2
   if ( examples.length > minExampleCount ) {
-    examples = shuffle(examples)
-    let examplesChars = sumBy(examples.slice(0, minExampleCount), example => example.input.length + example.output.length)
+    let size = example => example.input.length + example.output.length
+    let examplesChars = sumBy(examples.slice(0, minExampleCount), size )
     let i
-    for ( i = minExampleCount; i < examples.length && examplesChars < 3000; i++ )
-      examplesChars += examples[i].length
+    for ( i = minExampleCount; i < examples.length && examplesChars < 2000; i++ )
+      examplesChars += size(examples[i])
     examples = examples.slice(0, i)
   }
 
@@ -42,9 +44,9 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
     instruction,
     filteredParameters({ setup, slate, onlyRecitals: true, duringGeneration: true }).map(({ name }) => `${name}:\n${parameterValues[name]}`
     ).join('\n\n'),
-    (examples || []).map(example => `//// ${prefix.input}:\n\n${example.input}\n\n//// ${prefix.output}:\n\n${example.output}`
+    (examples || []).map(example => `=== ${prefix.input} ===\n\n${example.input}\n\n=== ${prefix.output} ===\n\n${example.output}`
     ).join('\n\n'),
-    `//// ${prefix.input}:`
+    `=== ${prefix.input} ===`
   ].filter(a => a).join('\n\n')
 
   for (let { name } of reject(parameters, { recital: true })) {
@@ -52,10 +54,10 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
   }
 
   if (input)
-    prompt += ' ' + input
+    prompt += '\n\n' + input
 
   if (input && !appendInput || output)
-    prompt += `\n\n//// ${prefix.output}:`
+    prompt += `\n\n=== ${prefix.output} ===`
   
   if (output)
     prompt += `\n\n${output.trimEnd()}`
@@ -63,7 +65,7 @@ function buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appe
   console.log(prompt)
 
   let stop = [
-    '//// ' + prefix.input,
+    '=== ' + prefix.input,
     // '***',
     ...(examples && examples.length) || omitExamples ? [] : ['\n'],
     ...slate.stop || []
@@ -84,15 +86,15 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     prompt,
     temperature,
     max_tokens: 300,
-    // frequency_penalty: 0,
-    // presence_penalty: 1,
+    frequency_penalty: 0.5,
+    presence_penalty: 0.5,
     n,
     logit_bias: {
       // 50256: -100 // end of text
     //   , 8162: 1 // ***
     //   , 1174: 1 // **
-      // , 198: 1 // new line,
-    //  628: 1 // double new line
+    198: 1, // new line,
+     628: 1 // double new line
     //   , 25: 1 // colon
     //   , 13: 1 // period
     //   , 0: 1 // bang
@@ -131,7 +133,7 @@ function parseResponse({ input, output, appendInput, prefix, response, n }) {
     if (input && !appendInput)
       output += text.trimEnd()
     else {
-      [input, output] = (input + text).trimEnd().split('//// ' + prefix.output + ':').map(s => s.trim())
+      [input, output] = (input + text).trimEnd().split('=== ' + prefix.output + ' ===').map(s => s.trim())
       if (!output)
         [input] = input.split("\n")
     }
