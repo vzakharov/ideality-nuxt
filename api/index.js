@@ -16,6 +16,7 @@ const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 // const { default: { admin }} = Bubble
 
 const { buildPrompt, complete, parseResponse } = require('../plugins/build')
+console.log(require('../plugins/build'))
 
 const jsyaml = require('js-yaml')
 
@@ -24,7 +25,7 @@ const app = express()
 // try {
 
   const _ = require('lodash')
-  const { assign, filter, find, get, keys, map, pickBy, reject } = _
+  const { assign, filter, find, get, keys, map, pickBy, reject, set } = _
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: false }))
@@ -226,48 +227,36 @@ const app = express()
       
       let quota = {}
       
-      if ( apiKey || get(widget, 'slate.apiKey') ) {
+      let runsLeft = {}
+      if ( apiKey ) {
         allowUnsafe = true
       }
       else {
-        quota = await admin.go('runsLeft--', { ip, widget: widget.id })
-        console.log({quota})
-        let quotaExceeded = keys(
-          pickBy(
-            quota, item => 
-            item.runsLeft <= 0
-          )
-        )[0]
-        console.log({quotaExceeded})
-        if ( quotaExceeded ) {
-          let { authorization } = req.headers
-          let user = await
-            authorization ?
-              getUser(authorization) :
-              {}
-          let { owner } = quota
-          console.log({quota, quotaExceeded, user, code})
-          if ( !(
-            quotaExceeded == 'ip' && (
-              user.id == owner.id
-              || code && ( code == owner.code )
-            )
-          ))
-            return res.status(403).send({
-              error: {
-                cause: 'quota', 
-                message: ({
-                  ip: 'User',
-                  widget: 'Widget',
-                  owner: 'Widget owner'
-                })[quotaExceeded] + ' quota exceeded.'
-                + ( quotaExceeded == 'ip' ? ' Please come back in an hour or add “?apiKey=[your OpenAI key starting with ‘sk-’]” to the URL. (We don’t store your API key, it will be used to make a request directly from your browser.)' : '' )
-              }
-            })
+        let ipInfo = await admin.get('ip', `ip-${ip.replace(/\./g, '-')}`)
+        console.log({ ipInfo })
+        runsLeft.ip = ipInfo.runsLeft
+        if ( runsLeft.ip < 0 ) {
+          return res.status(403).send({
+            error: {
+              cause: 'quota', 
+              message: 'Quota exceeded. Please come back in an hour or add “?apiKey=[your OpenAI key]” to the URL to make the request using your own key. (We don’t store your API key and will only use to make a request directly from your browser.)'
+            }
+          })
         }
       }
 
       await widgetLoaded
+
+      runsLeft.widget = widget.runsLeft
+
+      if ( runsLeft.widget < 0 ) {
+        return res.status(403).send({
+          error: {
+            cause: 'widget_quota', 
+            message: 'Widget quota exceeded. Please come back next day or add “?apiKey=[your OpenAI key]” to the URL to make the request using your own key. (We don’t store your API key and will only use to make a request directly from your browser.)'
+          }
+        })
+      }
 
       let { setup, slate, tie } = widget
       // ;( { apiKey } = slate )
@@ -277,6 +266,7 @@ const app = express()
       if ( slate.allowUnsafe )
         allowUnsafe = true
 
+      console.log({ buildPrompt })
       let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appendInput, output })
       
       // console.log({allowUnsafe})
@@ -299,10 +289,17 @@ const app = express()
       
       delete quota.ip
       console.log({content})
+      
+      let decrement = ( prompt.length + content.output.length ) / 2000
+
+      console.log({ decrement })
+
+      admin.go('runsLeft--', { ip, widget: widget.id, decrement }).then(runsLeftResponse => console.log({ runsLeftResponse }))
 
       res.send({content, runsLeft: map(quota, 'runsLeft') })
     } catch(error) {
       try {
+        console.log({error})
         let { statusCode, body: {status, message, path }} = error
         return res.status(statusCode).send({
           error: {

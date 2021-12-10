@@ -110,7 +110,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     payload, { headers }
   ]
 
-  console.log({ request })
+  // console.log({ request })
 
   return axios.post(...request)
 }
