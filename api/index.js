@@ -232,7 +232,7 @@ const app = express()
         allowUnsafe = true
       }
       else {
-        let ipInfo = await admin.get('ip', `ip-${ip.replace(/\./g, '-')}`)
+        let ipInfo = await admin.get('ip', `ip-${ip.replace(/\./g, '-')}`) || {}
         console.log({ ipInfo })
         runsLeft.ip = ipInfo.runsLeft
         if ( runsLeft.ip < 0 ) {
