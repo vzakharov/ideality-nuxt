@@ -66,7 +66,7 @@
         apiKey: ''
       }
       let categories = [
-        'Startup', 'Social', 'Brainstorming', 'Personal', 'Fun'
+        'Startup', 'Social', 'Brainstorming', 'Personal', 'Creative', 'Fun'
       ]
       return {
         ai,
