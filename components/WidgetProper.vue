@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div class="bg-light p-2">
+    <div :class="{
+      'bg-light': !prop('hideBackground'), ['p-' + ( prop('padding') || 2 )]: true 
+    }">
       <template v-if="!duringSetup">
-        <h4 v-text="widget.name" class="mb-3"/>
+        <h4 v-if="!prop('hideHeading')" v-text="widget.name" class="mb-3"/>
         <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
       </template>
             
       <LabeledInput
+        v-if="!prop('hideInput')"
         v-model="content.input"
         v-bind="{
           id: 'widget-input',
@@ -40,11 +43,12 @@
 
       <template>
         <div v-if="!generating">
-          <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
+          <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
             :disabled="!content.input || !canRunWidget"
             @click="isRetry ? tryAgain() : generate()"
           />
           <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
+            v-if="!prop('hideInput')"
             @click="inspire"
             :disabled="!canRunWidget"
           />
@@ -101,7 +105,7 @@
         
       </template>
 
-      <div class="text-end pt-2">
+      <div class="text-end pt-2" v-if="!prop('hidePoweredBy')">
         <small>
           <PoweredByIdeality target="widget">
             <nuxt-link style="color:#BBB" v-if="isAdmin" :to="{name: 'widget-id-config', params: { id: widget.slug }}" v-text="'(edit)'"/>
@@ -114,7 +118,7 @@
 
 <script>
 
-  import { assign, get, last, pick} from 'lodash'
+  import { assign, get, last, map, pick} from 'lodash'
   import Bubble from '~/plugins/bubble'
   import { buildPrompt, complete, parseResponse } from '~/plugins/build'
   import { clone, getUser } from '~/plugins/helpers'
@@ -124,7 +128,8 @@
   export default {
 
     // components: {BIconDice5},
-    props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 'dontFocusOnOutput', 'load', 'omitDescription'],
+    props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 
+      'dontFocusOnOutput', 'load', 'omitDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding'],
 
     data() { 
       let content = this.value || {}
@@ -161,7 +166,7 @@
     },
 
     methods: {
-      last,
+      get, last,
 
       inspire() {
         return this.generate({})
@@ -217,20 +222,45 @@
           console.log({setup, slate, apiKey})
 
           let runsLeft
-
+          
           if ( setup && slate && apiKey ) {
-            console.log({ input, output })
-            console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
+            // console.log({ input, output })
+            // console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
             let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
             console.log({ prompt })
             let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
-            console.log({ response })
+            // console.log({ response })
             content = parseResponse({ input, output, appendInput, prefix, response })
             console.log({ content })
           } else
             ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
 
+          let match = !setup.validationRegex
+
+          if ( !match ) {
+            let { output } = content
+            let patterns = setup.validationRegex.split('\n\n')
+            let index = 0
+            for ( let pattern of patterns ) {
+              match = output.slice(index).match(new RegExp(`^${pattern}\n*`))
+              console.log({match})
+              if ( match ) {
+                index += match[0].length
+              } else {
+                debugger
+                content.output = output.slice(0, index).trim() + '-'
+                break
+              }
+            }
+          }
+
           assign(this, { content })
+
+          // if ( !match ) {
+          //   debugger
+          //   return await this.generate(content)
+          // }
+
           // console.log(runsLeft)
           if ( runsLeft && this.code)
             this.$set(this.code, 'runsLeft', runsLeft.code)
@@ -264,8 +294,14 @@
 
     computed: {
       get,
+
+      continueOutput() {
+        return this.content.output && this.content.output.slice(-1) == '-'
+      },
+
       isRetry() {
         return this.generated && this.content.output &&
+          !this.continueOutput &&
           this.generatedInput == this.content.input &&
           this.generatedOutput == this.content.output        
       },
