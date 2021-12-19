@@ -1,5 +1,11 @@
 <template>
   <div>
+      <LabeledInput
+        caption="Show advanced settings"
+        v-model="display.advanced"
+        type="boolena"
+      />
+
       <ObjectConfig :value="widget"
         indirect v-on="$listeners"
         :fields="{
@@ -7,7 +13,10 @@
         }"
       />
       <ObjectConfig v-model="display" :fields="{
+        name: { hide: !display.advanced, caption: 'Alternative title (optional)' },
+        hideTitle: { hide: display.name, caption: 'Hide title', type: 'boolean' },
         description: { caption: 'Description', placeholder: 'The text that will show up in the widget', multiline: true},
+        markdownDescription: { caption: 'Show as markdown', type: 'boolean' },
         sampleDescription: { hide: !widget.isExample, caption: 'Description (for owners)', multiline: true},
         inputCaption: { caption: 'Caption for user input', placeholder: 'e.g. “Tell us about yourself”'},
         inputPlaceholder: { caption: 'Placeholder for user input', placeholder: 'e.g. “I am a ...”', multiline: true },
@@ -29,11 +38,14 @@
 
     data() {
       let display = this.setDefaults(this.value, {
+        advanced: false,
         name: '',
         description: '',
+        hideTitle: false,
         sampleDescription: '',
         inputCaption: '',
         inputPlaceholder: '',
+        markdownDescription: false,
         outputCaption: '',
         preCTA: '',
         CTA: '',
@@ -45,6 +57,13 @@
       let { widget } = this.context
       // debugger
       return { display, widget }
+    },
+
+    watch: {
+      'display.name': function(value) { 
+        if ( value ) 
+          this.display.hideTitle = false 
+      }
     }
 
   }

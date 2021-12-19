@@ -7,7 +7,7 @@
     <template v-else>
       <div v-if="$caption && !isBoolean"><label :for="uid" v-text="$caption" class="my-1 fw-bold"/></div>
       <Choices v-if="typeof choices !== 'undefined'" v-bind="{value, choices}" @input="$emit('input', $event)"/>
-      <div v-else-if="isBoolean" class="form-check">
+      <div v-else-if="isBoolean" class="form-check form-switch">
         <input class="form-check-input" type="checkbox" 
           v-bind="{checked: value, disabled}" 
           @input="console.log( $event.target.checked ); $emit('input', $event.target.checked)"
@@ -16,7 +16,7 @@
         <label :for="uid" class="form-check-label"> {{$caption}} </label>
       </div>
       <template v-else>
-        <textarea-autosize v-if="multiline" v-bind="inputProps" :id="uid"
+        <textarea-autosize v-if="prop('multiline')" v-bind="inputProps" :id="uid"
           v-on="{...$listeners,
             input: inputOrChange,
             change: inputOrChange,
@@ -135,7 +135,7 @@
       },
 
       inputOrChange({type, target, value}) {
-        if ( !type || !this.propFlag('lazy') == ( type == 'change' ))
+        if ( !type || !this.prop('lazy') == ( type == 'change' ))
           return
         if ( typeof value == 'undefined')
           ( {value} = target )

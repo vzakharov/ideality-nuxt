@@ -23,8 +23,8 @@
       
       let bubble = new Bubble({$auth})
       bubble.go('createWidget', { template }).then(({ widget }) => {
-        console.log(widget)
-        redirect({name: 'widget-id-config', params: {id: widget.id}})
+        console.log({created: widget})
+        redirect({name: 'widget-id-config', params: {id: widget.slug}})
       })
 
 

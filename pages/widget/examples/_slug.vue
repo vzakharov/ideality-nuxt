@@ -21,7 +21,7 @@
               Preview
             </Heading>
             <WidgetBox>
-              <WidgetProper ref="widget" :key="widget.id" :omitDescription="true"
+              <WidgetProper ref="widget" :key="widget.id" :hideDescription="true"
                 v-bind="{widget, apiKey, code, go}"
                 :value="content"
               />

@@ -86,15 +86,15 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
     prompt,
     temperature,
     max_tokens: 300,
-    frequency_penalty: 0.5,
+    frequency_penalty: 0,
     presence_penalty: 0.5,
     n,
     logit_bias: {
       // 50256: -100 // end of text
     //   , 8162: 1 // ***
     //   , 1174: 1 // **
-    198: 1, // new line,
-     628: 1 // double new line
+    // 198: 1, // new line,
+    //  628: 1 // double new line
     //   , 25: 1 // colon
     //   , 13: 1 // period
     //   , 0: 1 // bang

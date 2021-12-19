@@ -53,7 +53,7 @@
 
     async fetch() {
 
-      Object.assign(this, await new Bubble(this).go('getUserWidgets'))
+      this.widgets = await new Bubble(this).get('widgets', { owner: this.$auth.user.id })
         
     },
 

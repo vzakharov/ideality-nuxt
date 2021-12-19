@@ -230,8 +230,8 @@ export default {
 
     async clone() {
       let { id } = this.widget
-      let { response: { newWidget }} = await this.$axios.$post(process.env.NUXT_ENV_BUBBLE_URL+'wf/cloneWidget', { id })
-      console.log(newWidget)
+      let { response: { newWidget }} = await this.bubble.go('wf/cloneWidget', { id })
+      console.log({newWidget})
       this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
     },
 
@@ -252,7 +252,7 @@ export default {
         if ( saver ) {
           await saver(widget)
         } else {
-          widget.display.name = widget.name
+          // widget.display.name = widget.name
           await this.$axios.$patch(this.apiUrl, {
             ...omit(widget, Bubble.camelcasedReservedProperties),
             ...mapValues(pick(widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify)

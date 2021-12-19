@@ -1,7 +1,7 @@
 <template>
   <div>
     <LabeledInput 
-      v-for="field in fieldArray.filter(f=>!f.hide && ( typeof object[f.key] !=='undefined' || !f.hideIfUndefined ))" 
+      v-for="field in fieldArray.filter(f => ( object[f.key] || !f.hide ) && ( typeof object[f.key] !=='undefined' || !f.hideIfUndefined ))" 
       :key="field.key"
       v-bind="{
         ...field,
@@ -9,8 +9,8 @@
         value: ( field.object || object )[field.key],
         lazy
       }"
-      @input="!propFlag('lazy') && input(field, $event)"
-      @change="propFlag('lazy') && input(field, $event)"
+      @input="!prop('lazy') && input(field, $event)"
+      @change="prop('lazy') && input(field, $event)"
     />
   </div>
 </template>

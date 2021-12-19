@@ -4,8 +4,11 @@
       'bg-light': !prop('hideBackground'), ['p-' + ( prop('padding') || 2 )]: true 
     }">
       <template v-if="!duringSetup">
-        <h4 v-if="!prop('hideHeading')" v-text="widget.name" class="mb-3"/>
-        <p v-if="!omitDescription && widget.display.description" v-text="widget.display.description"/>
+        <h4 v-if="!prop('hideHeading') && !widget.display.hideTitle" v-text="widget.display.name || widget.name" class="mb-3"/>
+        <template v-if="!hideDescription && widget.display.description">
+          <p v-if="widget.display.markdownDescription" v-html="$md.render(widget.display.description)"/>
+          <p v-else v-text="widget.display.description"/>
+        </template>
       </template>
             
       <LabeledInput
@@ -53,7 +56,15 @@
             :disabled="!canRunWidget"
           />
         </div>
-        <b-spinner v-else class="spinner-grow text-danger"/>
+        <template v-else>
+          <b-spinner class="spinner-grow text-danger"/>
+          <small class="text-muted" v-text="[
+            'Generating, please wait...',
+            'Trying again...',
+            'And again...',
+            'One last time...'
+          ][retry]"/>
+        </template>
       </template>
       <slot/>
       <b-alert show v-if="error && !hide.error" variant="danger">
@@ -129,7 +140,8 @@
 
     // components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 
-      'dontFocusOnOutput', 'load', 'omitDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding'],
+      'dontFocusOnOutput', 'load', 
+      'hideDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding'],
 
     data() { 
       let content = this.value || {}
@@ -146,7 +158,8 @@
         showOutro: true,
         hide: {},
         content,
-        display
+        display,
+        retry: 0
       }
       return data
     },
@@ -223,43 +236,34 @@
 
           let runsLeft
           
-          if ( setup && slate && apiKey ) {
-            // console.log({ input, output })
-            // console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
-            let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
-            console.log({ prompt })
-            let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
-            // console.log({ response })
-            content = parseResponse({ input, output, appendInput, prefix, response })
-            console.log({ content })
-          } else
-            ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
+          let go = async () => {
+            
+            if ( setup && slate && apiKey ) {
+              // console.log({ input, output })
+              // console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
+              let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
+              console.log({ prompt })
+              let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
+              // console.log({ response })
+              content = parseResponse({ input, output, appendInput, prefix, response })
+              console.log({ content })
+            } else
+              ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
 
-          let match = !setup.validationRegex
+            let match = !setup.validationRegex || content.output.match(new RegExp(`^${setup.validationRegex}$`))
 
-          if ( !match ) {
-            let { output } = content
-            let patterns = setup.validationRegex.split('\n\n')
-            let index = 0
-            for ( let pattern of patterns ) {
-              match = output.slice(index).match(new RegExp(`^${pattern}\n*`))
-              console.log({match})
-              if ( match ) {
-                index += match[0].length
-              } else {
-                debugger
-                content.output = output.slice(0, index).trim() + '-'
-                break
-              }
+            let { retry } = this
+            console.log({retry})
+            if ( !match && retry < 4 ) {
+              this.retry = retry + 1
+              return go()
             }
+
           }
 
-          assign(this, { content })
+          await go()
 
-          // if ( !match ) {
-          //   debugger
-          //   return await this.generate(content)
-          // }
+          assign(this, { content })
 
           // console.log(runsLeft)
           if ( runsLeft && this.code)
@@ -278,6 +282,7 @@
             assign(this, {error})
         } finally {
           this.generating = false
+          this.retry = 0
         }
 
       },
@@ -293,8 +298,6 @@
     },
 
     computed: {
-      get,
-
       continueOutput() {
         return this.content.output && this.content.output.slice(-1) == '-'
       },

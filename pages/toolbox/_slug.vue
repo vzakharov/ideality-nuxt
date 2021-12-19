@@ -40,7 +40,7 @@
             >
               <BuilderComponent
                 class="scaled"
-                :name="widget.display.native.componentName" :content="content[widget.id]"
+                :type="widget.display.native.componentName" :content="content[widget.id].output"
               />
             </b-row>
           </b-col>

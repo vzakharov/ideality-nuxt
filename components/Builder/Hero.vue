@@ -44,8 +44,12 @@
 
     data() {
 
+      let { content } = this
+      if ( typeof content !== 'string' )
+        content = content.output
+
       try {
-        let match = this.content.output.match(
+        let match = content.match(
           /(Brief.*\n+)?# +((?<title>.*?)\. )?(?<headline>.*)\n+(?<text>.*)\n+Image for ["“](?<imageQuery>.*)["”]\n+\[(?<cta>.*)\]/
         )
 

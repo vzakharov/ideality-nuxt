@@ -135,26 +135,14 @@ Vue.mixin({
       return this.$router.resolve(this.appendRoute(...arguments)).href
     },
 
-    control(what, { viaModel, via } = {}) {
-      let key = JSON.stringify(what)
-      if (viaModel)
-        return { 
-          key, 
-          value: what 
-          // 'v-on': { assign: this.assign }
-        }
-      else {
-        let name = (() => {
-          for ( let key of keys(this) )
-            if ( this[key] == what )
-              return key
-        })()
-        return { 
-          key,
-          [name]: what
+    control(what) {
+      for ( let key of keys(what)) {
+        let value = what[key]
+        return {
+          key: JSON.stringify(value),
+          [key]: value
         }
       }
-
     },
 
     element: () => process.client && window.document.getElementById,
@@ -250,7 +238,7 @@ Vue.mixin({
     },
 
     prop(key) {
-      return this.$props[key] || ( typeof this.$props[key] !== 'undefined' )
+      return this.$props[key] === '' ? true : this.$props[key]
     },
 
     pseudoRoute({ params, query, hash, replace }) {

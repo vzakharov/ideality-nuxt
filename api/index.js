@@ -179,9 +179,9 @@ const app = express()
         query, orientation
       }
     },
-    res
+    res, next
   ) => {
-    // try {
+    try {
       !orientation && ( orientation = 'landscape' )
       console.log({query})
       let { data: {
@@ -192,10 +192,10 @@ const app = express()
       // console.log({photo})
       
       return res.send(photo)
-    // } catch(error) {
-    //   console.log({error})
-    //   next(error)
-    // }
+    } catch(error) {
+      console.log({error})
+      // next(error)
+    }
   })
 
   app.post('/widget/generate', async (req, res, next) =>

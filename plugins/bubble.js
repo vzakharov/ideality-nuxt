@@ -149,16 +149,17 @@ function Bubble({$auth, token } = {}) {
 
 }
 
-Bubble.asyncData = ( type, query, options ) => 
-  async ({ $auth, route, $route}) => {
+Bubble.asyncData = ( type, query, options ) =>  {
+  return async ({ $auth, route, $route}) => {
     let { params: { id }} = route || $route
     // console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })
-    let value = await bubble.get(type, query || id, options)    
+    let value = await bubble.get(type, query || id, options)
     result[type] = value
     return {...result, loaded: true}
   }
+}
 
 // Bubble.admin = new Bubble({admin: true})
 Bubble.anon = new Bubble()
