@@ -17,7 +17,8 @@
                     output: widget.content.output
                   },
                   hideInput: i != 0,
-                  hideDescription
+                  hideDescription,
+                  showEditingTip: i == 0
                 }"
                 @input="i == 0 ? $set(widget, 'content', $event) : $set(widget.content, 'output', $event.output)"
                 hide-background hide-powered-by

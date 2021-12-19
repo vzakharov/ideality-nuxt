@@ -44,6 +44,11 @@
         @keydown.native.alt.enter="isRetry && tryAgain()"
       />
 
+      <div v-if="content.output && showEditingTip" class="mb-2" style="color:#BBB; font-size: 0.8em">
+        Pro tip: Like the beginning of the generation but not the end? Just delete what you don’t need from the end,
+        put a dash (-), and click Ctrl/Cmd+Enter — the app will continue writing where you stopped!
+      </div>
+
       <template>
         <div v-if="!generating">
           <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
@@ -141,7 +146,8 @@
     // components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 
       'dontFocusOnOutput', 'load', 
-      'hideDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding'],
+      'hideDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding',
+      'showEditingTip'],
 
     data() { 
       let content = this.value || {}
