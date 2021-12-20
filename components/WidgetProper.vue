@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <div :class="{
-      'bg-light': !prop('hideBackground'), ['p-' + ( prop('padding') || 2 )]: true 
-    }">
+  <b-row align-h="center" align-v="center">
+    <b-col align-self="center" 
+      :class="{
+          'bg-light': !prop('hideBackground'),
+          ['p-' + ( prop('padding') || 2 )]: true ,
+          'border shadow': prop('box')
+      }"
+      :style="prop('box') && 'max-width:600px'"
+    >
       <template v-if="!duringSetup">
         <h4 v-if="!prop('hideHeading') && !widget.display.hideTitle" v-text="widget.display.name || widget.name" class="mb-3"/>
         <template v-if="!hideDescription && widget.display.description">
@@ -137,8 +142,8 @@
           </PoweredByIdeality>
         </small>
       </div>
-    </div>
-  </div>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
@@ -154,7 +159,7 @@
 
     // components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 
-      'dontFocusOnOutput', 'load', 
+      'dontFocusOnOutput', 'load', 'box',
       'hideDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding',
       'showEditingTip'],
 
@@ -162,6 +167,7 @@
       let content = this.value || {}
       // console.log(content)
       let { display } = this.widget
+      display.native = display.native || {}
       let data = {
         error: null,
         generating: false,
