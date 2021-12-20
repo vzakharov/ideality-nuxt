@@ -1,36 +1,36 @@
 <template>
-  <b-row align-h="center" class="gx-4" v-if="loaded">
-    <h1 v-if="title" class="fw-bold display-6 text-center mb-5">{{ title }}</h1>
-    <b-col>
-      <b-row align-h="center">
-        <b-col 
-          v-bind="cols({
-            cols: 12,
-            md: 5
-          })" align-self="center" class="text-center text-lg-start">
-          <h1 class="display-6 mb-3">
-            <strong>
-              {{ headline }}
-            </strong>
-          </h1>
-          <PexelsImage class="d-lg-none" :query="imageQuery" orientation="landscape"/>
-          <div>
-            <p class="lead pt-3" v-html="$md.render(text)"/>
-            <b-button size="lg" variant="primary">
-              {{ cta }}
-            </b-button>
-          </div>
+  <b-row align-h="center">
+    <b-col cols="12" lg="8">
+      <b-row align-h="center" class="gx-4" v-if="loaded">
+        <h1 v-if="title" class="fw-bold display-6 text-center mb-5">{{ title }}</h1>
+        <b-col>
+          <b-row align-h="center">
+            <b-col align-self="center" class="text-center text-md-start">
+              <h1 class="display-6 mb-3">
+                <strong>
+                  {{ headline }}
+                </strong>
+              </h1>
+              <PexelsImage class="d-md-none" :query="imageQuery" orientation="landscape"/>
+              <b-row>
+                <b-col>
+                  <p class="lead pt-3" style="font-size: calc(1rem + 0.5vw)" v-html="$md.render(text)"/>
+                  <b-button size="lg" variant="primary">
+                    {{ cta }}
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-col>
+            <b-col cols="4" class="d-none d-md-block">
+              <PexelsImage :query="imageQuery" orientation="portrait"/>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col v-bind="cols({
-            cols: 3
-          })" class="d-none d-lg-block">
-          <PexelsImage :query="imageQuery" orientation="portrait"/>
-        </b-col>
+        <!-- <b-col cols="3" align-self="center" class="d-none d-lg-block">
+          <PexelsImage :query="imageQuery"/>
+        </b-col> -->
       </b-row>
     </b-col>
-    <!-- <b-col cols="3" align-self="center" class="d-none d-lg-block">
-      <PexelsImage :query="imageQuery"/>
-    </b-col> -->
   </b-row>
 </template>
 
@@ -70,7 +70,7 @@
         let { size } = this
         let defaultSize = 'xl'
         if ( !size ) size = defaultSize
-        let sizes = ['cols', 'sm', 'md', 'xl', 'xxl']
+        let sizes = ['cols', 'sm', 'md', 'lg', 'xl']
         let getIndex = size => indexOf(sizes, size)
         
         let allCols = {}
@@ -81,14 +81,14 @@
             return allCols[breakpoint] = cols
 
           let index = getIndex(breakpoint)
-          let defaultIndex = getIndex(defaultSize)
+          let defaultIndex = getIndex(size)
           let diff = defaultIndex - index
           let newIndex = index + diff
 
           if ( newIndex > 4)
             return
 
-          allCols[sizes[newIndex]] = root ? Math.ceil(cols*widths[index]/widths[defaultIndex]) : cols
+          allCols[sizes[newIndex]] = root ? Math.floor(cols*widths[index]/widths[defaultIndex]) : cols
         })
 
         console.log({allCols})
