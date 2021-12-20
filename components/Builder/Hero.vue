@@ -62,42 +62,6 @@
 
     },
 
-    methods: {
-
-      cols(breakpoints, { root } = {}) {
-
-        let widths = [ 540, 720, 960, 1140, 1320 ]
-        let { size } = this
-        let defaultSize = 'xl'
-        if ( !size ) size = defaultSize
-        let sizes = ['cols', 'sm', 'md', 'lg', 'xl']
-        let getIndex = size => indexOf(sizes, size)
-        
-        let allCols = {}
-  
-        forEach(breakpoints, (cols, breakpoint) => {
-
-          if ( breakpoint == 'cols' )
-            return allCols[breakpoint] = cols
-
-          let index = getIndex(breakpoint)
-          let defaultIndex = getIndex(size)
-          let diff = defaultIndex - index
-          let newIndex = index + diff
-
-          if ( newIndex > 4)
-            return
-
-          allCols[sizes[newIndex]] = root ? Math.floor(cols*widths[index]/widths[defaultIndex]) : cols
-        })
-
-        console.log({allCols})
-        return allCols
-
-      }
-
-    }
-
   }
 
 </script>
