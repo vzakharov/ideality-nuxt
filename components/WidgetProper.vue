@@ -31,24 +31,29 @@
         ref="input"
       />
 
-      <LabeledInput v-if="content.output || duringSetup" 
-        :id="widget.slug+'-widget-output'"
-        v-model="content.output"
-        v-bind="{
-          multiline: true,
-          caption: display.outputCaption,
-          disabled: generating
-        }"
-        rows="1"
-        @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
-        @keydown.native.alt.enter="isRetry && tryAgain()"
-      />
-
-      <div v-if="content.output && showEditingTip" class="mb-2" style="color:#BBB; font-size: 0.8em">
-        Pro tip: Like the beginning of the generation but not the end? Just delete what you don’t need from the end,
-        put a dash (-), and click Ctrl/Cmd+Enter — the app will continue writing where you stopped!
-      </div>
-
+      <template v-if="content.output || duringSetup">
+        <template v-if="!preview || duringSetup">
+          <LabeledInput
+            :id="widget.slug+'-widget-output'"
+            v-model="content.output"
+            v-bind="{
+              multiline: true,
+              caption: display.outputCaption,
+              disabled: generating
+            }"
+            rows="1"
+            @keydown.native.ctrl.enter="last(content.output)=='-' && generate()"
+            @keydown.native.alt.enter="isRetry && tryAgain()"
+          />
+          <div v-if="content.output && showEditingTip" class="mb-2" style="color:#BBB; font-size: 0.8em">
+            Pro tip: Like the beginning of the generation but not the end? Just delete what you don’t need from the end,
+            put a dash (-), and click Ctrl/Cmd+Enter — the app will continue writing where you stopped!
+          </div>
+        </template>
+        <template v-else>
+            <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+        </template>
+      </template>
       <template>
         <div v-if="!generating">
           <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
@@ -59,6 +64,10 @@
             v-if="!prop('hideInput')"
             @click="inspire"
             :disabled="!canRunWidget"
+          />
+          <b-button v-if="display.native.componentName && content.output" variant="light" class="text-muted"
+            v-text="preview ? 'Edit' : 'Preview'"
+            @click.prevent="preview = !preview"
           />
         </div>
         <template v-else>
@@ -165,6 +174,7 @@
         hide: {},
         content,
         display,
+        preview: display.native.straightToPreview,
         retry: 0
       }
       return data
