@@ -2,35 +2,34 @@
   <b-row align-h="center">
     <b-col cols="12" lg="8">
       <h2 class="display-6 mb-4" v-text="headline"/>
-      <p class="lead" v-html="$md.render(text)"/>
+      <p class="lead" v-html="$md.render(text || '')"/>
     </b-col>
   </b-row>
 </template>
 
 <script>
 
-  import { chain, forEach, indexOf, mapKeys } from 'lodash'
+  import dedent from 'dedent-js'
+  import renderMixin from '~/plugins/render'
 
   export default {
+
+    mixins: [ renderMixin ],
 
     props: ['content', 'size'],
 
     data() {
 
-      let { content } = this
-      if ( typeof content !== 'string' )
-        content = content.output
+      let pattern = dedent`
+        ## %headline
 
-      try {
-        let match = content.match(
-          /## +(?<headline>.*)\n\n(?<text>.*)/
-        )
+        %text
+      `
 
-        let { groups } = match
-
-        return { loaded: true, match, ...groups } 
-      } catch(error) {
-        return { error, loaded: false}
+      return { 
+        pattern,
+        headline: '',
+        text: ''
       }
 
     },

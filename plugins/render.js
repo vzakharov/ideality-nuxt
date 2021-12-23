@@ -1,10 +1,13 @@
+import { mapValues } from "lodash"
+
 export default {
+
   computed: {
 
     regex() {
       return new RegExp(this.pattern.replace(/([\S\s]*?)%(\w+)(.*$)?/g, '(?:$1(?<$2>.*?)$3)?')+'$')
     }
-    
+
   },
 
   watch: {
@@ -24,8 +27,7 @@ export default {
           console.log(this.regex, match)
           if ( match ) {
 
-            let { groups } = match
-            
+            let groups = mapValues(match.groups, value => value || '')
 
             Object.assign(this, groups, { loaded: true })
           }        

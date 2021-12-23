@@ -2,7 +2,7 @@
   <Container hide-breadcrumbs fluid="xl">
     <b-row align-h="center">
       <b-col cols="12" lg="8">
-        <h1 class="text-center display-6 fw-bold mb-3">
+        <h1 class="text-center display-6 fw-bold mb-4">
           Got an idea? Get a landing page!
         </h1>
         <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create your own lead generation page in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
@@ -12,8 +12,8 @@
       <b-col v-if="widgets">
         <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
           <!-- <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/> -->
-          <div v-for="widget, i in widgets" :key="widget.slug" :class="{'bg-light': i % 2, 'pt-3': true}">
-            <template v-if="i == 0 || widgets[i-1].content.output">
+          <div v-for="widget, i in widgets" :key="widget.slug">
+            <div v-if="i == 0 || widgets[i-1].content.output" :class="{'bg-light': i % 2, 'py-3': true}">
               <!-- <hr v-if="i != 0"/> -->
               <WidgetProper 
                 v-bind="{
@@ -31,7 +31,7 @@
                 @input="i == 0 ? $set(widget, 'content', $event) : $set(widget.content, 'output', $event.output)"
                 hide-background hide-powered-by
               />
-            </template>
+            </div>
           </div>
         </div>
       </b-col>

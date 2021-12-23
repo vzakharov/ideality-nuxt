@@ -27,9 +27,6 @@
             </div>
           </b-row>
         </b-col>
-        <!-- <b-col cols="3" align-self="center" class="d-none d-lg-block">
-          <PexelsImage :query="imageQuery"/>
-        </b-col> -->
       </b-row>
     </b-col>
   </b-row>
@@ -37,7 +34,6 @@
 
 <script>
 
-  import { chain, forEach, indexOf, mapKeys } from 'lodash'
   import dedent from 'dedent-js'
   import renderMixin from '~/plugins/render'
 
@@ -61,11 +57,11 @@
 
       return { 
         loaded: false, 
-        title: null,
-        headline: null,
-        text: null,
-        imageQuery: null,
-        cta: null,
+        title: '',
+        headline: '',
+        text: '',
+        imageQuery: '',
+        cta: '',
         imageLoaded: false,
         pattern        
       } 
