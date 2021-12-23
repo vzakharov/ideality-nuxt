@@ -1,5 +1,5 @@
 <template>
-  <Container hide-breadcrumbs fluid="xl">
+  <Container hide-breadcrumbs fluid>
     <b-row align-h="center">
       <b-col cols="12" lg="8">
         <h1 class="text-center display-6 fw-bold mb-4">
@@ -9,11 +9,11 @@
       </b-col>
     </b-row>
     <b-row align-h="center">
-      <b-col v-if="widgets">
+      <b-col v-if="widgets" class="px-0">
         <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
           <!-- <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/> -->
           <div v-for="widget, i in widgets" :key="widget.slug">
-            <div v-if="i == 0 || widgets[i-1].content.output" :class="{'bg-light': i % 2, 'py-3': true}">
+            <div v-if="i == 0 || widgets[i-1].content.output" :class="'py-3 px-2 px-lg-5' + ( i % 2 ? ' bg-light' : '')">
               <!-- <hr v-if="i != 0"/> -->
               <WidgetProper 
                 v-bind="{

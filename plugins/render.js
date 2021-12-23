@@ -30,7 +30,7 @@ export default {
             let groups = mapValues(match.groups, value => value || '')
 
             Object.assign(this, groups, { loaded: true })
-          }        
+          } 
         } catch(error) {
           console.log({error})
           this.loaded = false

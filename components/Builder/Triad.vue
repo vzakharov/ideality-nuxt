@@ -2,10 +2,15 @@
   <b-container fluid>
     <b-col align-self="center" class="text-center mb-5">
       <h2 class="display-6 mb-4" v-text="headline"/>
-      <b-row align-h="center">
-        <b-col cols="10" lg="3" v-for="section, i in sections" :key="i" class="my-2 gy-3 text-center lead">
+      <b-row align-h="center" align-v="center">
+        <b-col cols="10" lg="3" v-for="section, i in sections" :key="i" class="mt-2 text-center">
           <h5 v-text="section.heading"/>
-          <p v-text="section.text"/>
+          <p v-html="$md.render(section.text)" class="d-lg-none"/>
+        </b-col>
+      </b-row>
+      <b-row class="d-none d-lg-flex" align-h="center">
+        <b-col cols="10" lg="3" v-for="section, i in sections" :key="i" class="text-center">
+          <p v-html="$md.render(section.text)"/>
         </b-col>
       </b-row>
     </b-col>
