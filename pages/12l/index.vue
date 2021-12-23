@@ -3,7 +3,7 @@
     <b-row align-h="center">
       <b-col cols="12" lg="8">
         <h1 class="text-center display-6 fw-bold mb-4">
-          Got an idea? Get a landing page!
+          Got an idea? Get some leads!
         </h1>
         <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create your own lead generation page in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
       </b-col>

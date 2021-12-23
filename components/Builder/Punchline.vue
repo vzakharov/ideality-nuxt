@@ -10,28 +10,27 @@
 
 <script>
 
-  import { chain, forEach, indexOf, mapKeys } from 'lodash'
+  import dedent from 'dedent-js'
+  import renderMixin from '~/plugins/render'
 
   export default {
+
+    mixins: [ renderMixin ],
 
     props: ['content', 'size'],
 
     data() {
 
-      let { content } = this
-      if ( typeof content !== 'string' )
-        content = content.output
+      let pattern = dedent`
+        ## %headline
 
-      try {
-        let match = content.match(
-          /## +(?<headline>.*)\n\n\[(?<cta>.*)\]/
-        )
+        \\[%cta\\]
+      `
 
-        let { groups } = match
-
-        return { loaded: true, match, ...groups } 
-      } catch(error) {
-        return { error, loaded: false}
+      return {
+        pattern,
+        headline: '',
+        cta: ''
       }
 
     },

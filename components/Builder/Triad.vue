@@ -1,9 +1,12 @@
 <template>
   <b-container fluid>
     <b-col align-self="center" class="text-center mb-5">
-      <h2 class="display-6" v-text="headline"/>
+      <h2 class="display-6 mb-4" v-text="headline"/>
       <b-row align-h="center">
-        <b-col cols="10" lg="3" v-for="section in sections" :key="section" v-html="$md.render(section)" class="my-2 gy-3 text-center lead"/>
+        <b-col cols="10" lg="3" v-for="section, i in sections" :key="i" class="my-2 gy-3 text-center lead">
+          <h5 v-text="section.heading"/>
+          <p v-text="section.text"/>
+        </b-col>
       </b-row>
     </b-col>
   </b-container>
@@ -11,28 +14,50 @@
 
 <script>
 
+  import renderMixin from '~/plugins/render'
+  import dedent from 'dedent-js'
+
   export default {
+
+    mixins: [ renderMixin ],
 
     props: ['widget', 'content'],
 
     data() {
-      try {
-        let match = this.content.output.match(
-            /## (?<headline>.*)\n*(?<section1>### .*\n+.*)\n*(?<section2>### .*\n+.*)\n*(?<section3>### .*\n+.*)\n*/
-        )
 
-        let { groups } = match
+      let pattern = dedent`
+        ## %headline
 
-        groups.sections = [ groups.section1, groups.section2, groups.section3 ]
+        ### %heading1
 
-        console.log({ groups })
+        %text1
 
-        return({ loaded: true, ...groups })
-      } catch(error) {
-        return {loaded: false, error}
+        ### %heading2
+
+        %text2
+
+        ### %heading3
+
+        %text3
+      `
+
+      return { 
+        pattern,
+          headline: '',
+          heading1: '', heading2: '', heading3: '',
+          text1: '', text2: '', text3: ''
       }
 
+    },
 
+    computed: {
+
+      sections() {
+        return [1,2,3].map(n => ({
+          heading: this['heading'+n],
+          text: this['text'+n]
+        }))
+      }
     }
 
   }
