@@ -1,6 +1,6 @@
 <template>
   <b-row>
-    <b-row align-h="center" align-v="center">
+    <b-row align-h="center" align-v="center" class="gx-5">
       <b-col align-self="center" 
         :class="{
             'bg-light': !prop('hideBackground'),
@@ -48,7 +48,7 @@
                 :disabled="!canRunWidget"
               />
               <b-button v-if="display.native.componentName && content.output" variant="light" class="text-muted"
-                v-text="preview ? 'Edit' : 'Preview'"
+                v-text="preview ? 'Hide preview' : 'Preview'"
                 @click.prevent="preview = !preview"
               />
             </div>
@@ -61,7 +61,7 @@
                 'One last time...'
               ][retry]"/>
             </template>
-          <div v-if="!preview && content.output || duringSetup">
+          <div v-if="content.output || duringSetup">
             <LabeledInput
               :id="widget.slug+'-widget-output'"
               v-model="content.output"

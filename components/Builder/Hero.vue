@@ -15,9 +15,10 @@
               <b-row>
                 <b-col>
                   <p class="lead pt-3" style="font-size: calc(1rem + 0.5vw)" v-html="$md.render(text)"/>
-                  <b-button size="lg" variant="primary">
+                  <b-button size="lg" variant="primary" v-b-modal.waitlist>
                     {{ cta }}
                   </b-button>
+                  <BuilderWaitlist/>
                 </b-col>
               </b-row>
             </b-col>
