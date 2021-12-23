@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="photo">
-        <img :src="photo.src.medium" style="width: 100%;"/>
+        <img :src="photo.src.medium" style="width: 100%; max-width: 400px"/>
         <figcaption class="figure-caption">
           <small>
             <a style="color: #CCC" :href="photo.url" target="_blank">

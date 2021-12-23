@@ -1,7 +1,7 @@
 <template>
-  <WidgetBox>
-    <WidgetProper v-bind="{widget}"/>
-  </WidgetBox>
+  <b-container>
+    <WidgetProper box v-bind="{widget}"/>
+  </b-container>
 </template>
 
 <script>

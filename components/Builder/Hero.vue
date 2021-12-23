@@ -65,11 +65,3 @@
   }
 
 </script>
-
-<style>
-
-  .h1-responsive {
-    font-size: calc(90% + 3.5vw);
-  }
-
-</style>

@@ -255,7 +255,7 @@ export default {
           // widget.display.name = widget.name
           await this.$axios.$patch(this.apiUrl, {
             ...omit(widget, Bubble.camelcasedReservedProperties),
-            ...mapValues(pick(widget, ['setup', 'display', 'slate', 'tie']), JSON.stringify)
+            ...mapValues(pick(widget, ['setup', 'display', 'slate', 'tie', 'stats']), JSON.stringify)
           })          
         }
         this.changed = false

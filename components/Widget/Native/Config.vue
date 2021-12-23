@@ -3,7 +3,8 @@
     <ObjectConfig
       :value="settings"
       :fields="{
-        componentName: {}
+        straightToPreview: { advanced: true, caption: 'Straight to preview', type: 'boolean'},
+        componentName: 'Component name'
       }"
     />
   </div>
@@ -19,7 +20,8 @@
 
       let { native: settings } = this.setDefaults(this.widget.display, {
         native: this.setDefaults({}, {
-          componentName: ''
+          componentName: '',
+          straightToPreview: false,
         })
       })
 

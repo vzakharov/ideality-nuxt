@@ -1,11 +1,9 @@
 <template>
   <b-container fluid>
-    <h1 class="fw-bold display-3 text-center mb-5">{{ title }}</h1>
-    <BuilderHero v-if="loaded" v-bind="{widget, content: {output: heroContent}}"/>
     <b-col align-self="center" class="text-center mb-5">
-      <h2 class="fw-bold display-5 my-5">Benefits</h2>
+      <h2 class="display-6" v-text="headline"/>
       <b-row align-h="center">
-        <b-col cols="10" lg="3" v-for="benefit in benefits" :key="benefit" v-html="$md.render(benefit)" class="my-2 gy-3 text-center"/>
+        <b-col cols="10" lg="3" v-for="section in sections" :key="section" v-html="$md.render(section)" class="my-2 gy-3 text-center lead"/>
       </b-row>
     </b-col>
   </b-container>
@@ -19,24 +17,17 @@
 
     data() {
       try {
-        let inputMatch = this.content.input.match(
-          /(?<title>.*?),.*\n+(?<heroContent>[\s\S]*)$/m
+        let match = this.content.output.match(
+            /## (?<headline>.*)\n*(?<section1>### .*\n+.*)\n*(?<section2>### .*\n+.*)\n*(?<section3>### .*\n+.*)\n*/
         )
 
-        let outputMatch = this.content.output.match(
-          /(Brief.*\n+)?(?<benefits>[\s\S]*)$/m
-        )
+        let { groups } = match
 
-        console.log({inputMatch, outputMatch})
+        groups.sections = [ groups.section1, groups.section2, groups.section3 ]
 
-        let groups = {}
-        if (inputMatch) Object.assign(groups, inputMatch.groups)
-        if (outputMatch) Object.assign(groups, outputMatch.groups)
-
-        groups.benefits = groups.benefits.split('\n\n')
         console.log({ groups })
 
-        return({ loaded: true, inputMatch, outputMatch, ...groups })
+        return({ loaded: true, ...groups })
       } catch(error) {
         return {loaded: false, error}
       }

@@ -1,7 +1,7 @@
 <template>
   <Container hide-breadcrumbs>
     <b-row class="gx-2" align-h="center">
-      <b-col v-if="widgets" style="max-width:800px">
+      <b-col v-if="widgets">
         <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
           <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/>
           <div v-for="widget, i in widgets" :key="widget.slug">
