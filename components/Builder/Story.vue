@@ -1,7 +1,7 @@
 <template>
   <b-row align-h="center">
     <b-col cols="12" lg="8">
-      <h2 class="display-6" v-text="headline"/>
+      <h2 class="display-6 mb-4" v-text="headline"/>
       <p class="lead" v-html="$md.render(text)"/>
     </b-col>
   </b-row>

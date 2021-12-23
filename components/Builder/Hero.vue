@@ -39,8 +39,11 @@
 
   import { chain, forEach, indexOf, mapKeys } from 'lodash'
   import dedent from 'dedent-js'
+  import renderMixin from '~/plugins/render'
 
   export default {
+  
+    mixins: [ renderMixin ],
 
     props: ['content', 'size'],
 
@@ -58,48 +61,16 @@
 
       let regex = new RegExp(pattern.replace(/([\S\s]*?)%(\w+)(.*$)?/g, '(?:$1(?<$2>.*?)$3)?')+'$')
 
-
       return { 
-        loaded: false, regex,
+        loaded: false, 
         title: null,
         headline: null,
         text: null,
         imageQuery: null,
         cta: null,
-        imageLoaded: false
+        imageLoaded: false,
+        regex        
       } 
-
-    },
-
-    watch: {
-
-      content: {
-
-        immediate: true,
-        deep: true,
-        handler(content) {
-          if ( typeof content !== 'string' )
-            content = content.output
-
-          try {
-            let match = content?.match(this.regex)
-            
-
-            console.log(this.regex, match)
-            if ( match ) {
-
-              let { groups } = match
-              
-
-              Object.assign(this, groups, { loaded: true })
-            }        
-          } catch(error) {
-            console.log({error})
-            this.loaded = false
-          }
-        }
-        
-      }
 
     }
 
