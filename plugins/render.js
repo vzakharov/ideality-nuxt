@@ -1,4 +1,12 @@
 export default {
+  computed: {
+
+    regex() {
+      return new RegExp(this.pattern.replace(/([\S\s]*?)%(\w+)(.*$)?/g, '(?:$1(?<$2>.*?)$3)?')+'$')
+    }
+    
+  },
+
   watch: {
 
     content: {

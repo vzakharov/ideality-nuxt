@@ -59,8 +59,6 @@
         \\[%cta\\]
       `
 
-      let regex = new RegExp(pattern.replace(/([\S\s]*?)%(\w+)(.*$)?/g, '(?:$1(?<$2>.*?)$3)?')+'$')
-
       return { 
         loaded: false, 
         title: null,
@@ -69,7 +67,7 @@
         imageQuery: null,
         cta: null,
         imageLoaded: false,
-        regex        
+        pattern        
       } 
 
     }
