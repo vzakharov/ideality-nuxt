@@ -1,17 +1,18 @@
 <template>
-  <b-row>
+  <b-row align-h="center">
     <b-row align-h="center" align-v="center" class="gx-5">
-      <b-col align-self="center" 
+      <b-col align-self="center"
         :class="{
             'bg-light': !prop('hideBackground'),
-            ['p-' + ( prop('padding') || 2 )]: true ,
+            ['p-' + ( prop('padding') || 2 )]: true,
             'border shadow': prop('box')
         }"
-        :style="prop('box') && 'max-width:600px'"
+        cols="12" :lg="content.output && preview ? 4 : 8"
+        :style="prop('box')"
       >
         <template v-if="!duringSetup">
           <h4 v-if="!prop('hideHeading') && !widget.display.hideTitle" v-text="widget.display.name || widget.name" class="mb-3"/>
-          <template v-if="!hideDescription && widget.display.description">
+          <template v-if="widget.display.description && !hideDescription && !( hideDescriptionIfOutput && content.output )">
             <p v-if="widget.display.markdownDescription" v-html="$md.render(widget.display.description)"/>
             <p v-else v-text="widget.display.description"/>
           </template>
@@ -37,31 +38,31 @@
           ref="input"
         />
 
-            <div v-if="!generating">
-              <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
-                :disabled="!content.input || !canRunWidget"
-                @click="isRetry ? tryAgain() : generate()"
-              />
-              <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
-                v-if="!prop('hideInput')"
-                @click="inspire"
-                :disabled="!canRunWidget"
-              />
-              <b-button v-if="display.native.componentName && content.output" variant="light" class="text-muted"
-                v-text="preview ? 'Hide preview' : 'Preview'"
-                @click.prevent="preview = !preview"
-              />
-            </div>
-            <template v-else>
-              <b-spinner class="spinner-grow text-danger"/>
-              <small class="text-muted" v-text="[
-                'Generating, please wait...',
-                'Trying again...',
-                'And again...',
-                'One last time...'
-              ][retry]"/>
-            </template>
-          <div v-if="content.output || duringSetup">
+          <div v-if="!generating">
+            <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
+              :disabled="!content.input || !canRunWidget"
+              @click="isRetry ? tryAgain() : generate()"
+            />
+            <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
+              v-if="!prop('hideInput')"
+              @click="inspire"
+              :disabled="!canRunWidget"
+            />
+            <b-button v-if="display.native.componentName && content.output" variant="light" class="text-muted d-lg-none"
+              v-text="preview ? 'Edit' : 'Preview'"
+              @click.prevent="preview = !preview"
+            />
+          </div>
+          <template v-else>
+            <b-spinner class="spinner-grow text-danger"/>
+            <small class="text-muted" v-text="[
+              'Generating, please wait...',
+              'Trying again...',
+              'And again...',
+              'One last time...'
+            ][retry]"/>
+          </template>
+          <div v-if="content.output || duringSetup" :class="preview && 'd-none d-lg-block'">
             <LabeledInput
               :id="widget.slug+'-widget-output'"
               v-model="content.output"
@@ -135,9 +136,9 @@
           </small>
         </div>
       </b-col>
-      <b-col cols="12" lg="9" v-if="content.output && preview" class="text-center">
+      <b-col cols="12" lg="8" v-if="content.output && preview && !duringSetup" class="text-center">
         <b-col>
-          <component breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+          <component breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}"/>
         </b-col>
       </b-col>
     </b-row>
@@ -158,7 +159,7 @@
     // components: {BIconDice5},
     props: ['widget', 'value', 'duringSetup', 'exampleIndex', 'ai', 'apiKey', 'code', 'go', 
       'dontFocusOnOutput', 'load', 'box',
-      'hideDescription', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding',
+      'hideDescription', 'hideDescriptionIfOutput', 'hideBackground', 'hideHeading', 'hideInput', 'hidePoweredBy', 'padding',
       'showEditingTip'],
 
     data() { 

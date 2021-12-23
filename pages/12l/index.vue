@@ -1,12 +1,20 @@
 <template>
-  <Container hide-breadcrumbs>
-    <b-row class="gx-2" align-h="center">
+  <Container hide-breadcrumbs fluid="xl">
+    <b-row align-h="center">
+      <b-col cols="12" lg="8">
+        <h1 class="text-center display-6 fw-bold mb-3">
+          Got an idea? Get a landing page!
+        </h1>
+        <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create your own lead generation page in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
+      </b-col>
+    </b-row>
+    <b-row align-h="center">
       <b-col v-if="widgets">
         <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
-          <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/>
-          <div v-for="widget, i in widgets" :key="widget.slug">
+          <!-- <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/> -->
+          <div v-for="widget, i in widgets" :key="widget.slug" :class="{'bg-light': i % 2, 'pt-3': true}">
             <template v-if="i == 0 || widgets[i-1].content.output">
-              <hr v-if="i != 0"/>
+              <!-- <hr v-if="i != 0"/> -->
               <WidgetProper 
                 v-bind="{
                   widget,
@@ -17,7 +25,7 @@
                     output: widget.content.output
                   },
                   hideInput: i != 0,
-                  hideDescription,
+                  hideDescriptionIfOutput: true,
                   showEditingTip: i == 0
                 }"
                 @input="i == 0 ? $set(widget, 'content', $event) : $set(widget.content, 'output', $event.output)"
@@ -45,6 +53,7 @@
 
   import Bubble from '~/plugins/bubble'
   import { chain, find, forEach, map, mapValues } from 'lodash'
+  import dedent from 'dedent-js'
 
   export default {
 
@@ -84,8 +93,6 @@
         })
       }))
 
-      debugger
-
       Object.assign(this, { widgets })
     },
 
@@ -101,7 +108,7 @@
     },
 
     methods: {
-      map
+      dedent, map
     }
 
   }

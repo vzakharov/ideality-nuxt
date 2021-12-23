@@ -81,6 +81,10 @@ function parseKids(parent, keys) {
   return parent
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 function slugify(name, items) {
   let slug = kebabCase(name)
   let i = 1
@@ -100,6 +104,7 @@ export {
   getUser,
   isDefined,
   parseKids,
+  sleep,
   slugify
 
 }

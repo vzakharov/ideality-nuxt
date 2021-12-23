@@ -26,4 +26,8 @@
     font-size: 0.75em;
   }
 
+  .mw-800 {
+    max-width: 800px;
+  }
+
 </style>
