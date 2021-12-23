@@ -163,11 +163,11 @@
       'showEditingTip'],
 
     data() { 
-      let content = this.value || {}
       // console.log(content)
       let { display } = this.widget
       display.native = display.native || {}
       let data = {
+        content: this.value || {},
         error: null,
         generating: false,
         generated: false,
@@ -177,7 +177,6 @@
         generatedOutput: '',
         showOutro: true,
         hide: {},
-        content,
         display,
         preview: display.native.straightToPreview,
         retry: 0
@@ -319,6 +318,7 @@
     },
 
     computed: {
+
       continueOutput() {
         return this.content.output && this.content.output.slice(-1) == '-'
       },
@@ -337,10 +337,25 @@
     },
 
     watch: {
+
       content: {
         deep: true, 
-        handler () { if ( this.content.input || this.content.output ) this.$emit('input', this.content )}
+        handler(content) { 
+          if ( this.ignoreContentChange )
+            return this.ignoreContentChange = false
+          if ( content.input || content.output ) this.$emit('input', content )
+        }
+      },
+
+      value: {
+        immediate: true,
+        handler(value) {
+          this.ignoreContentChange = true
+          this.content = value
+          console.log(this, {value})
+        }
       }
+      
     }
 
   }

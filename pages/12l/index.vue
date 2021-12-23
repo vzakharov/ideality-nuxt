@@ -18,9 +18,8 @@
               <WidgetProper 
                 v-bind="{
                   widget,
-                  key: i == 0 ? widget.slug : widgets[0].content.output,
-                  value:
-                  {
+                  key: widget.slug,
+                  value: {
                     input: i == 0 ? widget.content.input : widget.inputs.map( widget => widget.content.output ).join('\n\n'),
                     output: widget.content.output
                   },
