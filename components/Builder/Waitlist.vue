@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="waitlist" hide-header hide-footer>
+  <b-modal id="waitlist" hide-header hide-footer centered>
     <h2 class="display-6">
       Thank you for your interest!
     </h2>
@@ -12,13 +12,3 @@
     />
   </b-modal>
 </template>
-
-<script>
-export default {
-
-}
-</script>
-
-<style>
-
-</style>

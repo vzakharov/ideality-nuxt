@@ -167,7 +167,7 @@
       let { display } = this.widget
       display.native = display.native || {}
       let data = {
-        content: this.value || {},
+        content: null,
         error: null,
         generating: false,
         generated: false,
@@ -351,7 +351,7 @@
         immediate: true,
         handler(value) {
           this.ignoreContentChange = true
-          this.content = value
+          this.content = value || {}
           console.log(this, {value})
         }
       }

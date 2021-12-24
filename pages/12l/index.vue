@@ -3,7 +3,7 @@
     <b-row align-h="center">
       <b-col cols="12" lg="8">
         <h1 class="text-center display-6 fw-bold mb-4">
-          Got an idea? Get some leads!
+          Idea » Landing page » Leads!
         </h1>
         <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create your own lead generation page in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
       </b-col>
@@ -34,15 +34,25 @@
           </div>
         </div>
       </b-col>
-      <b-col cols="7" v-if="queryTags.testing">
-        <p v-if="!content.hero">
-          Your landing page will appear here
-        </p>
-        <BuilderRender
-          v-else
-          class="scaled"
-          v-bind="control({content: mergedContent})"
-        />
+    </b-row>
+    <b-row v-if="completed" class="text-center">
+      <Load what="build" v-on="{setFields}" :fetch="() => 
+        bubble.go('createBuild', {
+          code
+        })"
+      />
+      <b-col v-if="build">
+        <h2 class="fw-bold display-6 mb-3">
+          Looks good? Share it and start collecting leads!
+        </h2>
+        <strong>
+          Link to share:
+        </strong>
+        <a :href="buildLink" target="_blank" v-text="buildLink"/>
+        <strong>
+          Link for you to edit (SAVE IT!):
+        </strong>
+        <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
       </b-col>
     </b-row>
   </Container>
@@ -51,7 +61,7 @@
 <script>
 
   import Bubble from '~/plugins/bubble'
-  import { chain, find, forEach, map, mapValues } from 'lodash'
+  import { chain, filter, find, forEach, map, mapValues } from 'lodash'
   import dedent from 'dedent-js'
 
   export default {
@@ -59,6 +69,7 @@
     data() {
 
       return {
+        build: null,
         content: {},
         widgets: null,
         hideDescription: false
@@ -93,15 +104,31 @@
       }))
 
       Object.assign(this, { widgets })
+
     },
 
     computed: {
 
-      mergedContent({ content: { hero, benefits }} = this) {
-        return [
-          '== Hero ==',
-          hero.output
-        ].join('\n\n')
+      buildLink() {
+        return `https://ideality.app/b/${ this.build.slug }`
+      },
+
+      code({ widgets } = this) {
+        if ( !widgets )
+          return
+        return {
+          blocks: widgets.map(({
+            content,
+            display: { native: { componentName }}
+          }) => ({
+            content,
+            componentName
+          }))
+        }
+      },
+
+      completed() {
+        return this.widgets && !filter( this.widgets, widget => !widget?.content?.output ).length
       }
 
     },

@@ -131,6 +131,11 @@ function Bubble({$auth, token } = {}) {
       body = omit(body, v => typeof v === 'undefined') 
       // console.log(this, workflow, body)
       try {
+        forEach(body,  ( value, key ) => {
+          if ( typeof value == 'object' ) {
+            body[key] = JSON.stringify(value)
+          }
+        })
         let { data: { response } } = await axios.post('/wf/'+workflow, body)
         parse(response)
         console.log({response})

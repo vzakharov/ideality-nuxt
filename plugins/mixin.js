@@ -135,6 +135,16 @@ Vue.mixin({
       return this.$router.resolve(this.appendRoute(...arguments)).href
     },
 
+    reactify(object) {
+      let vm = this
+      forEach(object, ( value, key ) => {
+        debugger
+        if ( Object.getOwnPropertyDescriptor(object, key).get?.name != 'reactiveGetter' ) {
+          vm.$set(object, key, value)
+        }
+      })
+    },
+
     control(what) {
       for ( let key of keys(what)) {
         let value = what[key]
