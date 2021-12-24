@@ -28,6 +28,7 @@
                   showEditingTip: i == 0
                 }"
                 @input="i == 0 ? $set(widget, 'content', $event) : $set(widget.content, 'output', $event.output)"
+                @contentParsed="i == 0 && ( name = $event.name )"
                 hide-background hide-powered-by
               />
             </div>
@@ -38,22 +39,29 @@
     <b-row v-if="completed" class="text-center">
       <Load what="build" v-on="{setFields}" :fetch="() => 
         bubble.go('createBuild', {
-          code
+          code,
+          name
         })"
       />
       <b-col v-if="build">
-        <h2 class="fw-bold display-6 mb-3">
-          Looks good? Share it and start collecting leads!
-        </h2>
-        <strong>
-          Link to share:
-        </strong>
-        <a :href="buildLink" target="_blank" v-text="buildLink"/>
-        <strong>
-          Link for you to edit (SAVE IT!):
-        </strong>
-        <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
+        <div>
+          <h2 class="fw-bold display-6 mt-5 mb-3">
+            Looks good? Share the page and start collecting leads!
+          </h2>
+          <strong>
+            Link to share:
+          </strong>
+          <a :href="buildLink" target="_blank" v-text="buildLink"/>
+        </div>
+        <div>
+          <strong>
+            Link for you to edit (SAVE IT!):
+          </strong>
+          <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
+        </div>
       </b-col>
+    </b-row>
+    <b-row style="height: 30vh">
     </b-row>
   </Container>
 </template>
@@ -70,6 +78,7 @@
 
       return {
         build: null,
+        name: '',
         content: {},
         widgets: null,
         hideDescription: false
