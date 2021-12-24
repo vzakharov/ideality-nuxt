@@ -138,7 +138,7 @@
       </b-col>
       <b-col cols="12" lg="8" v-if="content.output && preview && !duringSetup" class="text-center">
         <b-col>
-          <component breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}"/>
+          <component @contentParsed="$emit('contentParsed', $event)" breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}"/>
         </b-col>
       </b-col>
     </b-row>
@@ -270,13 +270,27 @@
             } else
               ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
 
-            let match = !setup.validationRegex || content.output.match(new RegExp(`^${setup.validationRegex}$`))
+            let match = !setup.validationRegex
+            
+            if ( !match ) {
+              match = content.output.match(new RegExp(`${setup.validationRegex}`))
+              if ( match ) {
+                content.output = match[0]
+              }
+            }
 
             let { retry } = this
-            console.log({retry})
-            if ( !match && retry < 4 ) {
-              this.retry = retry + 1
-              return go()
+            // console.log({retry})
+            if ( !match  ) {
+              if ( retry < 3 ) {
+                this.retry = retry + 1
+                return go()
+              } else {
+                error = {
+                  cause: 'nonmatch',
+                  message: "Sorry, the output did not match the expected format. Please try again or report the problem to the developer."
+                }
+              }
             }
 
           }

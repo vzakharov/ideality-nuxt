@@ -28,6 +28,7 @@ export default {
           if ( match ) {
 
             let groups = mapValues(match.groups, value => value || '')
+            this.$emit('contentParsed', groups)
 
             Object.assign(this, groups, { loaded: true })
           } 

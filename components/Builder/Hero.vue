@@ -2,7 +2,7 @@
   <b-row align-h="center">
     <b-col style="max-width: 800px" class="px-2 px-md-5">
       <b-row align-h="center" class="gx-4" v-if="loaded">
-        <h1 :class="'fw-bold display-6 text-center mb-5'">{{ title }}</h1>
+        <h1 :class="'fw-bold display-6 text-center mb-5'">{{ name }}</h1>
         <b-col>
           <b-row align-h="center">
             <b-col align-self="center" class="text-center text-md-start">
@@ -46,7 +46,7 @@
     data() {
       
       let pattern = dedent`
-        # %title\\. %headline
+        # %name\\. %headline
 
         %text
 
@@ -57,7 +57,7 @@
 
       return { 
         loaded: false, 
-        title: '',
+        name: '',
         headline: '',
         text: '',
         imageQuery: '',
