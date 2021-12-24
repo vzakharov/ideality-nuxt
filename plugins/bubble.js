@@ -156,7 +156,8 @@ function Bubble({$auth, token } = {}) {
 
 Bubble.asyncData = ( type, query, options ) =>  {
   return async ({ $auth, route, $route}) => {
-    let { params: { id }} = route || $route
+    let { params: { id, slug }} = route || $route
+    id = id || slug
     // console.log(options)
     let result = {}
     let bubble = new Bubble($auth && { token: $auth.strategy.token.get() })

@@ -37,31 +37,40 @@
       </b-col>
     </b-row>
     <b-row v-if="completed" class="text-center">
-      <Load what="build" v-on="{setFields}" :fetch="() => 
-        bubble.go('createBuild', {
-          code,
-          name
-        })"
-      />
-      <b-col v-if="build">
-        <div>
-          <h2 class="fw-bold display-6 mt-5 mb-3">
-            Looks good? Share the page and start collecting leads!
-          </h2>
-          <strong>
-            Link to share:
-          </strong>
-          <a :href="buildLink" target="_blank" v-text="buildLink"/>
-        </div>
-        <div>
-          <strong>
-            Link for you to edit (SAVE IT!):
-          </strong>
-          <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
+      <b-col>
+        <h2 class="display-6 mt-5 mb-3">
+          Do you want to share the page &amp; start collecting leads?
+        </h2>
+        <b-button variant="success" size="lg" @click="shared=true">
+          Heck yeah!
+        </b-button>
+        <div v-if="shared">
+          <Load what="build" v-on="{setFields}" :fetch="() => 
+            bubble.go('createBuild', {
+              code,
+              name,
+              public: true
+            })"
+          />
+          <template v-if="build">
+            <h3>Here you go!</h3>
+            <div>
+              <strong>
+                Link to share:
+              </strong>
+              <a :href="buildLink" target="_blank" v-text="buildLink"/>
+            </div>
+            <div>
+              <strong>
+                Link for you to edit (SAVE IT!):
+              </strong>
+              <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
+            </div>
+          </template>
         </div>
       </b-col>
     </b-row>
-    <b-row style="height: 30vh">
+    <b-row style="height: 10vh">
     </b-row>
   </Container>
 </template>
@@ -80,6 +89,7 @@
         build: null,
         name: '',
         content: {},
+        shared: false,
         widgets: null,
         hideDescription: false
       }
@@ -128,10 +138,10 @@
         return {
           blocks: widgets.map(({
             content,
-            display: { native: { componentName }}
+            display: { native: { componentName: type }}
           }) => ({
             content,
-            componentName
+            type
           }))
         }
       },
