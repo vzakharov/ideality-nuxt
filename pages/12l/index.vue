@@ -39,8 +39,9 @@
     <b-row v-if="completed" class="text-center">
       <b-col>
         <h2 class="display-6 mt-5 mb-3">
-          Are you ready start collecting leads?
+          Are you ready to start collecting leads?
         </h2>
+        Make sure you have the landing page as you want it — it’s currently not possible to edit created landing pages.
         <b-button variant="success" size="lg" @click="shared=true">
           Heck yeah!
         </b-button>
