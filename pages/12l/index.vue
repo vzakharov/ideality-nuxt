@@ -5,7 +5,8 @@
         <h1 class="text-center display-6 fw-bold mb-4">
           Idea » Landing page » Leads!
         </h1>
-        <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create your own lead generation page in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
+        <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create a landing page and start validating your idea with real leads in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
+        <p class="text-end text-muted">Yours, <nuxt-link to="/">Ideality 🔺</nuxt-link></p>
       </b-col>
     </b-row>
     <b-row align-h="center">
