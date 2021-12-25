@@ -134,11 +134,15 @@
 
     computed: {
 
-      buildEditRoute({ build: { slug, secret }} = this) {
+      buildEditRoute() {
+        let { slug, secret } = this.build
+        console.log({slug, secret})
         return {name: 'b-slug-edit-secret', params: { slug, secret }}
       },
 
-      buildRoute({ build: { slug }} = this) {
+      buildRoute() {
+        let { slug } = this.build
+        console.log({slug})
         return {name: 'b-slug', params: { slug }}
       },
 
@@ -166,11 +170,12 @@
 
       async createBuild({ code, name } = this) {
         this.creating = true
-        this.build = await this.bubble.go('createBuild', {
+        Object.assign(this, await this.bubble.go('createBuild', {
           code,
           name,
           public: true
-        })
+        }))
+        console.log(this.build)
       },
 
       dedent, map
