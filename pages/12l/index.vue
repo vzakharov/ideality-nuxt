@@ -5,14 +5,19 @@
         <h1 class="text-center display-6 fw-bold mb-4">
           Idea » Landing page » Leads!
         </h1>
-        <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create a landing page and start validating your idea with real leads in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
+        <p class="lead">
+          How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create a landing page and start validating your idea with real leads in minutes.
+        </p>
+        <p>
+          <strong>Just enter your idea, and watch the magic unfold!</strong>
+        </p>
         <p class="text-end text-muted">Yours, <nuxt-link to="/">Ideality 🔺</nuxt-link></p>
-        <nuxt-link :to="{name: 'b-slug', params: {slug: 'carvana'}}" v-text="'Test'"/>
       </b-col>
     </b-row>
     <b-row align-h="center">
-      <b-col v-if="widgets" class="px-0">
-        <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
+      <b-col class="px-0">
+        <Loading class="text-center" v-if="!widgets" message="Loading the tool, please wait..."/>
+        <div v-else :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
           <!-- <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/> -->
           <div v-for="widget, i in widgets" :key="widget.slug">
             <div v-if="i == 0 || widgets[i-1].content.output" :class="'py-3 px-2 px-lg-5' + ( i % 2 ? ' bg-light' : '')">
@@ -49,25 +54,24 @@
         <b-button variant="success" size="lg" @click="createBuild()">
           Heck yeah!
         </b-button>
-        <div v-if="shared">
-          <template v-if="build">
-            <h3>Here you go!</h3>
-            <div>
-              <strong>
-                Link to share:
-              </strong>
-              <nuxt-link :to="buildRoute" v-text="window.location.hostname+$router.resolve(buildRoute).href"/>
-            </div>
-            <div>
-              <strong>
-                Link for you to edit (SAVE IT!):
-              </strong>
-              <nuxt-link :to="buildEditRoute" v-text="window.location.hostname+$router.resolve(buildEditRoute).href"/>
-              <p>
-                (We’re still working on editing created landing pages — please bookmark this link and come back to it in a few days.)
-              </p>
-            </div>
-          </template>
+        <Loading v-if="creating && ! build" message="Generating your page, please wait..."/>
+        <div v-if="build">
+          <h3>Here you go!</h3>
+          <div>
+            <strong>
+              Link to share:
+            </strong>
+            <nuxt-link :to="buildRoute" v-text="window.location.hostname+$router.resolve(buildRoute).href"/>
+          </div>
+          <div>
+            <strong>
+              Link for you to edit (SAVE IT!):
+            </strong>
+            <nuxt-link :to="buildEditRoute" v-text="window.location.hostname+$router.resolve(buildEditRoute).href"/>
+            <p>
+              (We’re still working on editing created landing pages — please bookmark this link and come back to it in a few days.)
+            </p>
+          </div>
         </div>
       </b-col>
     </b-row>
@@ -88,6 +92,7 @@
 
       return {
         build: null,
+        creating: false,
         name: '',
         content: {},
         shared: false,
@@ -160,6 +165,7 @@
     methods: {
 
       async createBuild({ code, name } = this) {
+        this.creating = true
         this.build = await this.bubble.go('createBuild', {
           code,
           name,
