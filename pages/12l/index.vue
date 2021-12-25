@@ -67,16 +67,13 @@
             <strong>
               Link to share:
             </strong>
-            <nuxt-link :to="buildRoute" v-text="window.location.hostname+$router.resolve(buildRoute).href"/>
+            <nuxt-link :to="buildRoute" v-text="'ideality.app'+$router.resolve(buildRoute).href"/>
           </div>
           <div>
             <strong>
               Link for you to edit (SAVE IT!):
             </strong>
-            <nuxt-link :to="buildEditRoute" v-text="window.location.hostname+$router.resolve(buildEditRoute).href"/>
-            <p>
-              (We’re still working on editing created landing pages — please bookmark this link and come back to it in a few days.)
-            </p>
+            <nuxt-link :to="buildEditRoute" v-text="'ideality.app'+$router.resolve(buildEditRoute).href"/>
           </div>
         </div>
       </b-col>
@@ -128,12 +125,19 @@
         }
       ]
 
-      await Promise.all(map(widgets, async widget => {
+      let { slug, secret} = this.$route.query
+
+      if ( slug && secret ) {
+        Object.assign(this, await this.bubble.go('getBuildBySecret', { slug, secret }))
+        this.status = 'ok'
+      }
+
+      await Promise.all(map(widgets, async ( widget, i ) => {
         let { inputs, slug } = widget
         Object.assign(widget, {
           ...await this.bubble.get('widget', slug),
           inputs: map(inputs, slug => find(widgets, { slug })),
-          content: {}
+          content: this.build?.code?.blocks?.[i]?.content || {}
         })
       }))
 
@@ -146,7 +150,7 @@
       buildEditRoute() {
         let { slug, secret } = this.build
         console.log({slug, secret})
-        return {name: 'b-slug-edit-secret', params: { slug, secret }}
+        return {name: '12l', query: { slug, secret }}
       },
 
       buildRoute() {
@@ -178,8 +182,8 @@
     watch: {
       code: {
         deep: true,
-        handler() {
-          if ( this.build ) {
+        handler(code, oldCode) {
+          if ( this.build && oldCode) {
             this.changed = true
             this.status = ''
           }
