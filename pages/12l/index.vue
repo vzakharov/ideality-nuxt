@@ -45,18 +45,24 @@
     </b-row>
     <b-row v-if="completed" class="text-center">
       <b-col>
-        <h2 class="display-6 mt-5 mb-3">
-          Are you ready to start collecting leads?
-        </h2>
-        <p>
-          Make sure you have the landing page as you want it — it’s currently not possible to edit created landing pages.
-        </p>
-        <b-button variant="success" size="lg" @click="createBuild()">
-          Heck yeah!
-        </b-button>
-        <Loading v-if="creating && ! build" message="Generating your page, please wait..."/>
+        <template v-if="status==''">
+          <h2 class="display-6 mt-5 mb-3" 
+            v-text="changed
+              ? 'You changed the page. Save the changes?' 
+              : 'Are you ready to start collecting leads?'
+            "
+          />
+          <b-button :variant="changed ? 'danger' : 'success'" size="lg" @click="changed ? updateBuild() : createBuild()"
+            v-text="changed
+              ? 'Save'
+              : 'Heck yeah!'
+            "
+          />
+        </template>
+        <Loading v-if="status=='pending'" :message="(changed ? 'Saving': 'Generating') + ' your page, please wait...'"/>
+        <em v-else-if="status=='ok'" v-text="'Done!'"/>
         <div v-if="build">
-          <h3>Here you go!</h3>
+          <h3 v-text="'Here you go!'"/>
           <div>
             <strong>
               Link to share:
@@ -92,7 +98,10 @@
 
       return {
         build: null,
-        creating: false,
+        status: '',
+        pending: false,
+        done: false,
+        changed: false,
         name: '',
         content: {},
         shared: false,
@@ -166,16 +175,40 @@
 
     },
 
+    watch: {
+      code: {
+        deep: true,
+        handler() {
+          if ( this.build ) {
+            this.changed = true
+            this.status = ''
+          }
+        }
+      }
+    },
+
     methods: {
 
       async createBuild({ code, name } = this) {
-        this.creating = true
+        this.status = 'pending'
         Object.assign(this, await this.bubble.go('createBuild', {
           code,
           name,
           public: true
         }))
+        this.status = 'ok'
         console.log(this.build)
+      },
+
+      async updateBuild({ build: { id, secret }, code, name } = this) {
+        this.status = 'pending'
+        Object.assign(this, await this.bubble.go('updateBuild', {
+          id,
+          secret,
+          code,
+          name
+        }))
+        this.status = 'ok'
       },
 
       dedent, map
