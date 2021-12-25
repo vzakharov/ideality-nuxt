@@ -7,6 +7,7 @@
         </h1>
         <p class="lead" v-html="$md.render('How many times have you had an idea for a new product, but didn’t know how to get started? Now you can create a landing page and start validating your idea with real leads in minutes. \n\n**Just enter your idea, and watch the magic unfold!**')"/>
         <p class="text-end text-muted">Yours, <nuxt-link to="/">Ideality 🔺</nuxt-link></p>
+        <nuxt-link :to="{name: 'b-slug', params: {slug: 'carvana'}}" v-text="'Test'"/>
       </b-col>
     </b-row>
     <b-row align-h="center">
@@ -45,17 +46,10 @@
         <p>
           Make sure you have the landing page as you want it — it’s currently not possible to edit created landing pages.
         </p>
-        <b-button variant="success" size="lg" @click="shared=true">
+        <b-button variant="success" size="lg" @click="createBuild()">
           Heck yeah!
         </b-button>
         <div v-if="shared">
-          <Load what="build" v-on="{setFields}" :fetch="() => 
-            bubble.go('createBuild', {
-              code,
-              name,
-              public: true
-            })"
-          />
           <template v-if="build">
             <h3>Here you go!</h3>
             <div>
@@ -164,6 +158,15 @@
     },
 
     methods: {
+
+      async createBuild({ code, name } = this) {
+        this.build = await this.bubble.go('createBuild', {
+          code,
+          name,
+          public: true
+        })
+      },
+
       dedent, map
     }
 
