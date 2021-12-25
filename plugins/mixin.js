@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { assign, chain, find, forEach, get, kebabCase, set, keys, mapValues, pickBy } from 'lodash'
+import { assign, chain, find, forEach, get, kebabCase, set, keys, mapValues, pick, pickBy } from 'lodash'
 import { appendRoute, canRunWidget, isDefined, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -16,6 +16,12 @@ function setDefaults(object, defaults) {
 
 
 Vue.mixin({
+
+  data() {
+    return {
+      $localLoaded: false
+    }
+  },
 
   created () { 
     this.vm = this 
@@ -161,48 +167,48 @@ Vue.mixin({
       return isDefined(this.$props[prop])
     },
 
-    loadLocal(pathOrOptions) {
+    localSync(localKey, { from, select, where, slugifyName }) {
 
-      let local, data, getItems, item, id, items, slug, slugParam, path
-      const getLocal = () => local = load(localStorage.getItem('data')) || {}
+      let local, data, item, id, items, collection, slug, path
 
-      const getData = () => (
-        getLocal(),
-        data = 
-          typeof pathOrOptions === 'string'
-            ? ( path = pathOrOptions,
-              get( local, path ) 
-              || get ( set ( local, path, {} ), path )
-            )
-            : (
-              { getItems, slugParam } = pathOrOptions,
-              items = getItems(local),
-              slug = this.$route.params[slugParam],
-              item = find(items, id ? { id } : { slug }),
-              { id } = item
-            )
-      )
+      const getData = () => {
+        local = load(localStorage.getItem(localKey)) || (
+          where ? [] : {}
+        )
+        collection = from ? get(local, from) : local
+        if ( where ) {
+          data = find(collection, where)
+          if ( !data )
+            collection.push(data = where)
+        } else {
+          data = local
+        }
+        return data
+      }
 
-      Object.assign(this, getData())
+      Object.assign(this, {
+        ...getData(),
+        $localLoaded: true
+      })
       
-      forEach(this.$data, (value, key) =>
+      forEach(select ? pick(this.$data, select) : this.$data, (value, key) => {
+
         this.$watch(key, { deep: true, handler(value) {
 
-          if ( key == 'name' ) {
-            slugify()
+          if ( slugifyName && key == 'name' ) {
             Object.assign(this, { slug: slugify(value, items) })
             return
           }
 
-          Object.assign( getData(), this.$data)
-          localStorage.setItem('data', dump(local))
+          set(getData(), key, value)
+          localStorage.setItem(localKey, dump(local))
 
           if ( key == 'slug' ) {
-            this.$router.push(this.appendRoute({ params: { [slugParam]: this.slug }}))
+            this.$router.push(this.appendRoute({ params: { [name]: this.slug }}))
           }
 
         }})
-      )
+      })
 
 
     },

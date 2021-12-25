@@ -18,7 +18,6 @@
                   <b-button size="lg" variant="primary" v-b-modal.waitlist>
                     {{ cta }}
                   </b-button>
-                  <BuilderWaitlist/>
                 </b-col>
               </b-row>
             </b-col>
@@ -41,7 +40,7 @@
   
     mixins: [ renderMixin ],
 
-    props: ['content', 'size'],
+    props: ['content', 'size', 'build'],
 
     data() {
       
@@ -50,7 +49,7 @@
 
         %text
 
-        Keywords: %imageQuery
+        (Keywords: |Image for ["“])%imageQuery["”]?
 
         \\[%cta\\]
       `

@@ -44,9 +44,10 @@
     },
 
     mounted({ $route: { params: { project: slug }}} = this) {
-      this.loadLocal({
-        getItems: local => local.builder.projects,
-        slugParam: 'project'
+      this.localSync('builder', {
+        parentPath: 'projects',
+        where: { slug },
+        slugifyName: true
       })
     },
 

@@ -39,7 +39,7 @@
     <b-row v-if="completed" class="text-center">
       <b-col>
         <h2 class="display-6 mt-5 mb-3">
-          Do you want to share the page &amp; start collecting leads?
+          Are you ready start collecting leads?
         </h2>
         <b-button variant="success" size="lg" @click="shared=true">
           Heck yeah!
@@ -58,13 +58,16 @@
               <strong>
                 Link to share:
               </strong>
-              <a :href="buildLink" target="_blank" v-text="buildLink"/>
+              <nuxt-link :to="buildRoute" v-text="window.location.hostname+$router.resolve(buildRoute).href"/>
             </div>
             <div>
               <strong>
                 Link for you to edit (SAVE IT!):
               </strong>
-              <a :href="buildLink+'/'+build.secret" target="_blank" v-text="buildLink+'/'+build.secret"/>
+              <nuxt-link :to="buildEditRoute" v-text="window.location.hostname+$router.resolve(buildEditRoute).href"/>
+              <p>
+                (We’re still working on editing created landing pages — please bookmark this link and come back to it in a few days.)
+              </p>
             </div>
           </template>
         </div>
@@ -128,8 +131,12 @@
 
     computed: {
 
-      buildLink() {
-        return `https://ideality.app/b/${ this.build.slug }`
+      buildEditRoute({ build: { slug, secret }} = this) {
+        return {name: 'b-slug-edit-secret', params: { slug, secret }}
+      },
+
+      buildRoute({ build: { slug }} = this) {
+        return {name: 'b-slug', params: { slug }}
       },
 
       code({ widgets } = this) {

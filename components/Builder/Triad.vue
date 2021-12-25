@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-col align-self="center" class="text-center mb-5">
+    <b-col align-self="center" class="text-center">
       <h2 class="display-6 mb-4" v-text="headline"/>
       <b-row align-h="center" align-v="center">
         <b-col cols="12" sm="10" lg="3" v-for="section, i in sections" :key="i" class="mt-2 text-center">

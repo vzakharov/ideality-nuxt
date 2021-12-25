@@ -19,7 +19,7 @@
     },
 
     mounted() {
-      this.loadLocal('builder')
+      this.localSync('builder')
     }
 
   }

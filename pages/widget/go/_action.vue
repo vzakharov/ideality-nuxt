@@ -11,27 +11,17 @@
         </div>
       </WidgetConfig>
       <template v-else>
-        <WidgetBox class="mt-5">
-          <WidgetProper v-bind="{widget}"/>
-          <div class="text-end">
-            <small>
-              <nuxt-link :to="appendRoute({params: { action: undefined }})" class="gray">
-                Edit this widget
-              </nuxt-link>
-            </small>
-          </div>
-        </WidgetBox>
+        <WidgetProper box v-bind="{widget}"/>
         <b-col class="text-center mt-5" style="max-width:600px">
           <h2 class="mb-3 display-6">Make your own AI widget!</h2>
           <div class="lead">
-            <p>This is an ephemeral widget, meaning that <strong>its whole configuration is stored in the URL</strong>.
-              Feel free to
+            <p>Like this widget? Feel free to
               <strong><nuxt-link :to="appendRoute({params: { action: undefined }})">
-                tinker with it, or even create a new one
-              </nuxt-link></strong>, and later share it with others!
+                edit it</nuxt-link>, or even <nuxt-link :to="{name:'widget-go-action'}">create a new one</nuxt-link>
+              </strong>, and share it with others!
             </p>
             <p>
-              <strong>It’s free — and no sign up required!</strong>
+              <strong>100% free, no sign-up required!</strong>
             </p>
             <p>
               <strong>

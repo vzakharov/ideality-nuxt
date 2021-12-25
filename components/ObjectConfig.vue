@@ -20,7 +20,7 @@
 import { isArray, upperFirst } from 'lodash'
 
 export default {
-  props: ['indirect', 'fields', 'value', 'lazy'],
+  props: ['indirect', 'fields', 'value', 'lazy', 'disabled'],
 
   data() { 
     // debugger

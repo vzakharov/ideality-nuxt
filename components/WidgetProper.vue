@@ -7,8 +7,7 @@
             ['p-' + ( prop('padding') || 2 )]: true,
             'border shadow': prop('box')
         }"
-        cols="12" :lg="content.output && preview ? 4 : 8"
-        :style="prop('box')"
+        :style="(!content.output || !preview ) && 'max-width:600px'"
       >
         <template v-if="!duringSetup">
           <h4 v-if="!prop('hideHeading') && !widget.display.hideTitle" v-text="widget.display.name || widget.name" class="mb-3"/>
@@ -135,6 +134,7 @@
             </PoweredByIdeality>
           </small>
         </div>
+        <slot/>      
       </b-col>
       <b-col cols="12" lg="8" v-if="content.output && preview && !duringSetup" class="text-center">
         <b-col>
