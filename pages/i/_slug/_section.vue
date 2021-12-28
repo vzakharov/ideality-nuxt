@@ -14,6 +14,7 @@
             <b-button @click="updateBuild" :variant="changed && !status ? 'primary' : 'light'" :disabled="!changed || status=='pending'">
               {{ status ? status == 'ok' ? 'Saved!' : 'Saving...' : 'Save' }}
             </b-button>
+            <Copiable class="btn btn-light text-muted" :value="buildUrl().view">Copy link</Copiable>
             <b-modal v-model="firstTime" title="Here you go!" hide-header-close ok-only>
                 <p>
                   Congratulations, your landing page is now live and ready to collect leads!
