@@ -14,35 +14,8 @@
         <p class="text-end text-muted">Yours, <nuxt-link to="/">Ideality 🔺</nuxt-link></p>
       </b-col>
     </b-row>
-    <b-row align-h="center">
-      <b-col class="px-0">
-        <Loading class="text-center" v-if="!widgets" message="Loading the tool, please wait..."/>
-        <div v-else :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
-          <!-- <LabeledInput v-model="hideDescription" type="boolean" caption="Hide descriptions"/> -->
-          <div v-for="widget, i in widgets" :key="widget.slug">
-            <div v-if="i == 0 || widgets[i-1].content.output" :class="'py-3 px-2 px-lg-5' + ( i % 2 ? ' bg-light' : '')">
-              <!-- <hr v-if="i != 0"/> -->
-              <WidgetProper 
-                v-bind="{
-                  widget,
-                  key: widget.slug,
-                  value: {
-                    input: i == 0 ? widget.content.input : widget.inputs.map( widget => widget.content.output ).join('\n\n'),
-                    output: widget.content.output
-                  },
-                  hideInput: i != 0,
-                  hideDescriptionIfOutput: true,
-                  showEditingTip: i == 0
-                }"
-                @input="i == 0 ? $set(widget, 'content', $event) : $set(widget.content, 'output', $event.output)"
-                @contentParsed="i == 0 && ( name = $event.name )"
-                hide-background hide-powered-by
-              />
-            </div>
-          </div>
-        </div>
-      </b-col>
-    </b-row>
+    <BuildEdit v-model="code" v-on="{setFields}"/>
+
     <b-row v-if="completed" class="text-center">
       <b-col>
         <template v-if="status==''">
@@ -95,9 +68,11 @@
 
       return {
         build: null,
+        code: {},
         status: '',
         pending: false,
         done: false,
+        loaded: false,
         changed: false,
         name: '',
         content: {},
@@ -108,73 +83,32 @@
 
     },
 
-    async fetch() {
-
-      let widgets = [
-        {
-          slug: 'builder-hero'
-        }, {
-          slug: 'builder-story',
-          inputs: ['builder-hero']
-        }, {
-          slug: 'builder-details',
-          inputs: ['builder-hero']
-        }, {
-          slug: 'builder-punchline',
-          inputs: ['builder-hero', 'builder-details']
-        }
-      ]
-
-      let { slug, secret} = this.$route.query
-
-      if ( slug && secret ) {
-        Object.assign(this, await this.bubble.go('getBuildBySecret', { slug, secret }))
-        this.status = 'ok'
-      }
-
-      await Promise.all(map(widgets, async ( widget, i ) => {
-        let { inputs, slug } = widget
-        Object.assign(widget, {
-          ...await this.bubble.get('widget', slug),
-          inputs: map(inputs, slug => find(widgets, { slug })),
-          content: this.build?.code?.blocks?.[i]?.content || {}
-        })
-      }))
-
-      Object.assign(this, { widgets })
-
+    mounted() {
+      this.syncLocal('p/new', {
+        select: ['code']
+      })
+      if ( !this.code )
+        this.code = {}
+      if ( !this.code.blocks )
+        this.$set(this.code, 'blocks', [])
     },
 
     computed: {
 
       buildEditRoute() {
         let { slug, secret } = this.build
-        console.log({slug, secret})
-        return {name: '12l', query: { slug, secret }}
+        // console.log({slug, secret})
+        return {name: 'i-slug-manage', params: { slug }, query: { secret }}
       },
 
       buildRoute() {
         let { slug } = this.build
-        console.log({slug})
-        return {name: 'b-slug', params: { slug }}
-      },
-
-      code({ widgets } = this) {
-        if ( !widgets )
-          return
-        return {
-          blocks: widgets.map(({
-            content,
-            display: { native: { componentName: type }}
-          }) => ({
-            content,
-            type
-          }))
-        }
+        // console.log({slug})
+        return {name: 'i-slug', params: { slug }}
       },
 
       completed() {
-        return this.widgets && !filter( this.widgets, widget => !widget?.content?.output ).length
+        return this.loaded && this.code && !filter( this.code.blocks, block => !block?.content?.output ).length
       }
 
     },
@@ -201,18 +135,13 @@
           public: true
         }))
         this.status = 'ok'
-        console.log(this.build)
-      },
-
-      async updateBuild({ build: { id, secret }, code, name } = this) {
-        this.status = 'pending'
-        Object.assign(this, await this.bubble.go('updateBuild', {
-          id,
-          secret,
-          code,
-          name
-        }))
-        this.status = 'ok'
+        this.code = {}
+        this.$router.push({
+          name: 'i-slug-section',
+          params: { slug: this.build.slug, section: 'edit' },
+          hash: '#firstTime',
+          query: { secret: this.build.secret }
+        })
       },
 
       dedent, map

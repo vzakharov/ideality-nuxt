@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { assign, chain, find, forEach, get, kebabCase, set, keys, mapValues, pick, pickBy } from 'lodash'
+import { assign, chain, find, forEach, get, isArray, kebabCase, set, keys, mapValues, pick, pickBy } from 'lodash'
 import { appendRoute, canRunWidget, isDefined, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -139,6 +139,38 @@ Vue.mixin({
 
     appendedUrl() {
       return this.$router.resolve(this.appendRoute(...arguments)).href
+    }, 
+
+    buildTarget({ slug, secret } = this.build) {
+      return {
+        view: {
+          name: 'i-slug',
+          params: { slug }
+        },
+        edit: {
+          name: 'i-slug-section',
+          params: { slug, section: 'edit' },
+          query: { secret }
+        }
+      }
+    },
+
+    buildUrl() {
+      return mapValues( this.buildTarget(...arguments), target => this.getFullUrl(target) )
+    },
+
+    download(text, name, format = 'yaml') {
+      const anchor = document.createElement('a')
+      if ( format == 'yaml' ) 
+        text = dump(text)
+      anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(text)
+      anchor.target = '_blank'
+      anchor.download = `${name}.${format}`
+      anchor.click()
+    },
+
+    getFullUrl(target) {
+      return 'ideality.app' + this.$router.resolve(target).href
     },
 
     reactify(object) {
@@ -167,7 +199,7 @@ Vue.mixin({
       return isDefined(this.$props[prop])
     },
 
-    localSync(localKey, { from, select, where, slugifyName }) {
+    syncLocal(localKey, { from, select, where, slugifyName }) {
 
       let local, data, item, id, items, collection, slug, path
 
@@ -178,8 +210,9 @@ Vue.mixin({
         collection = from ? get(local, from) : local
         if ( where ) {
           data = find(collection, where)
-          if ( !data )
+          if ( !data ) {
             collection.push(data = where)
+          }
         } else {
           data = local
         }
@@ -191,10 +224,12 @@ Vue.mixin({
         $localLoaded: true
       })
       
-      forEach(select ? pick(this.$data, select) : this.$data, (value, key) => {
+      console.log(this.$data, keys(this.$data))
+      forEach(select ? isArray(select) ? select : [select] : keys(this.$data), key => {
 
+        console.log({key})
         this.$watch(key, { deep: true, handler(value) {
-
+          
           if ( slugifyName && key == 'name' ) {
             Object.assign(this, { slug: slugify(value, items) })
             return
@@ -255,6 +290,14 @@ Vue.mixin({
 
     prop(key) {
       return this.$props[key] === '' ? true : this.$props[key]
+    },
+
+    pseudoLink(route) {
+      debugger
+      return {
+        to: this.appendRoute(route),
+        'v-on:click.prevent': () => window.alert('Hello world')
+      }
     },
 
     pseudoRoute({ params, query, hash, replace }) {

@@ -24,7 +24,7 @@ export default {
           let match = content?.match(this.regex)
           
 
-          console.log(this.regex, match)
+          // console.log(this.regex, match)
           if ( match ) {
 
             let groups = mapValues(match.groups, value => value || '')

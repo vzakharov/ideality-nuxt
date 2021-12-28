@@ -17,6 +17,10 @@
   a {
     text-decoration: none;
   }
+  
+  .bg-retro {
+    background-color: #FBF7EC
+  }
 
   .gray {
     color: #bbb

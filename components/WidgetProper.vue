@@ -366,7 +366,7 @@
         handler(value) {
           this.ignoreContentChange = true
           this.content = value || {}
-          console.log(this, {value})
+          // console.log(this, {value})
         }
       }
       

@@ -2,7 +2,7 @@
   <div class="mb-3">
     <small v-for="(crumb, i) in crumbs" :key="partialPath(i)">
       <span v-if="i" v-text="' / '"/>
-      <nuxt-link :to="partialPath(i)" v-text="crumb || '▲'"/>
+      <nuxt-link :to="partialPath(i)" v-text="full[crumb] || crumb || '▲'"/>
     </small>
   </div>
 </template>
@@ -13,6 +13,9 @@
 
     data() {
       return {
+        full: {
+          i: 'ideas'
+        },
         path: ''
       }
     },

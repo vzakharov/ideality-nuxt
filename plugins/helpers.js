@@ -8,7 +8,7 @@ function appendRoute({ route, params, query, hash, reset, ...newRoute }) {
     ...route,
     query: { ...reset.query ? {} : route.query, ...query },
     params: { ...reset.params ? {} : route.params, ...params },
-    hash: hash || route.hash,
+    hash: reset.hash ? '' : hash || route.hash,
     ...newRoute
   }
 }

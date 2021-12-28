@@ -45,7 +45,7 @@ If you haven’t already, please **follow the link in the confirmation email we 
     },
 
     mounted({ build: { slug }} = this) {
-      this.localSync('builds', {
+      this.syncLocal('builds', {
         select: ['accessRequested'],
         where: { slug }
       })
