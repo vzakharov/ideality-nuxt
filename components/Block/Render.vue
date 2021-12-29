@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BuilderComponent 
+    <Block 
       v-for="({type, content}) in blocks" :key="type"
       v-bind="{type, content}"
     />

@@ -36,7 +36,7 @@
             <b-row
                 class="border p-2 mt-3 me-2 shadow"
             >
-              <BuilderComponent
+              <Block
                 class="scaled"
                 :type="widget.display.native.componentName" :content="content[widget.id].output"
               />
