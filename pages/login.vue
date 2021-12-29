@@ -9,7 +9,3 @@
   }
 
 </script>
-
-<style>
-
-</style>

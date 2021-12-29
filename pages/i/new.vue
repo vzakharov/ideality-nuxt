@@ -129,7 +129,3 @@
   }
 
 </script>
-
-<style>
-
-</style>

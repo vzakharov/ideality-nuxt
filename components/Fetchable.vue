@@ -22,7 +22,3 @@
   }
 
 </script>
-
-<style>
-
-</style>
