@@ -99,7 +99,7 @@
                 v-text="display.CTA"
               />
               <b-modal id="content-preview" size="xl" hide-footer :title="`${widget.name} preview`">
-                <component :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
+                <component :is="'Block' + widget.display.native.componentName" v-bind="{widget, content}" :key="content.output"/>
                 <PoweredByIdeality/>
               </b-modal>
             </template>
@@ -138,7 +138,7 @@
       </b-col>
       <b-col cols="12" lg="8" v-if="content.output && preview && !duringSetup" class="text-center">
         <b-col>
-          <component @contentParsed="$emit('contentParsed', $event)" breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Builder' + widget.display.native.componentName" v-bind="{widget, content}"/>
+          <component @contentParsed="$emit('contentParsed', $event)" breakpoints="" class="bg-light shadow rounded px-2 mt-2 py-4" :is="'Block' + widget.display.native.componentName" v-bind="{widget, content}"/>
         </b-col>
       </b-col>
     </b-row>
