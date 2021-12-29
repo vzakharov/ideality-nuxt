@@ -31,10 +31,8 @@
         So you give them this (try with your own bio, it’s fun!):
       </p>
 
-      <WidgetBox>
-        <WidgetProper v-if="widgets" :widget="widgets[0]" :go="true" :dontFocusOnOutput="true"/>
-        <Loading v-else message="Loading your widget, hold on a sec..."/>
-      </WidgetBox>
+      <WidgetProper box v-if="widgets" :widget="widgets[0]" :go="true" :dontFocusOnOutput="true"/>
+      <Loading v-else message="Loading your widget, hold on a sec..."/>
 
       <p>
         Or maybe you run an online grocery store? Then you can give your visitors
@@ -47,10 +45,8 @@
         </small>
       </p>  
 
-      <WidgetBox :value="widgets" :key="widgets">
-        <WidgetProper v-if="widgets" :widget="widgets[1]" :go="true" :dontFocusOnOutput="true"/>
-        <Loading v-else message="Loading your widget, hold on a sec..."/>
-      </WidgetBox>
+      <WidgetProper box v-if="widgets" :widget="widgets[1]" :go="true" :dontFocusOnOutput="true"/>
+      <Loading v-else message="Loading your widget, hold on a sec..."/>
       
       <p>
         I here you say: “Okay, this is all fun, but...”
@@ -65,10 +61,8 @@
         <strong>Enter a brief description of your product below:</strong>
       </p>
 
-      <WidgetBox>
-        <WidgetProper v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
-        <Loading v-else message="Loading your widget, hold on a sec..."/>
-      </WidgetBox>
+      <WidgetProper box v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
+      <Loading v-else message="Loading your widget, hold on a sec..."/>
 
       <Heading id="setup">
         Is it hard to set up?

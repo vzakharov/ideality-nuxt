@@ -20,12 +20,10 @@
             <Heading>
               Preview
             </Heading>
-            <WidgetBox>
-              <WidgetProper ref="widget" :key="widget.id" :hideDescription="true"
-                v-bind="{widget, apiKey, code, go}"
-                :value="content"
-              />
-            </WidgetBox>
+            <WidgetProper box ref="widget" :key="widget.id" :hideDescription="true"
+              v-bind="{widget, apiKey, code, go}"
+              :value="content"
+            />
           </b-col>
           <template v-if="!hide.allButWidget">
             <Heading>Customization</Heading>
