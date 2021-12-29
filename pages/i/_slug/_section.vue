@@ -81,14 +81,9 @@
 
       <div v-if="section=='unshare'" class="mt-3">
         Currently, all pages made with Ideality are public. If you don’t want to keep sharing it, you can
-          <a href="#" @click.prevent="download(build.code, build.name, 'yaml')">
-            download its configuration
-          </a>
-        and
           <a href="#" v-b-modal.delete
-          >
-            delete the page.
-          </a>
+          >delete the page</a>.
+          Your existing configuration will be downloaded as a YAML in case you need it further.
         <b-modal id="delete" hide-header hide-footer>
           <h3>Are you sure? There’s no undo!</h3>
           <LabeledInput

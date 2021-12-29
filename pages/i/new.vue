@@ -19,36 +19,14 @@
     <b-row v-if="completed" class="text-center">
       <b-col>
         <template v-if="status==''">
-          <h2 class="display-6 mt-5 mb-3" 
-            v-text="changed
-              ? 'You changed the page. Save the changes?' 
-              : 'Are you ready to start collecting leads?'
-            "
-          />
-          <b-button :variant="changed ? 'danger' : 'success'" size="lg" @click="changed ? updateBuild() : createBuild()"
-            v-text="changed
-              ? 'Save'
-              : 'Heck yeah!'
-            "
-          />
+          <h2 class="display-6 mt-5 mb-3">
+            Are you ready to start collecting leads?
+          </h2>
+          <b-button variant="success" size="lg" @click="createBuild">
+            Heck yeah!
+          </b-button>
         </template>
         <Loading v-if="status=='pending'" :message="(changed ? 'Saving': 'Generating') + ' your page, please wait...'"/>
-        <em v-else-if="status=='ok'" v-text="'Done!'"/>
-        <div v-if="build">
-          <h3 v-text="'Here you go!'"/>
-          <div>
-            <strong>
-              Link to share:
-            </strong>
-            <nuxt-link :to="buildRoute" v-text="'ideality.app'+$router.resolve(buildRoute).href"/>
-          </div>
-          <div>
-            <strong>
-              Link for you to edit (SAVE IT!):
-            </strong>
-            <nuxt-link :to="buildEditRoute" v-text="'ideality.app'+$router.resolve(buildEditRoute).href"/>
-          </div>
-        </div>
       </b-col>
     </b-row>
     <b-row style="height: 10vh">
@@ -127,7 +105,8 @@
 
     methods: {
 
-      async createBuild({ code, name } = this) {
+      async createBuild() {
+        let { code, name } = this
         this.status = 'pending'
         Object.assign(this, await this.bubble.go('createBuild', {
           code,
