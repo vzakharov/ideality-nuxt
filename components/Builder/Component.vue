@@ -1,3 +1,4 @@
+<!-- Arbitrary builder block !-->
 <template>
   <component :is="'Builder' + type" v-bind="{content, size}" :key="content"/>
 </template>

@@ -1,3 +1,4 @@
+<!-- Component to configure AI generation settings -->
 <template>
   <div>
     <ObjectConfig

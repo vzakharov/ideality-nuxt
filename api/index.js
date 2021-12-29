@@ -1,17 +1,21 @@
 const axios = require('axios')
 
 const Bubble = require('../plugins/bubble')
-const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
+const BubbleAdmin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 
 const { buildPrompt, complete, parseResponse } = require('../plugins/whispering')
+
 const { keyedPromises } = require('../plugins/helpers')
 
 const express = require('express')
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+
+// To get ip
 app.set('trust proxy', true)
 
+// Function to run completion (currently OpenAI only; todo: add AI21, Cohere & maybe any other)
 async function doComplete(
   {
     body: { prompt, n, stop, allowUnsafe, engine, apiKey, temperature }
@@ -23,15 +27,16 @@ async function doComplete(
   try {
 
     // Only allow unsafe requests if sent with the user's own api key
-    if ( !allowUnsafe && !apiKey ) {
+    if ( !apiKey ) {
       apiKey = process.env.OPENAI_KEY
       allowUnsafe = false
     }
 
-    // Check safety in the background if needed
     let headers = {
       Authorization: `Bearer ${apiKey}`
     }
+
+    // Check safety in parallel with sending the request, to save on the completion time.
 
     let safetyChecked = 
       !allowUnsafe && 
@@ -42,8 +47,6 @@ async function doComplete(
           max_tokens: 1,
           logprobs: 10
         }, { headers })
-
-    // Prepare request
 
     let response = await complete({ engine, temperature, prompt, n, stop, apiKey })
     
@@ -70,6 +73,9 @@ async function doComplete(
 
 }
 
+// Get image from Pexels
+// Todo: Add a check that the request actually comes from Ideality
+
 app.post('/getImage', async (
   {
     body: {
@@ -84,15 +90,15 @@ app.post('/getImage', async (
       photos: [ photo ]
     }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=${orientation}&per_page=1`, {
       headers: { Authorization: process.env.PEXELS_KEY }
-    })
-    // console.log({photo})
-    
+    })    
     return res.send(photo)
   } catch(error) {
     return res.status(500).send({error})
     // next(error)
   }
 })
+
+// Endpoint to generate outputs based on widget & input
 
 app.post('/widget/generate', async ({ body, ip}, res, next) =>
 {
@@ -106,8 +112,8 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
     let { id } = widget
 
     let info = await keyedPromises({
-      ip: admin.get('ip', `ip-${ip.replace(/\./g, '-')}`),
-      widget: admin.get('widget', id)
+      ip: BubbleAdmin.get('ip', `ip-${ip.replace(/\./g, '-')}`),
+      widget: BubbleAdmin.get('widget', id)
     })
     
     if ( !apiKey ) {
@@ -142,8 +148,6 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
     let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appendInput, output })
     
-    if ( !apiKey ) apiKey = process.env.OPENAI_KEY
-
     let response = await doComplete(
       {
         body: { prompt, n, stop, allowUnsafe, apiKey},
@@ -158,7 +162,7 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
     
     let decrement = ( prompt.length + content.output.length ) / 2000
 
-    if ( widget.id ) admin.go('runsLeft--', { ip, widget: widget.id, decrement })
+    if ( widget.id ) BubbleAdmin.go('runsLeft--', { ip, widget: widget.id, decrement })
 
     res.send({ content, runsLeft })
   } catch(error) {
@@ -181,6 +185,8 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
 })
 
+// Track widget use
+
 app.post('/widget/track', async ({ 
   headers: { referer }, 
   body: { 
@@ -191,7 +197,7 @@ app.post('/widget/track', async ({
 
   actor || ( actor = ip )
 
-  admin.post('widgetEvent', { widget: id, actor, action, referer })
+  BubbleAdmin.post('widgetEvent', { widget: id, actor, action, referer })
 
   res.send(null)
 
