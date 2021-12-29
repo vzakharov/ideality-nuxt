@@ -6,11 +6,13 @@ const Bubble = require('../plugins/bubble')
 const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 
 const { buildPrompt, complete, parseResponse } = require('../plugins/whispering')
+const { keyedPromises } = require('../plugins/helpers')
+
 
 const app = express()
 
 const _ = require('lodash')
-const { assign, map } = _
+const { assign, forEach, map } = _
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -112,55 +114,46 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
     let { id } = widget
 
-    // Start loading the widget, but check the quota in the meantime
-    const widgetLoaded = 
-      !( widget && widget.setup && widget.slate )
-      && admin.get('widget', id)
-        .then( ({ setup, slate, tie }) => 
-          assign(widget, {
-            setup: { ...setup, ...widget.setup },
-            slate, tie,
-            ...widget
-          })
-        )
+    let info = await keyedPromises({
+      ip: admin.get('ip', `ip-${ip.replace(/\./g, '-')}`),
+      widget: admin.get('widget', id)
+    })
     
-    let runsLeft = {}
-
-    let allowUnsafe = !!apiKey 
     if ( !apiKey ) {
-      let ipInfo = await admin.get('ip', `ip-${ip.replace(/\./g, '-')}`) || {}
-      console.log({ ipInfo })
-      runsLeft.ip = ipInfo.runsLeft
-      if ( runsLeft.ip < 0 ) {
-        return res.status(403).send({
-          error: {
-            cause: 'quota', 
-            message: 'Quota exceeded. Please come back in an hour or add “?apiKey=[your OpenAI key]” to the URL to make the request using your own key. (We don’t store your API key and will only use to make a request directly from your browser.)'
-          }
-        })
+
+      for( let key in info ) {
+
+        let { runsLeft } = info[key]
+
+        console.log({key, runsLeft})
+        if ( runsLeft < 0)
+          return res.status(403).send({
+            error: {
+              cause: key == 'ip' ? 'quota' : 'quota_widget',
+              message: ( key == 'ip'
+                ? 'Quota exceeded. Come back in an hour'
+                : 'Widget quota exceeded. Come back tomorrow'
+              ) + ' or add “?apiKey=[your OpenAI key]” to the URL to make the request using your own key. (We don’t store your API key and will only use to make a request directly from your browser.)'
+            }
+          })
+
       }
-      apiKey = process.env.OPENAI_KEY
+
     }
 
-    await widgetLoaded
-
-    runsLeft.widget = widget.runsLeft
-
-    if ( runsLeft.widget < 0 ) {
-      return res.status(403).send({
-        error: {
-          cause: 'widget_quota', 
-          message: 'Widget quota exceeded. Please come back next day or add “?apiKey=[your OpenAI key]” to the URL to make the request using your own key. (We don’t store your API key and will only use to make a request directly from your browser.)'
-        }
-      })
-    }
+    ['slate', 'tie', 'setup', 'runsLeft'].forEach(key =>
+      !widget[key] && ( widget[key] = info.widget[key] )
+    )
 
     let { setup, slate, tie } = widget
+    let { runsLeft } = info.ip
 
-    allowUnsafe = allowUnsafe || slate.allowUnsafe
+    let allowUnsafe = !!apiKey || slate.allowUnsafe
 
     let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, appendInput, output })
     
+    if ( !apiKey ) apiKey = process.env.OPENAI_KEY
+
     let response = await doComplete(
       {
         body: { prompt, n, stop, allowUnsafe, apiKey},
@@ -198,22 +191,13 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
 })
 
-app.post('/error', async (req, res, next) => {
-  try {
-    await Bubble.default.anon.go('nope')
-  } catch(error) {
-    console.log({error})
-    res.status(403).send(error)
-  }
-})
-
 app.post('/widget/track', async ({ 
   headers: { referer }, 
   body: { 
     widget: { id }, actor, action
   },
   ip
-}, res, next) => {
+}, res ) => {
 
   actor || ( actor = ip )
 
@@ -223,14 +207,7 @@ app.post('/widget/track', async ({
 
 })
 
-// } catch (err) {
-//   console.log(err)
-//   // throw(err)
-// }
-
 export default {
   path: '/api',
   handler: app
 }
-
-

@@ -1,4 +1,4 @@
-import { filter, find, kebabCase, isObject, pick, get, keys } from 'lodash'
+import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function appendRoute({ route, params, query, hash, reset, ...newRoute }) {
@@ -56,7 +56,6 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
 
 async function getUser({ $axios, $auth }) {
   try {
-  //   let { data: { user }} = await $axios.get('api/auth/user')
     console.log('Fetching user...')
     let user = await (
       new Bubble({$auth, token: $auth.strategy.token.get()}).go('getUserInfo')
@@ -81,6 +80,19 @@ function parseKids(parent, keys) {
   return parent
 }
 
+async function keyedPromises(promises) {
+
+  let objectKeys = keys(promises)
+
+  let object = {}
+  forEach(await Promise.all(values(promises)), 
+    ( value, i ) => object[ objectKeys[i] ] = value
+  )
+
+  return object
+
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -103,6 +115,7 @@ export {
   filteredParameters,
   getUser,
   isDefined,
+  keyedPromises,
   parseKids,
   sleep,
   slugify
