@@ -1,7 +1,7 @@
 <template>
 <div v-if="start.tail" :class="{ small: !topLevel }">
 <span v-for='node in start.tail()' :key='node.slug'>
-    <current-node 
+    <CurrentNode
       v-if="node==d.node" 
       :node='node'
       @action="$emit('node-action', $event)"
@@ -36,12 +36,9 @@
 <script>
 
 import { escape } from 'lodash'
-import CurrentNode from './currentNode.vue'
-
 let { log } = console
 
 export default {
-  components: { CurrentNode },
 
   
   props: ['d', 'topLevel', 'start', 'bumped'],
