@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <WidgetProper box class="mt-5" v-bind="{widget}"/>
+    <Widget box class="mt-5" v-bind="{widget}"/>
   </b-container>
 </template>
 

@@ -25,7 +25,7 @@
       <b-col>
         <b-row>
           <b-col class="p-3">
-            <WidgetProper v-if="widget" box :key="widget.id" v-bind="{ widget, ai }" v-model="content[widget.id]"/>
+            <Widget v-if="widget" box :key="widget.id" v-bind="{ widget, ai }" v-model="content[widget.id]"/>
           </b-col>
           <b-col v-if="widget.isNative && content[widget.id]" class="d-none d-md-block mt-3" 
             :cols="6"

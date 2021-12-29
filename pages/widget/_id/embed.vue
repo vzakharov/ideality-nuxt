@@ -1,5 +1,5 @@
 <template>
-  <WidgetProper v-bind="{widget}"/>
+  <Widget v-bind="{widget}"/>
 </template>
 
 <script>

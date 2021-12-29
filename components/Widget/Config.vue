@@ -109,7 +109,7 @@
             </div>
           </div>
           <template v-if="section=='test'">
-            <WidgetProper box v-bind="{widget}"/>
+            <Widget box v-bind="{widget}"/>
             <slot/>
           </template>
 
@@ -118,7 +118,7 @@
       </b-col>
       <b-col class="d-none d-md-block mt-3">
         <h5>Widget preview</h5>
-          <WidgetProper box v-bind="{widget}"/>
+          <Widget box v-bind="{widget}"/>
         <slot/>
       </b-col>
     </b-row>

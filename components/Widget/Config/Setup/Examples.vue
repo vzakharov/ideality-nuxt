@@ -18,7 +18,7 @@
       />
     </ul>
     <div v-if="examples.length">
-      <WidgetProper
+      <Widget
         v-model="examples[exampleIndex]"
         v-bind="{
           widget,

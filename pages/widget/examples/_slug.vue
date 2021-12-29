@@ -20,7 +20,7 @@
             <Heading>
               Preview
             </Heading>
-            <WidgetProper box ref="widget" :key="widget.id" :hideDescription="true"
+            <Widget box ref="widget" :key="widget.id" :hideDescription="true"
               v-bind="{widget, apiKey, code, go}"
               :value="content"
             />

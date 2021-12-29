@@ -11,7 +11,7 @@
         </div>
       </WidgetConfig>
       <template v-else>
-        <WidgetProper box v-bind="{widget}"/>
+        <Widget box v-bind="{widget}"/>
         <b-col class="text-center mt-5" style="max-width:600px">
           <h2 class="mb-3 display-6">Make your own AI widget!</h2>
           <div class="lead">

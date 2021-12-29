@@ -31,7 +31,7 @@
         So you give them this (try with your own bio, it’s fun!):
       </p>
 
-      <WidgetProper box v-if="widgets" :widget="widgets[0]" :go="true" :dontFocusOnOutput="true"/>
+      <Widget box v-if="widgets" :widget="widgets[0]" :go="true" :dontFocusOnOutput="true"/>
       <Loading v-else message="Loading your widget, hold on a sec..."/>
 
       <p>
@@ -45,7 +45,7 @@
         </small>
       </p>  
 
-      <WidgetProper box v-if="widgets" :widget="widgets[1]" :go="true" :dontFocusOnOutput="true"/>
+      <Widget box v-if="widgets" :widget="widgets[1]" :go="true" :dontFocusOnOutput="true"/>
       <Loading v-else message="Loading your widget, hold on a sec..."/>
       
       <p>
@@ -61,7 +61,7 @@
         <strong>Enter a brief description of your product below:</strong>
       </p>
 
-      <WidgetProper box v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
+      <Widget box v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
       <Loading v-else message="Loading your widget, hold on a sec..."/>
 
       <Heading id="setup">

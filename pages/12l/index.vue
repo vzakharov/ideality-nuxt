@@ -22,7 +22,7 @@
           <div v-for="widget, i in widgets" :key="widget.slug">
             <div v-if="i == 0 || widgets[i-1].content.output" :class="'py-3 px-2 px-lg-5' + ( i % 2 ? ' bg-light' : '')">
               <!-- <hr v-if="i != 0"/> -->
-              <WidgetProper 
+              <Widget 
                 v-bind="{
                   widget,
                   key: widget.slug,
