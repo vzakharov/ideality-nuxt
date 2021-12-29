@@ -8,7 +8,7 @@
       }"
     >
       <b-col>
-        <BuilderComponent 
+        <Block 
           v-bind="block"
         />
       </b-col>
@@ -16,7 +16,7 @@
     <div style="position: absolute; bottom: 10px; right: 10px">
       <PoweredByIdeality target="12l" class="d-none d-md-block"/>
     </div>
-    <BuilderWaitlist v-bind="{build}"/>
+    <BlockWaitlist v-bind="{build}"/>
     <b-row style="height:10vh"/>
   </b-container>
 </template>
