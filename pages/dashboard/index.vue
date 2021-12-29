@@ -1,5 +1,5 @@
 <template>
-  <Container style="max-width:800px">
+  <MyContainer style="max-width:800px">
     <b-row align-h="center">
       <b-col cols="12" class="border bg-light p-3">
         <h1>
@@ -8,9 +8,9 @@
         <a class="link-secondary small" href="#" v-text="'Log out'"
           @click="$auth.setUser(null); $auth.logout()"
         />
-        <Heading>
+        <MyHeading>
           Widgets
-        </Heading>
+        </MyHeading>
         <WidgetNewPicker/>
         <WidgetTable/>
         <div>
@@ -24,7 +24,7 @@
         </div>
       </b-col>
     </b-row>
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

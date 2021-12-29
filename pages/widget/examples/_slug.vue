@@ -11,22 +11,22 @@
         <b-row v-if="widget" class="px-3">
           <h1 class="display-4" v-text="widget.name"/>
           <b-col sm="12" md="5">
-            <Heading>
+            <MyHeading>
               Info
-            </Heading>
+            </MyHeading>
             <div v-if="widget.display.sampleDescription" v-html="$md.render(widget.display.sampleDescription)"/>
           </b-col>
           <b-col sm="12" md="7">
-            <Heading>
+            <MyHeading>
               Preview
-            </Heading>
+            </MyHeading>
             <Widget box ref="widget" :key="widget.id" :hideDescription="true"
               v-bind="{widget, apiKey, code, go}"
               :value="content"
             />
           </b-col>
           <template v-if="!hide.allButWidget">
-            <Heading>Customization</Heading>
+            <MyHeading>Customization</MyHeading>
             <p>
               All Ideality widgets are based on customizable templates, which allow changing both the display (changing texts,
               adding custom CSS), calls to action and the AI logic.
@@ -34,7 +34,7 @@
             </p>
 
             <template v-if="hasQueryTag('dev')">
-              <LabeledInput
+              <MyInput
                 caption="Embed link"
                 :value="iframeCode"
                 :multiline="true"
@@ -47,7 +47,7 @@
               <b-button :variant="copied ? 'light' : 'outline-secondary'" size="sm" v-text="!copied ? 'Copy' : 'Copied!'"
                 @click="$copyText(iframeCode).then(() => copied=true)"
               />
-              <LabeledInput
+              <MyInput
                 caption="Use with your own API key"
                 v-model="widget.apiKey"
                 :props="{

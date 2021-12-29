@@ -1,6 +1,6 @@
 <template>
   <div>
-      <ObjectConfig v-model="parameter" :fields="{
+      <MyForm v-model="parameter" :fields="{
         name: { caption: 'Name' },
         type: { caption: 'Type', choices: ['text', 'choices'] },
         placeholder: { hide: parameter.type!='text', caption: 'Placeholder' },
@@ -11,7 +11,7 @@
         requires: { caption: 'Requires', choices: context.slate.parameters.map(p=>p.name) },
         regex: { hide: !parameter.requires, caption: 'To match...', placeholder: 'Regular expression or empty (then requires to be defined)'}
       }"/>
-      <!-- <LabeledInput v-if="parameter.type=='choices'"
+      <!-- <MyInput v-if="parameter.type=='choices'"
         v-model="parameter.choices"
         v-bind="{
           caption: 'Choices',

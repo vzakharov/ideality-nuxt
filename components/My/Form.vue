@@ -1,6 +1,7 @@
+<!-- Note that the component actually does NOT contain a form tag (todo: add?) -->
 <template>
   <div>
-    <LabeledInput 
+    <MyInput 
       v-for="field in fieldArray.filter(f => ( object[f.key] || !f.hide ) && ( typeof object[f.key] !=='undefined' || !f.hideIfUndefined ))" 
       :key="field.key"
       v-bind="{

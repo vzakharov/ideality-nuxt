@@ -14,7 +14,7 @@
         Request your access below, and we’ll get back to you real fast.
       </p>
       <b-form>
-        <ObjectConfig v-model="request" :fields="{
+        <MyForm v-model="request" :fields="{
           email: { id: 'email', type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail,
             props: {
               name: 'username',

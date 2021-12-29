@@ -1,3 +1,4 @@
+<!-- Not used currently, but the idea is to have something that looks like a link but actually just updates some internal data (and the displayed url too) -->
 <template>
   <a :href="updatedUrl" @click.prevent="updateRoute">
     <slot/>

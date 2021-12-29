@@ -1,3 +1,4 @@
+<!-- Not used anywhere in the app, but useful for debugging (see e.g. test/inspect) -->
 <template>
   <span>
     <b>{{ _key }}</b>

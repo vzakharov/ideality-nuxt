@@ -1,7 +1,7 @@
 <template>
 <div v-if="start.tail" :class="{ small: !topLevel }">
 <span v-for='node in start.tail()' :key='node.slug'>
-    <CurrentNode
+    <StudioNodeNow
       v-if="node==d.node" 
       :node='node'
       @action="$emit('node-action', $event)"
@@ -22,7 +22,7 @@
     />
     <ul v-if="node.expanded && node.branched">
       <li v-for="child in node.heirs().slice(1)" :key='child.slug'>
-        <thread 
+        <StudioThread 
           :start='child'
           :d='d'
           @node-click="$emit('node-click', $event)"

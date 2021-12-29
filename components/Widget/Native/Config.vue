@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ObjectConfig
+    <MyForm
       :value="settings"
       :fields="{
         straightToPreview: { advanced: true, caption: 'Straight to preview', type: 'boolean'},

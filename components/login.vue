@@ -9,7 +9,7 @@
     </template>
     <div :disabled="loggingIn">
       <form @submit.prevent="login">
-        <ObjectConfig v-model="vm" :fields="{
+        <MyForm v-model="vm" :fields="{
           email: { type: 'email'},
           password: {type: 'password'}
         }"/>

@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-0 bg-light vh-100 pt-5">
     <div class="container-sm w-auto p-3 shadow rounded mx-auto" style="max-width: 800px">
-      <navbar @openProject="openProject"/>
+      <StudioNavbar @openProject="openProject"/>
       <div>
         <h1 v-if="!editingDocName" @click="editDocName()">{{ project.name }}</h1>
         <input
@@ -14,7 +14,7 @@
         />
       </div>
       <div>
-        <thread 
+        <StudioThread 
           v-if='centerNode'
           :start='nodes[0]'
           :topLevel=true
@@ -31,14 +31,10 @@
 </template>
 
 <script>
-import navbar from '~/components/navbar.vue'
 import Vue from 'vue'
 import TextareaAutosize from 'vue-textarea-autosize'
 import _ from 'lodash'
 import { assign, filter, find, forEach, map, now, orderBy, pick, without } from 'lodash'
-import Thread from '~/components/thread.vue'
-import Login from '~/components/login.vue'
-import Tree from '~/components/tree.vue'
 
 
 // console.log(ideality)
@@ -46,7 +42,6 @@ import Tree from '~/components/tree.vue'
 Vue.use(TextareaAutosize)
 
 export default {
-  components: { navbar, Thread, Login, Tree },
 
   head() {
     return {

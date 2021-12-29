@@ -7,7 +7,7 @@
       (for {{ meal }})
     </p>
     <div class="my-3">
-      <LabeledInput class="lead" v-for="item in items" :key="item" type="boolean" :caption="item"/>
+      <MyInput class="lead" v-for="item in items" :key="item" type="boolean" :caption="item"/>
     </div>
     <p class="text-muted">
       (This is a sample page to illustrate what the widget can do.)

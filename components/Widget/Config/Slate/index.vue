@@ -1,9 +1,7 @@
 <template>
   <div>
 
-    <!-- Basic settings (to be deleted probably) -->
-
-    <ObjectConfig v-model="slate" :fields="{
+    <MyForm v-model="slate" :fields="{
       apiKey: { caption: 'API key', placeholder: 'sk-...' },
       instruction: { caption: 'AI instruction', placeholder: 'e.g. Suggest ...', multiline: true },
       inputPrefix: { caption: 'Prefix for input' },
@@ -14,25 +12,9 @@
       omitExamples: { caption: 'Doesn’t need examples', type: 'boolean'}
     }"/>
 
-    <!-- Prompt parts -->
-
-    <h4 v-text="'Prompt parts'"/>
-    
-    <!-- <ListOfComponents 
-      v-model="parts"
-      component="PromptPart"
-      title="part"
-      :defaultItem="{
-        prompt: ''
-      }"
-      :context="{parameters}"
-    /> -->
-
-    <!-- Parameters (switch with prompt parts?) -->
-
     <h4>Parameters</h4>
     
-    <ListOfComponents
+    <MyComponentList
       v-model="slate.parameters"
       :context="{slate}"
       component="WidgetConfigSlateParameter"

@@ -1,8 +1,8 @@
 <template>
-  <Container>
+  <MyContainer>
     <h2>Your projects</h2>
     <Cards v-model="projects" type="project" route-prefix="builder"/>
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

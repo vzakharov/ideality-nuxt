@@ -10,9 +10,9 @@
         <strong>Ideality Widget encourages users to use your product by giving them ideas.</strong>
       </p>
 
-      <Heading>
+      <MyHeading>
         Examples
-      </Heading>
+      </MyHeading>
       <p class="text-end form-text">
         <small>
           (more examples
@@ -52,9 +52,9 @@
         I here you say: “Okay, this is all fun, but...”
       </p>
 
-      <Heading id="your-case">
+      <MyHeading id="your-case">
         Why would <em>I</em> want to use it?
-      </Heading>
+      </MyHeading>
 
       <p>
         Let’s see how!
@@ -64,9 +64,9 @@
       <Widget box v-if="widgets" :widget="widgets[2]" :go="true" :dontFocusOnOutput="true"/>
       <Loading v-else message="Loading your widget, hold on a sec..."/>
 
-      <Heading id="setup">
+      <MyHeading id="setup">
         Is it hard to set up?
-      </Heading>
+      </MyHeading>
 
       <p>
         No! Ideality Widget is packed with very simple yet flexible AI logic, so you
@@ -86,7 +86,7 @@
         (<nuxt-link :to="{ name: 'widget-id-embed', params: {id: 'tweet-ideas'}}">example</nuxt-link>)
         just like you would with any other HTML.
 
-      <Heading id="pricing">How much?</Heading>
+      <MyHeading id="pricing">How much?</MyHeading>
       <p>
         As we’re using a super-efficient AI, Ideality Widget is surprisingly affordable.
         In fact, <b>early adopters get 100 generations for free</b>, so you can try it out
@@ -94,7 +94,7 @@
         <b>$6 per 1000 generations</b>.
       </p>
 
-      <Heading id="access">How to get it</Heading>
+      <MyHeading id="access">How to get it</MyHeading>
       <TextAccess/>
 <!-- 
       <b-row align-h="center">

@@ -1,5 +1,5 @@
 <template>
-  <Container :hide-breadcrumbs="!build" fluid>
+  <MyContainer :hide-breadcrumbs="!build" fluid>
     <b-row align-h="center">
       <b-col cols="12" lg="8">
         <h1 class="text-center display-6 fw-bold mb-4">
@@ -31,7 +31,7 @@
     </b-row>
     <b-row style="height: 10vh">
     </b-row>
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

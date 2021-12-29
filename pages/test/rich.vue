@@ -1,12 +1,12 @@
 <template>
-  <Container>
+  <MyContainer>
     <div id="editor">
       <p>Hello World!</p>
       <p><span>Some</span><span> initial </span><strong>bold</strong> text</p>
       <p><br></p>
     </div>
     <b-button @click="enable">Enable quill</b-button>
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

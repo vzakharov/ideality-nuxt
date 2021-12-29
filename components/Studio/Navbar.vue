@@ -25,16 +25,13 @@
       </ul>
       <span v-if='$auth.loggedIn'>Hello, {{ $auth.user.Slug }} <small><b-link class="link-secondary" href='#' @click='$auth.logout()'>(log out)</b-link></small></span>
       <b-dropdown v-if="!$auth.loggedIn" variant="light" text="Log in" right>
-        <login/>
+        <Login/>
       </b-dropdown>
     </b-collapse>
   </b-navbar>
 </template>
 
 <script>
-
-import Vue from 'vue'
-import login from './login.vue'
 
 export default {
 

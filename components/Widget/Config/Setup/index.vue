@@ -1,13 +1,13 @@
 <template>
   <div>
 
-    <LabeledInput
+    <MyInput
       v-model="setup.advanced"
       type="boolean"
       caption="Show advanced settings"
     />
 
-    <LabeledInput
+    <MyInput
       v-for="parameter in filteredParameters(widget)"
       :key="parameter.name"
       v-model="setup.parameterValues[parameter.name]"
@@ -18,7 +18,7 @@
     />
 
     <template v-if="setup.advanced || setup.validationRegex">
-      <LabeledInput
+      <MyInput
         caption="Validation regex (optional)"
         v-model="setup.validationRegex"
         multiline

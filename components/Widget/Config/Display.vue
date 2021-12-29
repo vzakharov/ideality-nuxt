@@ -1,18 +1,18 @@
 <template>
   <div>
-      <LabeledInput
+      <MyInput
         caption="Show advanced settings"
         v-model="display.advanced"
         type="boolena"
       />
 
-      <ObjectConfig :value="widget"
+      <MyForm :value="widget"
         indirect v-on="$listeners"
         :fields="{
           name: {}
         }"
       />
-      <ObjectConfig v-model="display" :fields="pickBy({
+      <MyForm v-model="display" :fields="pickBy({
         name: { advanced: true, caption: 'Alternative title (optional)' },
         hideTitle: { advanced: true, hide: display.name, caption: 'Hide title', type: 'boolean' },
         description: { caption: 'Description', placeholder: 'The text that will show up in the widget', multiline: true},

@@ -127,7 +127,7 @@
 
 <script>
 
-// import ObjectConfig from '@/components/ObjectConfig.vue'
+// import MyForm from '@/components/MyForm.vue'
 
 import { assign, findIndex, get, last, mapValues, omit, pick, without } from 'lodash'
 import yaml from 'js-yaml'

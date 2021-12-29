@@ -1,7 +1,7 @@
 <template>
-  <Container>
+  <MyContainer>
     <h1>{{ name }}</h1>
-    <LabeledInput lazy caption='Name' v-model="name"/>
+    <MyInput lazy caption='Name' v-model="name"/>
     <b-card no-body>
       <b-card-header>
         <b-nav card-header tabs>
@@ -18,7 +18,7 @@
         <Cards v-model="vm[section]" :type="singular(section)" :route-prefix="'builder-project-'+singular(section)"/>
       </b-card-body>
     </b-card>
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

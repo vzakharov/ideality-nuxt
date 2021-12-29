@@ -1,5 +1,5 @@
 <template>
-  <Container fluid>
+  <MyContainer fluid>
     <b-nav tabs>
       <MyTab section="edit"/>
       <MyTab section="leads"/>
@@ -39,7 +39,7 @@
                   v-if="!linkSent"
                   @submit.prevent="bubble.go('sendBuildLink', { build: build.id, secret, email }).then(() => linkSent=true)"
                 >
-                  <LabeledInput
+                  <MyInput
                     caption="Send edit link to my email"
                     placeholder="Enter your email"
                     description="We won’t store your email and will only use it once to send you the link."
@@ -86,7 +86,7 @@
           Your existing configuration will be downloaded as a YAML in case you need it further.
         <b-modal id="delete" hide-header hide-footer>
           <h3>Are you sure? There’s no undo!</h3>
-          <LabeledInput
+          <MyInput
             :caption="`Type in “DELETE ${ build.name.toUpperCase() }” (in all caps) to confirm.`"
             v-model="confirmDeleteInput"
           />
@@ -104,7 +104,7 @@
       <Loading message="Loading page data..."/>
     </b-row>
 
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

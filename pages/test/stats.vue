@@ -1,10 +1,10 @@
 <template>
-  <Container>
+  <MyContainer>
     <WidgetStats :value="{widget}"/>
     <b-form
       @submit.prevent="$axios.post('api/widget/track', event)"
     >
-      <ObjectConfig
+      <MyForm
         v-model="event"
         :fields="{
           action: {}
@@ -13,7 +13,7 @@
       <b-button variant="primary" v-text="'Submit'" type="submit"/>
     </b-form>
 
-  </Container>
+  </MyContainer>
 </template>
 
 <script>

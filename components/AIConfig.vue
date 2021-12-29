@@ -1,7 +1,7 @@
 <!-- Component to configure AI generation settings -->
 <template>
   <div>
-    <ObjectConfig
+    <MyForm
       v-model="ai"
       :key="ai"
       :fields="{

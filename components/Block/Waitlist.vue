@@ -8,7 +8,7 @@
       <p class="lead">
         We are not yet available publicly — leave your email below, so we can ping you once we have something to show you!
       </p>
-      <ObjectConfig
+      <MyForm
         v-model="vm"
         :fields="{
           email: { description: 'We promise not to spam you.', type: 'email', placeholder: 'jane@example.com' },

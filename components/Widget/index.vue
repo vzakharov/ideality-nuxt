@@ -17,7 +17,7 @@
           </template>
         </template>
               
-        <LabeledInput
+        <MyInput
           v-if="!prop('hideInput')"
           v-model="content.input"
           v-bind="{
@@ -62,7 +62,7 @@
             ][retry]"/>
           </template>
           <div v-if="content.output || duringSetup" :class="preview && 'd-none d-lg-block'">
-            <LabeledInput
+            <MyInput
               :id="widget.slug+'-widget-output'"
               v-model="content.output"
               v-bind="{

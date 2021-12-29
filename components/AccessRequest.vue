@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="!requested">
-      <ObjectConfig
+      <MyForm
         v-model="request"
         :fields="{
           email: { caption: 'Email', type: 'email', placeholder: 'gdb@openai.com', id: 'access-request-email'},

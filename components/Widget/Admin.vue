@@ -1,7 +1,7 @@
 <template>
   <div>
     <Load store what='toolCategories' :fetch="() => bubble.go('getToolCategories')"/>
-    <ObjectConfig
+    <MyForm
       v-bind="{value: settings}"
       :fields="{
         category: { choices: $store.state.toolCategories },
@@ -14,7 +14,7 @@
         sortIndex: '',
       }"
     />
-    <ObjectConfig
+    <MyForm
       :value="widget"
       :fields="{name:{}}"
     />

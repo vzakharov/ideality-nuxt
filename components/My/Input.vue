@@ -6,7 +6,9 @@
     </template>
     <template v-else>
       <div v-if="$caption && !isBoolean"><label :for="uid" v-text="$caption" class="my-1 fw-bold"/></div>
-      <Choices v-if="typeof choices !== 'undefined'" v-bind="{value, choices}" @input="$emit('input', $event)"/>
+
+      <MyDropdown v-if="typeof choices !== 'undefined'" v-bind="{value, choices}" @input="$emit('input', $event)"/>
+
       <div v-else-if="isBoolean" class="form-check form-switch">
         <input class="form-check-input" type="checkbox" 
           v-bind="{checked: value, disabled}" 
@@ -56,12 +58,8 @@
 
   Vue.use(TextareaAutosize)
 
-  import Choices from './Choices.vue'
-
   export default {
 
-    components: { Choices },
-    
     props: [
       'caption', 'description', 'placeholder', 'object', '$key', 'multiline', 'labelClass', 'id', 
       'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows', 'lazy',

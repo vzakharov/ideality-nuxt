@@ -19,7 +19,7 @@
     <b-col>
       <p>Create new:</p>
       <b-form>
-        <LabeledInput
+        <MyInput
           v-model="newItemName"
           placeholder="Enter name"
         />
