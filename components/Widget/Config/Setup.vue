@@ -27,7 +27,7 @@
     </template>
 
     <h4 v-text="'Examples for AI to use'"/>
-    <WidgetSetupExamples v-model="setup.examples" v-bind="{widget}"/>
+    <WidgetConfigSetupExamples v-model="setup.examples" v-bind="{widget}"/>
   </div>
 </template>
 

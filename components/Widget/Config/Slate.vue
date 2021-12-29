@@ -35,7 +35,7 @@
     <ListOfComponents
       v-model="slate.parameters"
       :context="{slate}"
-      component="SlateParameter"
+      component="WidgetConfigSlateParameter"
       title="parameter"
       :defaultItem="{
         type: 'text'

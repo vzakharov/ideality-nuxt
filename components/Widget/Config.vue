@@ -94,10 +94,10 @@
               <WidgetNativeConfig v-if="section=='native'" v-bind="{widget}" v-on="{please}"/>
               
               <template v-if="section=='display'">
-                <WidgetDisplayConfig :context="{widget}" v-model="display" v-on="{please}"/>
+                <WidgetConfigDisplay :context="{widget}" v-model="display" v-on="{please}"/>
               </template>
-              <WidgetSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
-              <SlateConfig v-if="section=='slate'" v-model="widget.slate" v-bind="{widget}"/>
+              <WidgetConfigSetup v-if="section=='setup'" v-model="setup" v-bind="{widget}"/>
+              <WidgetConfigSlate v-if="section=='slate'" v-model="widget.slate" v-bind="{widget}"/>
 
 
               <WidgetStats :value="{widget}" v-if="section=='stats'"/>
