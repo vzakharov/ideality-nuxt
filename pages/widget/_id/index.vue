@@ -7,7 +7,6 @@
 <script>
 
   import Bubble from '@/plugins/bubble'
-  import { get } from 'lodash'
 
   export default {
     
