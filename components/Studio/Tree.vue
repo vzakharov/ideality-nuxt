@@ -3,7 +3,7 @@
     {{node.bumped}}: {{node.body}}
     <ul v-if="node.hasChildren">
       <li v-for="child in node.heirs()" :key="child.slug">
-        <tree :node="child"/>
+        <StudioTree :node="child"/>
       </li>
     </ul>
   </div>

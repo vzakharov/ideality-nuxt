@@ -3,7 +3,7 @@
     <span @click="goto(node)" style='white-space: pre-wrap'>{{ node.body || '[empty]' }}</span>
     <ul v-if="node.children && node.children.length > 1">
       <li v-for="child in node.children.filter(child => child != the.node)" :key="child.body.slice(0, 5)">
-        <StudioNodeSpan :node='child' :the='the' @goto="goto"/>
+        <StudioNode :node='child' :the='the' @goto="goto"/>
       </li>
     </ul>
   </span>

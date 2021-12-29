@@ -24,8 +24,6 @@
           @input-blur='goto(node)'
         />
       </div>
-      <!-- <hr>
-      <tree :node='nodes[0]'/> -->
     </div>
   </div>
 </template>
