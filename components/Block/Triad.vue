@@ -1,3 +1,4 @@
+<!-- A "triad" is basically any section consisting of three subsections -->
 <template>
   <b-container fluid>
     <b-col align-self="center" class="text-center">

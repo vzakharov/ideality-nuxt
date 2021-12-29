@@ -1,3 +1,4 @@
+<!-- Modal to request access to a build -->
 <template>
   <b-modal id="waitlist" hide-header hide-footer centered>
     <div v-if="!accessRequested">
