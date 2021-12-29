@@ -1,10 +1,9 @@
+<!-- A tab automatically routed to relevant section (section in route params) -->
 <template>
   <b-nav-item 
     :active="nowSection==section" 
     :to="route"
   >
-    <!-- @click.prevent="pseudoRoute(route); $emit('input', section)"
-    :href="appendedUrl(route)" -->
     {{ title }}
   </b-nav-item>
 </template>
