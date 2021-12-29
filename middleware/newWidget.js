@@ -7,7 +7,6 @@ export default function({ store: { $auth }, redirect, route: { query: { template
 
   let bubble = new Bubble({$auth})
   bubble.go('createWidget', { template }).then(({ widget }) => {
-    console.log(widget)
     redirect({name: 'widget-id-config', params: {id: widget.id}})
   })
 

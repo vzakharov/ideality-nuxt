@@ -29,7 +29,6 @@
       } catch(e) {
       } finally {
         this.loaded = true
-        console.log(this)
       }
       
     }

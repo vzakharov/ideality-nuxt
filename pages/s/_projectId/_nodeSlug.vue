@@ -155,7 +155,6 @@ export default {
 
     openProject(project) {
       this.tree = JSON.parse(project.tree)
-      console.log(this.tree)
     },
 
     parseTree(tree = this.tree) {
@@ -180,8 +179,6 @@ export default {
           branched: node.children && node.children.length > 1
 
         })
-
-        console.log(node.slug)
 
         if ( parent )
           this.set(node, {
@@ -219,7 +216,6 @@ export default {
     },
 
     set(object, ...valueses) {
-      console.log(valueses)
       forEach(valueses, values =>
         forEach(values, (value, key) => {
           this.$set(object, key, value)

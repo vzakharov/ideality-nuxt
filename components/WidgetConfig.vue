@@ -185,13 +185,10 @@ export default {
     },
 
     widgetYaml: {
-      get({ isAdmin } = this) { 
-        console.log({isAdmin})
+      get() { 
         let cutWidget = pick(this.widget, [
           'name', 'display', 'setup', 'slate'
-          // ...isAdmin ? ['slate'] : []
         ])
-        console.log({cutWidget})
         return yaml.dump(cutWidget) 
       },
 
@@ -227,7 +224,6 @@ export default {
     async clone() {
       let { id } = this.widget
       let { response: { newWidget }} = await this.bubble.go('wf/cloneWidget', { id })
-      console.log({newWidget})
       this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
     },
 

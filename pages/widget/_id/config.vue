@@ -6,7 +6,6 @@
     <template v-else>
       <WidgetConfig v-model="widget" v-bind="{id: widget.id}"
         v-on="{
-          loadFromYaml,
           deleted: () => { $router.push({name: 'dashboard'}) }
         }"
       />
@@ -49,10 +48,6 @@ export default {
 
   mounted() {
     window.vm = this
-  },
-
-  methods: {
-    loadFromYaml() { console.log(arguments) }
   },
 
   watch: {

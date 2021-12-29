@@ -56,7 +56,6 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
 
 async function getUser({ $axios, $auth }) {
   try {
-    console.log('Fetching user...')
     let user = await (
       new Bubble({$auth, token: $auth.strategy.token.get()}).go('getUserInfo')
     )
@@ -71,7 +70,6 @@ async function getUser({ $axios, $auth }) {
 }
 
 function parseKids(parent, keys) {
-  console.log(parent, keys)
   keys.forEach(key => {
     let kid = parent[key]
     if (kid)

@@ -149,13 +149,11 @@
 
       buildEditRoute() {
         let { slug, secret } = this.build
-        console.log({slug, secret})
         return {name: '12l', query: { slug, secret }}
       },
 
       buildRoute() {
         let { slug } = this.build
-        console.log({slug})
         return {name: 'b-slug', params: { slug }}
       },
 
@@ -201,7 +199,6 @@
           public: true
         }))
         this.status = 'ok'
-        console.log(this.build)
       },
 
       async updateBuild({ build: { id, secret }, code, name } = this) {

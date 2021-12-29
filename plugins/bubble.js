@@ -76,7 +76,7 @@ function Bubble({$auth, token } = {}) {
             ))
           }
           results = [...results, ...await Promise.all(promises)].flat()
-          console.log
+          // console.log
         }
       }
       
@@ -85,10 +85,10 @@ function Bubble({$auth, token } = {}) {
       object[type] = things
       parse(object)
 
-      console.log({ object })
+      // console.log({ object })
 
       things = object[type]
-      console.log({ things })
+      // console.log({ things })
 
       let result
       if ( fetchMany ) {
@@ -104,7 +104,7 @@ function Bubble({$auth, token } = {}) {
         result = keyedResult
       }
       
-      console.log({result})
+      // console.log({result})
 
       return result
 
@@ -121,7 +121,7 @@ function Bubble({$auth, token } = {}) {
         let { data: { id }} = await axios.post(`obj/${type}`, thing)
         return { id }
       } catch(error) {
-        console.log(error.response.data)
+        // console.log(error.response.data)
         let { statusCode, body } = error
         throw({statusCode, ...body})
       }
@@ -138,7 +138,7 @@ function Bubble({$auth, token } = {}) {
         })
         let { data: { response } } = await axios.post('/wf/'+workflow, body)
         parse(response)
-        console.log({response})
+        // console.log({response})
         return response
       } catch({ response, ...error }) {
         if ( response ) {
@@ -204,7 +204,7 @@ function parse(object) {
       delete thing[key]
     }
 
-    console.log({thing})
+    // console.log({thing})
 
     return thing
   }

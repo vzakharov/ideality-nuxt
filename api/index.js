@@ -1,5 +1,3 @@
-const express = require('express')
-
 const axios = require('axios')
 
 const Bubble = require('../plugins/bubble')
@@ -8,12 +6,8 @@ const admin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 const { buildPrompt, complete, parseResponse } = require('../plugins/whispering')
 const { keyedPromises } = require('../plugins/helpers')
 
-
+const express = require('express')
 const app = express()
-
-const _ = require('lodash')
-const { assign, forEach, map } = _
-
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.set('trust proxy', true)
@@ -57,8 +51,6 @@ async function doComplete(
 
       let { data: { choices: [{ text: safetyLabel }]}} = await safetyChecked
 
-      console.log({ safetyLabel })
-      
       if ( safetyLabel.match(/[12]/) )
         return res.status(403).send({
           error: {
@@ -84,11 +76,10 @@ app.post('/getImage', async (
       query, orientation
     }
   },
-  res, next
+  res
 ) => {
   try {
     !orientation && ( orientation = 'landscape' )
-    console.log({query})
     let { data: {
       photos: [ photo ]
     }} = await axios.get(`https://api.pexels.com/v1/search?query=${query}&orientation=${orientation}&per_page=1`, {
@@ -98,7 +89,7 @@ app.post('/getImage', async (
     
     return res.send(photo)
   } catch(error) {
-    console.log({error})
+    return res.status(500).send({error})
     // next(error)
   }
 })
@@ -125,7 +116,6 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
         let { runsLeft } = info[key]
 
-        console.log({key, runsLeft})
         if ( runsLeft < 0)
           return res.status(403).send({
             error: {
@@ -168,7 +158,7 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
     
     let decrement = ( prompt.length + content.output.length ) / 2000
 
-    admin.go('runsLeft--', { ip, widget: widget.id, decrement })//.then(runsLeftResponse => console.log({ runsLeftResponse }))
+    if ( widget.id ) admin.go('runsLeft--', { ip, widget: widget.id, decrement })
 
     res.send({ content, runsLeft })
   } catch(error) {

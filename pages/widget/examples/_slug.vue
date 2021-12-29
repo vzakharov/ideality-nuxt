@@ -142,7 +142,6 @@
 
       if ( codeId ) {
         this.code = await Bubble.anon.get('code', codeId)
-        console.log(this.code)
       }
 
 

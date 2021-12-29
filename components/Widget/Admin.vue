@@ -51,7 +51,6 @@
 
       async destroy() {
         if ( window.prompt('Are you sure? Type in DELETE to confirm') == 'DELETE' ) {
-          console.log(this)
           await this.bubble.destroy('widget', this.widget)
           this.$emit('deleted')
         }

@@ -21,7 +21,6 @@
 
       try {
         let response = await Bubble.anon.go('checkConfirmationCode', { user, code })
-        console.log(response)
         ok = true
       } catch(err) {
         ok = false

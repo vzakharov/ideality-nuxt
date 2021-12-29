@@ -149,7 +149,7 @@
 
   import { assign, get, last, map, pick} from 'lodash'
   import Bubble from '~/plugins/bubble'
-  import { buildPrompt, complete, parseResponse } from '~/plugins/build'
+  import { buildPrompt, complete, parseResponse } from '~/plugins/whispering'
   import { clone, getUser } from '~/plugins/helpers'
 
   // import { BIconDice5 } from 'bootstrap-vue'
@@ -207,7 +207,6 @@
 
       tryAgain() {
         let content = { input: this.usedInput || this.content.input, output: this.usedOutput }
-        console.log({content})
         assign(this, { content })
         return this.generate(content)
       },
@@ -252,21 +251,14 @@
               apiKey, code, ...this.queryTags
             }
           
-          console.log({setup, slate, apiKey})
-
           let runsLeft
           
           let go = async () => {
             
             if ( setup && slate && apiKey ) {
-              // console.log({ input, output })
-              // console.log({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
               let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
-              console.log({ prompt })
               let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
-              // console.log({ response })
               content = parseResponse({ input, output, appendInput, prefix, response })
-              console.log({ content })
             } else
               ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
 

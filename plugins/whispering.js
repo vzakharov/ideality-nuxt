@@ -1,5 +1,5 @@
 import { find, reject, shuffle, sumBy, upperFirst, without } from 'lodash'
-import { filteredParameters } from '../plugins/helpers'
+import { filteredParameters } from './helpers'
 import axios from 'axios'
 
 

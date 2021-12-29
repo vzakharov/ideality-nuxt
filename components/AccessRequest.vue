@@ -26,10 +26,12 @@
 
     props: ['value'],
 
-    data() { console.log(this.value); return {
-      request: this.value || {},
-      requested: undefined
-    }},
+    data() {
+      return {
+        request: this.value || {},
+        requested: undefined
+      }
+    },
 
     mounted() {
       this.requested = localStorage.getItem('betaRequested')

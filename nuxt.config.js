@@ -76,11 +76,7 @@ export default {
         endpoints: {
           login: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/login', method: 'post'},
           logout: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/logout', method: 'post'},
-          // logout: {url: 'api/auth/logout', method: 'post'},
-          // user: false
           user: false
-          // user: {url: 'api/auth/user'}
-          // user: {url: process.env.NUXT_ENV_BUBBLE_URL+'wf/getUserInfo', method: 'post'}
         }
       }
     },
