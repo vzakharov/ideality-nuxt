@@ -33,7 +33,7 @@
               Here is an <a href="https://gyazo.com/4bad7e812a8c3697cf95ef3e70e2bff4" target="_blank">example screencast</a>.
             </p>
 
-            <template v-if="hasQueryTag('dev')">
+            <template v-if="hasQueryFlag('dev')">
               <MyInput
                 caption="Embed link"
                 :value="iframeCode"

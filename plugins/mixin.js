@@ -225,19 +225,6 @@ Vue.mixin({
 
     },
 
-    withElement(id, ...actions) {
-      let element = window.document.getElementById(id)
-      const next = () =>
-        this.$nextTick(() => {
-          if ( actions.length ) {
-            let action = actions.shift()
-            element[action]()
-            next()
-          }    
-        })
-      next()
-    },
-
     focus(id, ...furtherActions) {
       this.$nextTick(() => {
         let element = window.document.getElementById(id)
@@ -255,10 +242,6 @@ Vue.mixin({
         }
         next()
       })
-    },
-
-    hasQueryTag(tag) {
-      return this.queryFlags[tag]
     },
 
     please(doWhat) {
@@ -291,17 +274,6 @@ Vue.mixin({
     setFields(fields) {
       Object.assign(this, fields)
     },
-
-
-    // redirectIfNotLoggedIn() {
-    //   if ( !this.$auth.loggedIn )
-    //     this.$router.push({
-    //       name: 'login',
-    //       query: {
-    //         then: this.$route.fullPath
-    //       }
-    //     })
-    // },
 
     setDefaults
   }
