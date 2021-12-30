@@ -29,8 +29,6 @@
 
 <script>
 
-  import { map } from 'lodash'
-
   export default {
 
     middleware: ['loggedIn'],
@@ -39,13 +37,7 @@
       return {
         userDetails: {}
       }
-    },
-
-    methods: {
-      map
-    },
-
-    created() {  },
+    }
 
   }
 

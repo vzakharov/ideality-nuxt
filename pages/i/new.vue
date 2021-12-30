@@ -36,9 +36,7 @@
 
 <script>
 
-  import Bubble from '~/plugins/bubble'
-  import { chain, filter, find, forEach, map, mapValues } from 'lodash'
-  import dedent from 'dedent-js'
+  import { filter } from 'lodash'
 
   export default {
 
@@ -121,9 +119,7 @@
           hash: '#firstTime',
           query: { secret: this.build.secret }
         })
-      },
-
-      dedent, map
+      }
     }
 
   }

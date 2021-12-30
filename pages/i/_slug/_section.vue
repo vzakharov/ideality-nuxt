@@ -14,7 +14,7 @@
             <b-button @click="updateBuild" :variant="changed && !status ? 'primary' : 'light'" :disabled="!changed || status=='pending'">
               {{ status ? status == 'ok' ? 'Saved!' : 'Saving...' : 'Save' }}
             </b-button>
-            <Copiable class="btn btn-light text-muted" :value="buildUrl().view">Copy link</Copiable>
+            <Copiable class="btn btn-light text-muted" :value="buildUrl().view">Copy link to share</Copiable>
             <b-modal v-model="firstTime" title="Here you go!" hide-header-close ok-only>
                 <p>
                   Congratulations, your landing page is now live and ready to collect leads!
@@ -109,9 +109,7 @@
 
 <script>
 
-  import Bubble from '~/plugins/bubble'
-  import { chain, filter, find, forEach, map, mapValues, pick, values } from 'lodash'
-  import dedent from 'dedent-js'
+  import { filter, map, pick } from 'lodash'
   import { appendRoute } from '~/plugins/helpers'
   import { dump } from 'js-yaml'
 
@@ -222,7 +220,7 @@
     watch: {
       'build.code': {
         deep: true,
-        handler(code, oldCode) {
+        handler(oldCode) {
           if ( this.build && oldCode ) {
             this.changed = true
             this.status = ''
@@ -268,28 +266,9 @@
         this.status = 'ok'
       },
 
-      dedent, map, dump
+      dump
     }
 
   }
 
 </script>
-
-<style>
-.close {
-  box-sizing: content-box;
-  width: 1em;
-  height: 1em;
-  padding: 0.25em 0.25em;
-  border: 0;
-  border-radius: 0.25rem;
-  opacity: 0.5;
-  float: right;
-  background-color: transparent;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-}
-</style>

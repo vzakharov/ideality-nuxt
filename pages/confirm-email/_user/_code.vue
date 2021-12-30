@@ -20,7 +20,7 @@
       let ok = null
 
       try {
-        let response = await Bubble.anon.go('checkConfirmationCode', { user, code })
+        await Bubble.anon.go('checkConfirmationCode', { user, code })
         ok = true
       } catch(err) {
         ok = false
