@@ -53,7 +53,7 @@ Vue.mixin({
   },
 
   computed: {
-    
+
     bubble() {
       return new Bubble(this)
     },
@@ -116,7 +116,17 @@ Vue.mixin({
 
   methods: {
 
-    appendRoute,
+    appendRoute({ route, params, query, hash, reset, ...newRoute }) {
+      route = route || this.$route
+      reset = reset || {}
+      return {
+        ...route,
+        query: { ...reset.query ? {} : route.query, ...query },
+        params: { ...reset.params ? {} : route.params, ...params },
+        hash: reset.hash ? '' : hash || route.hash,
+        ...newRoute
+      }
+    },
 
     appendedUrl() {
       return this.$router.resolve(this.appendRoute(...arguments)).href

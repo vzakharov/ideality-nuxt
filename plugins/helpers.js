@@ -1,18 +1,6 @@
 import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
-function appendRoute({ route, params, query, hash, reset, ...newRoute }) {
-  route = route || this.$route
-  reset = reset || {}
-  return {
-    ...route,
-    query: { ...reset.query ? {} : route.query, ...query },
-    params: { ...reset.params ? {} : route.params, ...params },
-    hash: reset.hash ? '' : hash || route.hash,
-    ...newRoute
-  }
-}
-
 function cast(f, ...targets) {
   return function() {
     return f(...targets, ...arguments)
@@ -101,7 +89,6 @@ function slugify(name, items) {
 
 export {
 
-  appendRoute,
   cast,
   clone,
   filteredParameters,
