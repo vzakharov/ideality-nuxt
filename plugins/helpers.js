@@ -1,19 +1,6 @@
 import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
-function cast(f, ...targets) {
-  return function() {
-    return f(...targets, ...arguments)
-  }
-}
-
-function clone(object) {
-  return JSON.parse(JSON.stringify(object))
-}
-
-function isDefined(what) {
-  return typeof what !== 'undefined'
-}
 
 function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration}) {
   let { parameters } = slate || tie
@@ -52,14 +39,6 @@ async function getUser({ $axios, $auth }) {
   }
 }
 
-function parseKids(parent, keys) {
-  keys.forEach(key => {
-    let kid = parent[key]
-    if (kid)
-      parent[key] = JSON.parse(kid)
-  })
-  return parent
-}
 
 async function keyedPromises(promises) {
 
@@ -89,13 +68,9 @@ function slugify(name, items) {
 
 export {
 
-  cast,
-  clone,
   filteredParameters,
   getUser,
-  isDefined,
   keyedPromises,
-  parseKids,
   sleep,
   slugify
 
