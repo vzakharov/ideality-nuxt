@@ -98,12 +98,7 @@ Vue.mixin({
           tag => !tag && ( typeof tag !== 'undefined' )
         ), () => true)
     },
-
-    route() {
-      return this.$store.state.updatedRoute || this.$route
-    },
     
-    isTest() { return this.queryFlags.test },
     user() { return this.$auth.user || {}}
   },
 
