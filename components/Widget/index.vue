@@ -146,10 +146,9 @@
 
 <script>
 
-  import { assign, get, last, map, pick} from 'lodash'
-  import Bubble from '~/plugins/bubble'
+  import { assign, get, last} from 'lodash'
   import { buildPrompt, complete, parseResponse } from '~/plugins/whispering'
-  import { clone, getUser } from '~/plugins/helpers'
+  import { getUser } from '~/plugins/helpers'
 
   // import { BIconDice5 } from 'bootstrap-vue'
 

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { find, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
-import { appendRoute, isDefined, slugify } from '@/plugins/helpers'
+import { slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
