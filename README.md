@@ -1,69 +1,46 @@
-# ideality
+First of all, 
 
-## Build Setup
+# I have no idea what I’m doing.
 
-```bash
-# install dependencies
-$ npm install
+With that out of the way, this is the source code for [Ideality 🔺](https://ideality.app), the AI-driven ideation platform.
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+Although I did my best to review & clean the code before publishing it, it’s still (more than) a bit all over the place. The most hilarious part is that I was learning Vue/Nuxt ([an amazing framework!](https://nuxtjs.org/)) along the way, so earlier code is a complete 🤦‍♂️, while later one might be (less than) a bit less so.
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+Before you can call me a GPT Open-Source Pioneer (you were going to, right?), here is a couple of
 
-# generate static project
-$ npm run generate
-```
+## Caveats
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
+1. The backend (DB + auth) is **NOT** open-sourced. It is built on [Bubble](https://bubble.io/), and I don’t currently see a way to open-source it. Still, you can use many of the features by deploying the app locally and using other DB/auth providers, or adapting the code to load records from local storage.*
+2. Most of the prompts used in the various widgets and tools within Ideality are stored in the database, so you can’t directly access them from the code. However, if you use Ideality with your own OpenAI API key (you can do this by simply adding `?apiKey=sk-...` to the URL — the keys are not stored and just used to access the API from *your own browser*), then you can see all the prompts used in the browser’s developer console.
 
-## Special Directories
+## Installation
 
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
+Frankly? I have no idea. I mean, that’s the whole source code, but, especially given the caveats above, I don’t see how you can easily deploy and start using it locally. Hopefully, someone else will have a clue!
 
-### `assets`
+## Structure
 
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
+Below is some info on some of the folders/files in the codebase:
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
+- `api/`: API for requests to Ideality server (not to be confused with the Bubble API, which is also used, including by this very API).
+- `components/`: Vue components, most notably:
+  - `Block/`: various blocks (Hero, Story, Triad, Punchline) used in [Ideality Builder](https://ideality.app/i/) (working title).
+  - `Build/`: a build is basically a sequence of block, which together makeup an entire content piece (e.g. a landing page).
+  - `Studio/` (10% ready): components for working with Ideality Studio.
+  - `Toolbox/` (90% ready): components for working with Ideality Toolbox.
+  - `Widget/`: components for working with Ideality Widget (mvp completion: 100%).
+- `pages/`: Pages you can access from the web, most notable:
+  - `builder/` (30% ready): a central UI  for creating and editing Idea Builder projects.
+  - `dashboard/`: main dashboard for registered users. Currently only contains the list of widgets. (Note that Ideality is currently early-access, so the only way to sign up is by submitting an [early-access request](https://ideality.app/request-access).)
+- `i/` (shorthand for “Ideas”): interface for creating, editing, and accessing Idea Builder projects. Currently supports creating [landing/lead generation pages from ideas](https://ideality.app/i/new) — no sign-up required.
+- `s/` (10% ready, shorthand for “Studio”): a tool to edit prompts in a tree-like fashion, while being able to use various AI providers (e.g. OpenAI, Cohere, AI21, etc.).
+- `toolbox/` (90% ready): think of it as an “open-source CopyAI,” a collection of simple tools which might or might not lead to more complex tools after generation. Currently there are very few tools, mainly because I was focused on building the app and not individual tools/widgets.
+- `widget/`: perhaps the most important part, a “widget” defines which inputs the app accepts and which output it gives (i.e. “generate a tweet based on Twitter bio”) and includes an arbitrary number of examples (a.k.a. shots in a few-shot prompt).
+  - `go/`: a special kind of a widget that reads all its information (input & output specification + exampels) right from the URL, so you can [build your own widgets](https://ideality.app/widget/go) on the fly, without signing up or storing anything anywhere.
 
-### `components`
+Okay, with that said, I’m pressing the imaginary “Share with the world” button, and, with my fingers shaking, look forward to y’all’s feedback.
 
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be reused and imported into your pages, layouts and even other components.
+Oh, and remember,
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
+# I have no idea what I’m doing!
 
-### `layouts`
-
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
-
-
-### `pages`
-
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory and setup Vue Router automatically.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
-
-### `plugins`
-
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application. This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
-
-### `static`
-
-This directory contains your static files. Each file inside this directory is mapped to `/`.
-
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/static).
-
-### `store`
-
-This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+Yours, [Vova](https:/twitter.com/vovahimself).
