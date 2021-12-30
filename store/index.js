@@ -1,4 +1,4 @@
-import { get, set } from 'lodash'
+import { get } from 'lodash'
 
 export const state = () => ({
   path: '',
@@ -26,7 +26,6 @@ export const mutations = {
 
 export const actions = {
   nuxtServerInit({ commit }, { req: { headers } }) {
-    // console.log({commit, req})
     commit('set', { headers })
   }
 }

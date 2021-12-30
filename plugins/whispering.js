@@ -1,3 +1,5 @@
+// Plugin for building prompt from inputs, sending the request, and parsing the output
+
 import { find, reject, shuffle, sumBy, upperFirst, without } from 'lodash'
 import { filteredParameters } from './helpers'
 import axios from 'axios'
