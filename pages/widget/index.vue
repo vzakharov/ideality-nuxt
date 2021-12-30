@@ -96,12 +96,6 @@
 
       <MyHeading id="access">How to get it</MyHeading>
       <TextAccess/>
-<!-- 
-      <b-row align-h="center">
-        <b-col cols="8">
-          <AccessRequest class="border rounded shadow p-2"/>
-        </b-col>
-      </b-row> -->
 
     </b-container>
   </div>
@@ -132,8 +126,6 @@
       let { widgets } = (
         await Bubble.anon.go('getWidgetLandingWidgets')
       )
-
-      // debugger
       
       widgets = widgets.map(widget => omit(widget, 'display.description'))
       Object.assign(this, { widgets })
@@ -141,10 +133,6 @@
 
     computed: {
       productDescriptionInput: () => window.document.getElementById('productDescription')
-    },
-
-    mounted() {
-      // this.focus('product-description', 'select')
     }
 
   }

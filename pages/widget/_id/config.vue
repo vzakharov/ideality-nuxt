@@ -14,12 +14,8 @@
 </template>
 
 <script>
-// import "bootstrap/dist/css/bootstrap.min.css"
-// import "bootstrap"
 
-import yaml from 'js-yaml'
-import { assign, findIndex, get, identity, map, mapValues, pick, pickBy, remove } from 'lodash'
-import { parseKids } from '@/plugins/helpers'
+import { assign, get } from 'lodash'
 import Bubble from '@/plugins/bubble'
 
 export default {
@@ -31,8 +27,6 @@ export default {
   }},
 
   data() { 
-
-    assign(this, { yaml })
 
     return {
       editing: true
@@ -62,9 +56,3 @@ export default {
 }
 
 </script>
-
-<style>
-.ideality-label {
-  font-weight: bold
-}
-</style>

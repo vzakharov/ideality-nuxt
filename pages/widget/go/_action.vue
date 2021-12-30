@@ -132,9 +132,7 @@
         this.pseudoRoute(this.shortlink)
       },
 
-      async getShortlink({ shortlink, url } = this) {
-        // if ( shortlink )
-        //   return shortlink
+      async getShortlink({ url } = this) {
         let { tail } = await Bubble.anon.go('shortlink', { url })
         return this.shortlink = `${this.baseUrl}to/${tail}`
       }

@@ -50,7 +50,7 @@
 
 <script>
 
-  import { chain, filter, find, without } from 'lodash'
+  import { filter, find, without } from 'lodash'
   import Bubble from '~/plugins/bubble'
 
   export default {
@@ -90,12 +90,6 @@
       if ( ai ) Object.assign(this, {ai})
     },
 
-    // computed: {
-    //   categories({ widgets } = this) {
-    //     return chain(widgets).map('category').uniq().value()
-    //   }
-    // },
-
     watch: {
       ai: {
         handler(ai) {
@@ -104,10 +98,6 @@
         deep: true
       }
     }
-    // methods: {
-
-
-    // }
 
   }
 

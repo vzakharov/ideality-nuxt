@@ -74,10 +74,6 @@
 
   import Bubble from '@/plugins/bubble'
 
-  import Vue from 'vue'
-  // import VueClipboard from 'vue-clipboard2'
-  // Vue.use(VueClipboard)
-
   import { assign, find, get } from 'lodash'
 
   export default {
@@ -115,7 +111,7 @@
       }
     },
 
-    async asyncData({params, query}) {
+    async asyncData({params}) {
       let data = {}
       assign(data, await Bubble.asyncData('widgets', { isExample: true }, {sortBy: 'sortIndex'})(...arguments))
 
@@ -162,10 +158,7 @@
           localStorage.removeItem('apiKey')
       },
 
-      widget(widget) {
-        // let apiKey = get(widget, 'slate.apiKey')
-        // if ( apiKey )
-        //   assign(this, { apiKey })
+      widget() {
         this.copied = false
       },
 
