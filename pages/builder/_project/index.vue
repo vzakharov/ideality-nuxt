@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { appendRoute } from '~/plugins/helpers'
+import { appendedTarget } from '~/plugins/helpers'
 
 export default {
   async middleware({ route, redirect }) {
-    redirect(appendRoute({ route, name: 'builder-project-section', params: { section: 'assets' }}))
+    redirect(appendedTarget({ route, name: 'builder-project-section', params: { section: 'assets' }}))
   }
 }
 </script>

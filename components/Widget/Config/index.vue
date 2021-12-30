@@ -77,7 +77,7 @@
               active: section == item.slug
             }"
             v-text="item.caption"
-            :to="appendRoute({query: { section: item.slug }})"
+            :to="appendedTarget({query: { section: item.slug }})"
             @click="section=item.slug"
           />
         </li>

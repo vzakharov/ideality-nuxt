@@ -14,7 +14,7 @@
     computed: {
 
       updatedRoute() {
-        return this.appendRoute(this.append)
+        return this.appendedTarget(this.append)
       },
 
       updatedUrl() {

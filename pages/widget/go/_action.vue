@@ -16,7 +16,7 @@
           <h2 class="mb-3 display-6">Make your own AI widget!</h2>
           <div class="lead">
             <p>Like this widget? Feel free to
-              <strong><nuxt-link :to="appendRoute({params: { action: undefined }})">
+              <strong><nuxt-link :to="appendedTarget({params: { action: undefined }})">
                 edit it</nuxt-link>, or even <nuxt-link :to="{name:'widget-go-action'}">create a new one</nuxt-link>
               </strong>, and share it with others!
             </p>

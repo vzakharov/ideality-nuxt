@@ -7,7 +7,7 @@
         <b-nav card-header tabs>
           <b-nav-item v-for="s in ['assets', 'builds']" :key="s"
             :active="s == section"
-            :to="appendRoute({ params: { section: s }})"
+            :to="appendedTarget({ params: { section: s }})"
           >
             {{ capitalize(s )}}
           </b-nav-item>
@@ -25,7 +25,7 @@
 
   import { capitalize } from 'lodash'
   import { singular } from 'pluralize'
-  import { appendRoute } from '~/plugins/helpers'
+  import { appendedTarget } from '~/plugins/helpers'
   
   export default {
 
@@ -40,7 +40,7 @@
     
     async middleware({ redirect, route, route: { params: { section }} }) {
       if ( !section )
-        redirect(appendRoute({ route, params: { section: 'assets' }}))
+        redirect(appendedTarget({ route, params: { section: 'assets' }}))
     },
 
     mounted({ $route: { params: { project: slug }}} = this) {

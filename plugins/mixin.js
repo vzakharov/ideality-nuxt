@@ -104,7 +104,7 @@ Vue.mixin({
 
   methods: {
 
-    appendRoute({ route, params, query, hash, reset, ...newRoute }) {
+    appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
       route = route || this.$route
       reset = reset || {}
       return {
@@ -117,7 +117,7 @@ Vue.mixin({
     },
 
     appendedUrl() {
-      return this.$router.resolve(this.appendRoute(...arguments)).href
+      return this.$router.resolve(this.appendedTarget(...arguments)).href
     }, 
 
     buildTarget({ slug, secret } = this.build) {
@@ -216,7 +216,7 @@ Vue.mixin({
           localStorage.setItem(localKey, dump(local))
 
           if ( key == 'slug' ) {
-            this.$router.push(this.appendRoute({ params: { [name]: this.slug }}))
+            this.$router.push(this.appendedTarget({ params: { [name]: this.slug }}))
           }
 
         }})
@@ -272,7 +272,7 @@ Vue.mixin({
     pseudoLink(route) {
       // debugger
       return {
-        to: this.appendRoute(route),
+        to: this.appendedTarget(route),
         'v-on:click.prevent': () => window.alert('Hello world')
       }
     },

@@ -110,7 +110,7 @@
 <script>
 
   import { filter, map, pick } from 'lodash'
-  import { appendRoute } from '~/plugins/helpers'
+  import { appendedTarget } from '~/plugins/helpers'
   import { dump } from 'js-yaml'
 
   export default {
@@ -126,7 +126,7 @@
 
     async middleware({ redirect, route, route: { params: { section }} }) {
       if ( !section )
-        redirect(appendRoute({ route, params: { section: 'edit' }}))
+        redirect(appendedTarget({ route, params: { section: 'edit' }}))
     },
     
     data() {
@@ -211,7 +211,7 @@
         },
 
         set() {
-          this.$router.push(this.appendRoute({ reset: { hash: true }}))
+          this.$router.push(this.appendedTarget({ reset: { hash: true }}))
         }
       }
 
