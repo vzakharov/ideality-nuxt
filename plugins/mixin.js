@@ -59,7 +59,7 @@ Vue.mixin({
     bubble() {
       return new Bubble(this)
     },
-    
+
     head() {
       let { header } = this
       if ( header ) {
@@ -92,11 +92,7 @@ Vue.mixin({
       return this.$auth.user && this.$auth.user.isAdmin
     },
 
-    process() {
-      return process
-    },
-
-    queryTags() {
+    queryFlags() {
       return mapValues(
         pickBy(this.$route.query,
           tag => !tag && ( typeof tag !== 'undefined' )
@@ -107,7 +103,7 @@ Vue.mixin({
       return this.$store.state.updatedRoute || this.$route
     },
     
-    isTest() { return this.queryTags.test },
+    isTest() { return this.queryFlags.test },
     user() { return this.$auth.user || {}}
   },
 
@@ -267,7 +263,7 @@ Vue.mixin({
     },
 
     hasQueryTag(tag) {
-      return this.queryTags[tag]
+      return this.queryFlags[tag]
     },
 
     please(doWhat) {

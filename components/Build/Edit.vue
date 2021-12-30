@@ -3,7 +3,7 @@
   <b-row align-h="center">
     <Loading v-if="!blocks || !widgets" message="Loading the editor..."/>
     <b-col v-else class="px-0">
-      <div :style="queryTags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
+      <div :style="queryFlags.testing && 'height: 100vh; overflow:hidden; overflow-y:auto'">
         <div v-for="widget, i in widgets" :key="widget.slug">
           <div v-if="i == 0 || blocks[i-1].content.output" :class="'py-3 px-2 px-lg-5' + ( i % 2 ? ' bg-light' : '')">
             <Widget 

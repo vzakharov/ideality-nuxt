@@ -68,7 +68,7 @@
             { slug: 'stats', caption: 'Stats'},
             ],
             { slug: 'test', caption: 'Preview'}
-          ].filter(item=>!item.testing || queryTags.testing)"
+          ].filter(item=>!item.testing || queryFlags.testing)"
           :key="item.slug"
         >
           <b-link

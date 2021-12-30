@@ -183,7 +183,7 @@
     },
 
     async fetch() {
-      if ( this.queryTags.admin ) {
+      if ( this.queryFlags.admin ) {
         if ( !await getUser(this) ) {
           this.$router.push({name: 'login', query: { then: this.$route.fullPath }})
         } 
@@ -192,7 +192,7 @@
 
     mounted() {
       this.track('open')
-      if (this.queryTags.go || this.go)
+      if (this.queryFlags.go || this.go)
         this.$nextTick(this.generate)
     },
 
@@ -246,7 +246,7 @@
           
           let body = { 
               input, output, appendInput, duringSetup, exampleIndex, widget: {id, setup, slate, tie }, 
-              apiKey, code, ...this.queryTags
+              apiKey, code, ...this.queryFlags
             }
           
           let runsLeft
@@ -255,7 +255,7 @@
             
             if ( setup && slate && apiKey ) {
               let { prompt, stop, prefix } = buildPrompt({ setup, slate, tie, duringSetup, exampleIndex, input, output, appendInput })
-              let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryTags.testing && 5 })
+              let response = await complete({ prompt, engine, temperature, stop, apiKey, logprobs: this.queryFlags.testing && 5 })
               content = parseResponse({ input, output, appendInput, prefix, response })
             } else
               ( { data: { content, runsLeft }} = await this.$axios.post('api/widget/generate', body) )
