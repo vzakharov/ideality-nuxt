@@ -1,3 +1,6 @@
+// Plugin to "talk" to Bubble, which is currently used as the DB
+// The most important thing to note here is that Bubble can't store objects. Tiw I store them as strings (JSON) and parse on the receiving end. I'm considering using YAML instead (todo)
+
 import Axios from 'axios'
 import { camelCase, forEach, isArray, isObject, keys, map, mapValues, omit, sortBy } from 'lodash'
 import { singular } from 'pluralize'
@@ -14,20 +17,16 @@ function Bubble({$auth, token } = {}) {
     } : {}
   })
 
-  // console.log({token})
-
   Object.assign(this, {
 
 
+    // Get thing by id or slug, or a list of things by filter
     async get( type, idOrQuery, options = {}) {
-      // if (type=='code') debugger
-      // console.log(options)
       let id = typeof idOrQuery === 'string' && idOrQuery
       let query = !id && idOrQuery || {}
       let slug = id && !id.match(/^\d/) && id
       if ( slug )
         id = undefined
-      // console.log(slug, id)
       let fetchMany = !id & !slug
       if ( fetchMany )
         type = singular(type)
@@ -35,8 +34,6 @@ function Bubble({$auth, token } = {}) {
       const url = `obj/${type}/`
 
       let constraint_type = 'equals'
-
-      // console.log(idOrQuery)
 
       let params = { constraints: JSON.stringify(
         slug ?
@@ -73,7 +70,6 @@ function Bubble({$auth, token } = {}) {
             ))
           }
           results = [...results, ...await Promise.all(promises)].flat()
-          // console.log
         }
       }
       
@@ -82,11 +78,7 @@ function Bubble({$auth, token } = {}) {
       object[type] = things
       parse(object)
 
-      // console.log({ object })
-
       things = object[type]
-      // console.log({ things })
-
       let result
       if ( fetchMany ) {
         if ( options.sortBy )
@@ -124,6 +116,7 @@ function Bubble({$auth, token } = {}) {
       }
     },
 
+    // Call any workflow API
     async go( workflow, body ) {
       body = omit(body, v => typeof v === 'undefined') 
       // console.log(this, workflow, body)
@@ -151,6 +144,8 @@ function Bubble({$auth, token } = {}) {
 
 }
 
+
+// Note: this fyunction creates **another function**, which in turn has the arguments usually required for the asyncData API
 Bubble.asyncData = ( type, query, options ) =>  {
   return async ({ $auth, route, $route}) => {
     let { params: { id, slug }} = route || $route
@@ -164,12 +159,13 @@ Bubble.asyncData = ( type, query, options ) =>  {
   }
 }
 
-// Bubble.admin = new Bubble({admin: true})
+// For calls that don't require authentication
 Bubble.anon = new Bubble()
 
 Bubble.reservedProperties = ['Slug', '_id', 'Modified Date', 'Created Date', 'Created By']
 Bubble.camelcasedReservedProperties = map(Bubble.reservedProperties, camelCase)
 
+// Convert Bubble fields to js objects
 function parse(object) {
 
   const process = ( thing, type ) => {
@@ -219,6 +215,7 @@ function parse(object) {
 
 }
 
+// Convert back
 function unparse(object) {
 
   return mapValues(object, value =>
