@@ -187,7 +187,7 @@ Vue.mixin({
     element: () => process.client && window.document.getElementById,
 
     hasProp(prop) {
-      return isDefined(this.$props[prop])
+      return typeof this.$props[prop] !== 'undefined'
     },
 
     syncLocal(localKey, { from, select, where, slugifyName }) {
