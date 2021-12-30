@@ -13,11 +13,6 @@ function appendRoute({ route, params, query, hash, reset, ...newRoute }) {
   }
 }
 
-
-function canRunWidget({code, apiKey, widget} = this) {
-  return true
-}
-
 function cast(f, ...targets) {
   return function() {
     return f(...targets, ...arguments)
@@ -107,7 +102,6 @@ function slugify(name, items) {
 export {
 
   appendRoute,
-  canRunWidget,
   cast,
   clone,
   filteredParameters,

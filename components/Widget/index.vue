@@ -39,13 +39,12 @@
 
           <div v-if="!generating">
             <b-button :variant="isRetry ? 'outline-primary' : 'primary'" v-text="continueOutput ? 'Continue' : isRetry ? 'Try again' : display.suggestCaption || 'Suggest'" 
-              :disabled="!content.input || !canRunWidget"
+              :disabled="!content.input"
               @click="isRetry ? tryAgain() : generate()"
             />
             <b-button class="text-muted" variant="light" v-text="'Inspire me!'"
               v-if="!prop('hideInput')"
               @click="inspire"
-              :disabled="!canRunWidget"
             />
             <b-button v-if="display.native.componentName && content.output" variant="light" class="text-muted d-lg-none"
               v-text="preview ? 'Edit' : 'Preview'"
