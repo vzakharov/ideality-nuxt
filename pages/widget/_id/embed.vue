@@ -1,5 +1,5 @@
 <template>
-  <Widget v-bind="{widget}"/>
+  <Widget box v-bind="{widget}"/>
 </template>
 
 <script>
@@ -22,6 +22,12 @@
       return {
         script
       }
+    },
+
+    computed: {
+
+      box() { return this.$route.query.box }
+      
     },
 
     asyncData: Bubble.asyncData('widget')
