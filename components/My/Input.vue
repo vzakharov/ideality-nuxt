@@ -9,7 +9,7 @@
 
       <MyDropdown v-if="typeof choices !== 'undefined'" v-bind="{value, choices}" @input="$emit('input', $event)"/>
 
-      <div v-else-if="isBoolean" class="form-check form-switch">
+      <div v-else-if="isBoolean" :class="{'form-check': true, 'form-switch': !prop('checkbox')}">
         <input class="form-check-input" type="checkbox" 
           v-bind="{checked: value, disabled}" 
           @input="$emit('input', $event.target.checked)"
@@ -17,6 +17,7 @@
         >
         <label :for="uid" class="form-check-label"> {{$caption}} </label>
       </div>
+
       <template v-else>
         <textarea-autosize v-if="prop('multiline')" v-bind="inputProps" :id="uid"
           v-on="{...$listeners,
@@ -63,7 +64,7 @@
     props: [
       'caption', 'description', 'placeholder', 'object', '$key', 'multiline', 'labelClass', 'id', 
       'disabled', 'choices', 'value', 'commaSeparated', 'type', 'removeNewLines', 'rows', 'lazy',
-      'props', 'fixAfterBlur', 'status'
+      'props', 'fixAfterBlur', 'status', 'checkbox'
     ],
     
     data() { 
