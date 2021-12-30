@@ -43,4 +43,4 @@ Oh, and remember,
 
 # I have no idea what I’m doing!
 
-Yours, [Vova](https:/twitter.com/vovahimself).
+Yours, [Vova](https://twitter.com/vovahimself).
