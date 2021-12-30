@@ -18,14 +18,16 @@ function setDefaults(object, defaults) {
 Vue.mixin({
 
   data() {
+
+    // If the vm involves loading data from localStorage, this is where we start
     return {
       $localLoaded: false
     }
+
   },
 
   created () { 
-    this.vm = this 
-    this.debug = () => { debugger }
+    this.vm = this
   },
 
   mounted () {
@@ -57,12 +59,7 @@ Vue.mixin({
     bubble() {
       return new Bubble(this)
     },
-
-    data() {
-      return this.$data
-    },
-
-
+    
     head() {
       let { header } = this
       if ( header ) {

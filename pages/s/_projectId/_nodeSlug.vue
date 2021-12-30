@@ -326,7 +326,7 @@ export default {
           return
         this.parseTree()
 
-        let { projectId, nodeSlug } = route.params
+        let { nodeSlug } = route.params
 
         this.centerNode = this.findNode(nodeSlug)
 
@@ -353,10 +353,6 @@ export default {
 
 }
 
-function debug(what) {
-  debugger
-  return what
-}
 
 function getTail(node) {
   let result = [node]
