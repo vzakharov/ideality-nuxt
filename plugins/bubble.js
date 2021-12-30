@@ -1,14 +1,11 @@
 import Axios from 'axios'
-import { load } from 'js-yaml'
-import { assign, camelCase, chain, forEach, isArray, isObject, keys, map, mapKeys, mapValues, omit, sortBy } from 'lodash'
-import { singular, plural } from 'pluralize'
+import { camelCase, forEach, isArray, isObject, keys, map, mapValues, omit, sortBy } from 'lodash'
+import { singular } from 'pluralize'
 
 function Bubble({$auth, token } = {}) {
 
   if ( $auth )
     token = $auth.strategy.token.get()
-
-  let {NUXT_ENV_BUBBLE_URL} = process.env
 
   let axios = Axios.create({ 
     baseURL: process.env.NUXT_ENV_BUBBLE_URL,
@@ -175,7 +172,7 @@ Bubble.camelcasedReservedProperties = map(Bubble.reservedProperties, camelCase)
 
 function parse(object) {
 
-  const process = ( thing, type, object ) => {
+  const process = ( thing, type ) => {
 
     thing = mapValues(thing, value => {
       const isString = typeof value === 'string'
