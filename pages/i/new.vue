@@ -26,7 +26,8 @@
             Heck yeah!
           </b-button>
         </template>
-        <Loading v-if="status=='pending'" :message="(changed ? 'Saving': 'Generating') + ' your page, please wait...'"/>
+        <Loading v-else-if="status=='pending'" message="Generating your page, please wait..."/>
+        <Loading v-else-if="status=='ok'" message="Done! Redirecting..."/>
       </b-col>
     </b-row>
     <b-row style="height: 10vh">
@@ -43,18 +44,10 @@
     data() {
 
       return {
-        build: null,
         code: {},
         status: '',
-        pending: false,
-        done: false,
         loaded: false,
-        changed: false,
-        name: '',
-        content: {},
-        shared: false,
-        widgets: null,
-        hideDescription: false
+        name: ''
       }
 
     },
@@ -71,34 +64,10 @@
 
     computed: {
 
-      buildEditRoute() {
-        let { slug, secret } = this.build
-        // console.log({slug, secret})
-        return {name: 'i-slug-manage', params: { slug }, query: { secret }}
-      },
-
-      buildRoute() {
-        let { slug } = this.build
-        // console.log({slug})
-        return {name: 'i-slug', params: { slug }}
-      },
-
       completed() {
         return this.loaded && this.code && !filter( this.code.blocks, block => !block?.content?.output ).length
       }
 
-    },
-
-    watch: {
-      code: {
-        deep: true,
-        handler(code, oldCode) {
-          if ( this.build && oldCode) {
-            this.changed = true
-            this.status = ''
-          }
-        }
-      }
     },
 
     methods: {
@@ -116,8 +85,8 @@
         this.$router.push({
           name: 'i-slug-section',
           params: { slug: this.build.slug, section: 'edit' },
-          hash: '#firstTime',
-          query: { secret: this.build.secret }
+          query: { secret: this.build.secret },
+          hash: '#firstTime'
         })
       }
     }
