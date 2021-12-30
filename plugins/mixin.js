@@ -176,7 +176,7 @@ Vue.mixin({
     reactify(object) {
       let vm = this
       forEach(object, ( value, key ) => {
-        debugger
+        // debugger
         if ( Object.getOwnPropertyDescriptor(object, key).get?.name != 'reactiveGetter' ) {
           vm.$set(object, key, value)
         }
@@ -291,7 +291,7 @@ Vue.mixin({
     },
 
     pseudoLink(route) {
-      debugger
+      // debugger
       return {
         to: this.appendRoute(route),
         'v-on:click.prevent': () => window.alert('Hello world')
