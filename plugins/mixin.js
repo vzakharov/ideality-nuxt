@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { assign, chain, find, forEach, get, isArray, kebabCase, set, keys, mapValues, pick, pickBy } from 'lodash'
+import { find, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
 import { appendRoute, canRunWidget, isDefined, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -44,27 +44,9 @@ Vue.mixin({
         window.vms[this._name] = []
       
       window.vms[this._name].push(this)
-  
-      // console.log({axios})
+
       if (!window.axios)
         window.axios = axios 
-      
-      // // Only set this once for the root component
-      // if ( !this.$parent && this.$store.state.local.pending ) {
-
-      //   this.$store.commit('set', {
-      //     local: load(localStorage.getItem('data')) || {}
-      //   })
-  
-      //   this.$watch('$store.state.local', {
-      //     deep: true,
-      //     handler(value) {
-      //       debugger
-      //       localStorage.setItem('data', dump(value))
-      //     }
-      //   })
-      // }
-
 
     }
 
