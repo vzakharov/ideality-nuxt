@@ -50,7 +50,7 @@
 <script>
 
   import Bubble from '~/plugins/bubble'
-  import { assign, get } from 'lodash'
+  import { get } from 'lodash'
 
   export default {
 
@@ -89,7 +89,7 @@
 
     methods: {
 
-      checkrepeatPassword(repeat) {
+      checkrepeatPassword() {
         this.$set( this.status, 'password', 
           this.request.password == this.request.repeatPassword
           ? { ok: true }
