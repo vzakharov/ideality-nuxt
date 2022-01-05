@@ -44,6 +44,7 @@
     data() {
 
       return {
+        build: null,
         code: {},
         status: '',
         loaded: false,
@@ -78,6 +79,7 @@
         Object.assign(this, await this.bubble.go('createBuild', {
           code,
           name,
+          core: this.code.blocks[0].content.input,
           public: true
         }))
         this.status = 'ok'

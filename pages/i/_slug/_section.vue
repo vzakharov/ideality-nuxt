@@ -231,16 +231,6 @@
 
     methods: {
 
-      async createBuild({ code, name } = this) {
-        this.status = 'pending'
-        Object.assign(this, await this.bubble.go('createBuild', {
-          code,
-          name,
-          public: true
-        }))
-        this.status = 'ok'
-      },
-
       downloadCSV() {
         let fields = ['email', 'createdDate', 'confirmed', 'comments']
 

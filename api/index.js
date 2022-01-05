@@ -93,8 +93,8 @@ app.post('/getImage', async (
     })    
     return res.send(photo)
   } catch(error) {
-    return res.status(500).send({error})
-    // next(error)
+    // return res.status(500).send({error})
+    next(error)
   }
 })
 

@@ -35,17 +35,20 @@ function Bubble({$auth, token } = {}) {
 
       let constraint_type = 'equals'
 
-      let params = { constraints: JSON.stringify(
-        slug ?
-          [{
-            key: 'Slug', value: slug, constraint_type
-          }] 
-          : Object.entries(query).map(([key, value]) => ({
-            key, 
-            value: isObject(value) ? value.id : value, 
-            constraint_type
-          }))
-      )}
+      let params = { 
+        constraints: JSON.stringify(
+          slug ?
+            [{
+              key: 'Slug', value: slug, constraint_type
+            }] 
+            : Object.entries(query).map(([key, value]) => ({
+              key, 
+              value: isObject(value) ? value.id : value, 
+              constraint_type
+            }))
+        ),
+        ...options
+      }
 
       let doFetch = () => (
         ( id ) ? 

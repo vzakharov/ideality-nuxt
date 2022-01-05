@@ -1,33 +1,29 @@
 <template>
-  <b-container fluid>
-    <b-row align-v="center" v-for="block, i in build.code.blocks" :key="block.componentName"
-      :class="{
-        'bg-light': i == 0,
-        'vh-100': i == 0,
-        'pt-5': i != 0
-      }"
-    >
-      <b-col>
-        <Block 
-          v-bind="block"
-        />
-      </b-col>
-    </b-row>
-    <div style="position: absolute; bottom: 10px; right: 10px">
-      <PoweredByIdeality target="12l" class="d-none d-md-block"/>
-    </div>
-    <BlockWaitlist v-bind="{build}"/>
-    <b-row style="height:10vh"/>
-  </b-container>
+  <div v-if="build">
+    <Build v-bind="{build}"/>
+  </div>
 </template>
 
 <script>
 
-  import Bubble from '~/plugins/bubble'
-
   export default {
 
-    asyncData: Bubble.asyncData('build')
+    data() {
+
+      return {
+        build: null
+      }
+
+    },
+
+    async fetch() {
+      let build = this.$route.params
+
+      if ( !build.code )
+        build = await this.bubble.get('build', this.$route.params.slug)
+      
+      Object.assign(this, { build })
+    } 
 
   }
 
