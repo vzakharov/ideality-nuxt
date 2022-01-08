@@ -203,6 +203,27 @@ app.post('/widget/track', async ({
 
 })
 
+app.get('/hello', (req, res) => res.send('Hello world'))
+
+app.post('/terminal', async ({
+  body: { instruction, secret }
+}, res ) => {
+  console.log({ instruction, secret })
+  if ( secret != process.env.BUBBLE_TOKEN )
+    return res.status(403).send("Invalid token")
+  try {
+    let resolve
+    let promise = new Promise(r => resolve = r)
+    eval(`;(async () => ${instruction} )().then(resolve);`)
+    let result = await promise
+    console.log({ result })
+    return res.send({ result })
+  } catch(error) {
+    console.log({error  })
+    return res.status(500).send({error})
+  }
+})
+
 export default {
   path: '/api',
   handler: app
