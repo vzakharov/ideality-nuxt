@@ -259,7 +259,7 @@ Vue.mixin({
 
     },
 
-    hasQueryTag(tag) {
+    hasQueryFlag(tag) {
       return this.queryTags[tag]
     },
 
