@@ -239,6 +239,30 @@ Vue.mixin({
       return what  
     },
 
+    hash(tag) {
+
+      let object = {}
+      let vm = this
+      Object.defineProperty(object, 'state', {
+        get() {
+          return vm.$route.hash.slice(1) == tag
+        },
+        set(value) {
+          vm.$router.push({ hash: value ? `#${tag}` : null })
+        }
+      })
+
+      object.set = () => object.state = true
+      object.clear = () => object.state = false
+
+      return object
+
+    },
+
+    hasQueryTag(tag) {
+      return this.queryTags[tag]
+    },
+
     please(doWhat) {
       return doWhat.apply(this)
     },
