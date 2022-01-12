@@ -162,13 +162,17 @@ Vue.mixin({
       }
     },
 
+    debug() {
+      debugger
+    },
+  
     element: () => process.client && window.document.getElementById,
 
     hasProp(prop) {
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, select, where, slugifyName }) {
+    syncLocal(localKey, { from, select, where, slugifyName, as }) {
 
       let local, data, item, id, items, collection, slug, path
 
@@ -189,7 +193,7 @@ Vue.mixin({
       }
 
       Object.assign(this, {
-        ...getData(),
+        ...as ? { [as]: getData()} : getData(),
         $localLoaded: true
       })
       
@@ -254,6 +258,7 @@ Vue.mixin({
 
       object.set = () => object.state = true
       object.clear = () => object.state = false
+      object.toggle = () => object.state = !object.state
 
       return object
 

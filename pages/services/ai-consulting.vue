@@ -1,7 +1,7 @@
 <template>
   <div>
     <NavHomepage/>
-    <Container hide-breadcrumbs style="max-width:960px">
+    <MyContainer hide-breadcrumbs style="max-width:960px">
       <b-row align-h="center" class="px-0 px-md-5">
         <h1 class="display-6 fw-bold mb-4">
           Make AI language models work for you
@@ -43,7 +43,7 @@
           <p>Please describe your company, product or use case (if you know one already) below.</p>
         </div>
         <b-form>
-          <ObjectConfig v-model="vm"
+          <MyForm v-model="vm"
             :fields="{
               email: { placeholder: 'gbr@openai.com'},
               description: { placeholder: 'We are ….. We’re building an app for …. We want to …. Here are some links: …', multiline: true, description: 'Be as detailed as possible. The more we know, the more we can help you.' }
@@ -59,7 +59,7 @@
           </p>
         </b-form>
       </b-modal>
-    </Container>
+    </MyContainer>
   </div>
   
 </template>

@@ -1,8 +1,8 @@
 import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
-function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
-  route = route || this.$route
+function appendedTarget({ route, $route, params, query, hash, reset, ...newRoute }) {
+  route = route || this?.$route || {}
   reset = reset || {}
   return {
     ...route,

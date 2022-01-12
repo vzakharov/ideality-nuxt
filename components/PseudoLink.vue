@@ -13,12 +13,12 @@
 
     computed: {
 
-      updatedRoute() {
+      updatedTarget() {
         return this.appendedTarget(this.append)
       },
 
       updatedUrl() {
-        return this.$router.resolve(this.updatedRoute).href
+        return this.$router.resolve(this.updatedTarget).href
       }
 
     },
@@ -26,11 +26,11 @@
     methods: {
 
       updateRoute() {
-        let { updatedUrl, replace, updatedRoute } = this
+        let { updatedUrl, replace, updatedTarget } = this
         window.history[replace ? 'replaceState' : 'pushState'](
           null, null, updatedUrl
         )
-        this.$store.commit('set', { updatedRoute })
+        this.$store.commit('set', { updatedTarget })
       }
 
     }

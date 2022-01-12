@@ -1,6 +1,7 @@
 import { get } from 'lodash'
 
 export const state = () => ({
+  builds: null,
   path: '',
   local: {
     pending: true

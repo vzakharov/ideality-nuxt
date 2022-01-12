@@ -34,4 +34,10 @@
     max-width: 800px;
   }
 
+  .scrollable {
+    height: 100vh;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
 </style>
