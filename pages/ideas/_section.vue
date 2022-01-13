@@ -5,17 +5,25 @@
       <template #sidebar>
         <ul class="nav nav-tabs sticky-top bg-white">
           <li class="nav-item"
-            v-for="section in ['my', 'recent', 'a-z', 'shuffled']" :key="section"
+            v-for="section in keys(sections)" :key="section"
           >
             <nuxt-link :class="`
-                nav-link
+                nav-link nocolor grayscale
                 ${section==$route.params.section && 'active'}
               `"
-              :to="appendedTarget({params: {section}})" v-text="section"
+              :to="appendedTarget({params: {section}})" v-text="sections[section]"
             />
           </li>
         </ul>
-        <b-row :cols="build ? 1 : 5">
+        <b-row v-bind="{
+          ...build ? { cols: 1 } : {
+            cols: 1,
+            'cols-sm': 2,
+            'cols-md': 3,
+            'cols-lg': 4,
+            'cols-xl': 5
+          }
+        }">
           <b-col v-for="b in sortedBuilds" :key="b.id">
             <b-card class="m-2"
               footer-class="small text-muted"
@@ -26,13 +34,25 @@
             >
               <template #header>
                 <div class="d-flex justify-content-between">
-                  <h5 v-text="b.name"/>
-                  <nuxt-link
-                    :to="{name:'i-slug', params: b}" target="_blank"
-                    style="opacity: 30%; z-index: 2" class="small"
-                  >
-                    🔗
-                  </nuxt-link>
+                  <h5>
+                    <nuxt-link 
+                      class="nocolor"
+                      v-text="b.name"
+                      :to="{hash: '#' + b.slug}"
+                    />
+                  </h5>
+                  <div>
+                    <nuxt-link
+                      :to="{name:'i-slug', params: b}" target="_blank"
+                      style="opacity: 30%; z-index: 2" class="small"
+                    >
+                      🔗
+                    </nuxt-link>
+                    <a href="#" class="nocolor"
+                      @click.prevent="toggleStar(b)"
+                      v-text="(getLocalBuild(b) || {}).starred ? '⭐' : '☆'"
+                    />
+                  </div>
                 </div>
               </template>
               <template #footer>
@@ -41,11 +61,6 @@
                 /> 
               </template>
               <p v-text="b.core"/>
-              <nuxt-link 
-                :to="{hash: '#' + b.slug}"
-                class="stretched-link"
-                @click.prevent="build "
-              />
             </b-card>
           </b-col>
         </b-row>
@@ -59,19 +74,29 @@
 
 <script>
 
-  import { find, map, shuffle, sortBy } from 'lodash'
+  import { find, keys, map, shuffle, sortBy } from 'lodash'
+
+  const sections = {
+    recent: 'recent',
+    starred: '⭐',
+    'a-z': 'a-z',
+    shuffled: '🔀'
+  }
 
   export default {
 
-    // middleware({ redirect }) {
-    //   redirect({name: 'i-new'})
-    // },
+    middleware({ redirect, route: { params: { section }} }) {
+      if (!section)
+      redirect({name: 'ideas-section', params: {section: 'recent'}})
+    },
 
     data() {
 
       return {
         builds: null,
-        localBuilds: []
+        localBuild: null,
+        localBuilds: [],
+        sections
       }
 
     },
@@ -101,11 +126,12 @@
         }
       },
 
+
       sortedBuilds() {
         switch(this.$route.params.section) {
           case 'shuffled': return shuffle(this.builds)
           case 'a-z': return sortBy(this.builds, 'name')
-          case 'my': 
+          case 'starred': 
             let localSlugs = map(this.localBuilds, 'slug')
             return this.builds.filter(({ slug }) => localSlugs.includes(slug))
         }
@@ -123,7 +149,7 @@
               let element = this.$refs[b.slug]?.[0]
               if ( element ) {
                 element.scrollIntoView()
-                document.getElementById('sidebar').scrollBy(0, -50)
+                document.getElementById('sidebar')?.scrollBy(0, -50)
                 document.getElementById('content').scrollTop = 0
               }
             })
@@ -134,13 +160,33 @@
 
     methods: {
 
+      getLocalBuild({ slug }) {
+        return find(this.localBuilds, { slug })
+      },
+
+      setLocalBuild({ slug }, values) {
+        let localBuild = this.getLocalBuild({ slug })
+        if ( !localBuild ) {
+          this.localBuilds = [ ...this.localBuilds, { slug, ...values } ]
+        } else {
+          Object.assign(localBuild, values )
+          this.localBuilds = [...this.localBuilds]
+        }
+      },
+
+      toggleStar({ slug }) {
+        let localBuild = this.getLocalBuild({ slug })
+        this.setLocalBuild({ slug }, { starred: !localBuild?.starred })
+      },
+
       setBuild(slug) {
         let { builds } = this
         if (builds && slug ) {
           return this.build = find(builds, { slug })
         }
       },
-      shuffle
+
+      keys
 
     }
 
