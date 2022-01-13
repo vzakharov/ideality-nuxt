@@ -67,7 +67,7 @@
 
     async mounted() {
       let { $store } = this
-      let builds = JSON.parse(JSON.stringify($store.state.builds))
+      let builds = $store.state.builds?.map?.(build => ({...build}))
       console.log({builds})
       if ( !builds ) {
         builds = await this.bubble.get('builds', {}, {
