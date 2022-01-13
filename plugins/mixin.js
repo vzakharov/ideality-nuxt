@@ -50,7 +50,6 @@ Vue.mixin({
       if (!window.axios)
         window.axios = axios 
 
-      if (this._name=='<MySidebarred>') console.log(this)
       if ( typeof this.width !== 'undefined' ) {
         let setWidth = () => {
           this.width = window.innerWidth
