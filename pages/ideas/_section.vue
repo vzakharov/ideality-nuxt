@@ -100,7 +100,8 @@
       sortedBuilds() {
         switch(this.$route.params.section) {
           case 'shuffled': return shuffle(this.builds)
-          case 'a-z': return sortBy(this.builds, 'name')
+          case 'a-z':
+          case 'bookmarked': return sortBy(this.builds, 'name')
         }
         return this.builds
       }
