@@ -20,7 +20,6 @@ export const mutations = {
   },
 
   setFields(state, [ key, values ]) {
-    debugger
     Object.assign(get(state, key), values)
   }
 

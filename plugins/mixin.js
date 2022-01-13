@@ -113,6 +113,12 @@ Vue.mixin({
     user() { return this.$auth.user || {}}
   },
 
+  watch: {
+    '$route': function() {
+      this.vms = []
+    }
+  },
+
   methods: {
 
     appendedTarget,
@@ -218,9 +224,7 @@ Vue.mixin({
             return
           }
 
-          if ( as && !select )
-            local = value // Todo: merge arrays
-          else
+          if ( !as )
             set(getData(), key, value)
 
           localStorage.setItem(localKey, dump(local))

@@ -24,9 +24,9 @@
             'cols-xl': 5
           }
         }">
-          <b-col v-for="build in sortedBuilds" :key="build.id">
-            <BuildCard :ref="build.slug" v-bind="{ build, active: build==vm.build}"/>
-          </b-col>
+          <template v-for="build in sortedBuilds">
+            <BuildCard :key="build.id" :ref="build.slug" v-bind="{ build, bookmarkedOnly: $route.params.section=='bookmarked', active: build==vm.build}"/>
+          </template> 
         </b-row>
       </template>
       <template #content v-if="build">
@@ -77,13 +77,13 @@
         $store.commit('set', { builds })
       }
       Object.assign(this, { builds })
-      this.syncLocal('builds', { as: 'localBuilds' })
-      for ( let local of this.localBuilds ) {
-        let build = find(this.builds, { slug: local.slug })
-        if ( build ) {
-          this.setFieldsFor(build, local)
-        }
-      }
+      // this.syncLocal('builds', { as: 'localBuilds' })
+      // for ( let local of this.localBuilds ) {
+      //   let build = find(this.builds, { slug: local.slug })
+      //   if ( build ) {
+      //     this.setFieldsFor(build, local)
+      //   }
+      // }
       this.setBuild(this.$route.hash.slice?.(1))
     },
 
@@ -101,15 +101,6 @@
         switch(this.$route.params.section) {
           case 'shuffled': return shuffle(this.builds)
           case 'a-z': return sortBy(this.builds, 'name')
-          case 'bookmarked': 
-            return this.builds.filter(({ slug }) => 
-              map(
-                this.localBuilds.filter(b => 
-                  b.starred 
-                  || b.secret 
-                  || b.accessRequested 
-                ), 'slug')
-              .includes(slug))
         }
         return this.builds
       }
@@ -124,7 +115,8 @@
             this.$nextTick(() => {
               let element = this.$refs[b.slug]?.[0]
               if ( element ) {
-                element.scrollIntoView()
+                element.$el.scrollIntoView?.()
+                // console.log({element})
                 document.getElementById('sidebar')?.scrollBy(0, -50)
                 document.getElementById('content').scrollTop = 0
               }
