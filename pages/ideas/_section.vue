@@ -24,44 +24,8 @@
             'cols-xl': 5
           }
         }">
-          <b-col v-for="b in sortedBuilds" :key="b.id">
-            <b-card class="m-2"
-              footer-class="small text-muted"
-              v-bind="{...build == b && {
-                'border-variant': 'dark'
-              }}"
-              :ref="b.slug"
-            >
-              <template #header>
-                <div class="d-flex justify-content-between">
-                  <h5>
-                    <nuxt-link 
-                      class="nocolor"
-                      v-text="b.name"
-                      :to="{hash: '#' + b.slug}"
-                    />
-                  </h5>
-                  <div>
-                    <nuxt-link
-                      :to="{name:'i-slug', params: b}" target="_blank"
-                      style="opacity: 30%; z-index: 2" class="small"
-                    >
-                      🔗
-                    </nuxt-link>
-                    <a href="#" class="nocolor"
-                      @click.prevent="toggleStar(b)"
-                      v-text="b.secret ? '⚙️' : b.accessRequested ? '🔔' : b.starred ? '⭐' : '☆'"
-                    />
-                  </div>
-                </div>
-              </template>
-              <template #footer>
-                <div class="small text-muted font-italic"
-                  v-text="new Date(b.createdDate).toDateString()"
-                /> 
-              </template>
-              <p v-text="b.core"/>
-            </b-card>
+          <b-col v-for="build in sortedBuilds" :key="build.id">
+            <BuildCard :ref="build.slug" v-bind="{ build, active: build==vm.build}"/>
           </b-col>
         </b-row>
       </template>
