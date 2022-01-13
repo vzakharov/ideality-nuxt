@@ -16,10 +16,11 @@ export const state = () => ({
 export const mutations = {
 
   set(state, values) {
-    Object.assign(state, values)
+    Object.assign(state, JSON.parse(JSON.stringify(values)))
   },
 
   setFields(state, [ key, values ]) {
+    debugger
     Object.assign(get(state, key), values)
   }
 

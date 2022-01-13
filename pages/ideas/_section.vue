@@ -50,14 +50,14 @@
                     </nuxt-link>
                     <a href="#" class="nocolor"
                       @click.prevent="toggleStar(b)"
-                      v-text="(getLocalBuild(b) || {}).starred ? '⭐' : '☆'"
+                      v-text="b.secret ? '⚙️' : b.accessRequested ? '🔔' : b.starred ? '⭐' : '☆'"
                     />
                   </div>
                 </div>
               </template>
               <template #footer>
                 <div class="small text-muted font-italic"
-                  v-text="b.createdDate.toDateString()"
+                  v-text="new Date(b.createdDate).toDateString()"
                 /> 
               </template>
               <p v-text="b.core"/>
@@ -74,11 +74,11 @@
 
 <script>
 
-  import { find, keys, map, shuffle, sortBy } from 'lodash'
+  import { filter,find, keys, map, shuffle, sortBy } from 'lodash'
 
   const sections = {
     recent: 'recent',
-    starred: '⭐',
+    bookmarked: '🔖',
     'a-z': 'a-z',
     shuffled: '🔀'
   }
@@ -103,7 +103,8 @@
 
     async mounted() {
       let { $store } = this
-      let { builds } = $store.state
+      let builds = JSON.parse(JSON.stringify($store.state.builds))
+      console.log({builds})
       if ( !builds ) {
         builds = await this.bubble.get('builds', {}, {
           sort_field: 'Created Date',
@@ -113,6 +114,12 @@
       }
       Object.assign(this, { builds })
       this.syncLocal('builds', { as: 'localBuilds' })
+      for ( let local of this.localBuilds ) {
+        let build = find(this.builds, { slug: local.slug })
+        if ( build ) {
+          this.setFieldsFor(build, local)
+        }
+      }
       this.setBuild(this.$route.hash.slice?.(1))
     },
 
@@ -126,14 +133,19 @@
         }
       },
 
-
       sortedBuilds() {
         switch(this.$route.params.section) {
           case 'shuffled': return shuffle(this.builds)
           case 'a-z': return sortBy(this.builds, 'name')
-          case 'starred': 
-            let localSlugs = map(this.localBuilds, 'slug')
-            return this.builds.filter(({ slug }) => localSlugs.includes(slug))
+          case 'bookmarked': 
+            return this.builds.filter(({ slug }) => 
+              map(
+                this.localBuilds.filter(b => 
+                  b.starred 
+                  || b.secret 
+                  || b.accessRequested 
+                ), 'slug')
+              .includes(slug))
         }
         return this.builds
       }
@@ -169,8 +181,7 @@
         if ( !localBuild ) {
           this.localBuilds = [ ...this.localBuilds, { slug, ...values } ]
         } else {
-          Object.assign(localBuild, values )
-          this.localBuilds = [...this.localBuilds]
+          this.setFieldsFor(localBuild, values)
         }
       },
 

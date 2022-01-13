@@ -173,8 +173,9 @@ Vue.mixin({
       }
     },
 
-    debug() {
+    debug(what) {
       debugger
+      return what
     },
   
     element: () => process.client && window.document.getElementById,
@@ -313,6 +314,13 @@ Vue.mixin({
     setFields(fields) {
       Object.assign(this, fields)
     },
+
+    setFieldsFor(object, fields) {
+      for ( let key of keys(fields) ) {
+        this.$set(object, key, fields[key])
+      }
+    },
+
 
     setDefaults
   }
