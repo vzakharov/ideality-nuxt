@@ -13,31 +13,64 @@
 
 
 <style>
-  
-  a {
-    text-decoration: none;
-  }
-  
-  .bg-retro {
-    background-color: #FBF7EC
-  }
+.close {
+  float: right;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: 0.5;
+}
+.close:hover {
+  color: #000;
+  text-decoration: none;
+}
+.close:not(:disabled):not(.disabled):focus,
+.close:not(:disabled):not(.disabled):hover {
+  opacity: 0.75;
+}
+button.close {
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+}
+a.close.disabled {
+  pointer-events: none;
+}
 
-  .gray {
-    color: #bbb
-  }
+a {
+  text-decoration: none;
+}
 
-  .small {
-    font-size: 0.75em;
-  }
+a.nocolor {
+  color: inherit;
+}
 
-  .mw-800 {
-    max-width: 800px;
-  }
+.bg-retro {
+  background-color: #fbf7ec;
+}
 
-  .scrollable {
-    height: 100vh;
-    overflow: hidden;
-    overflow-y: auto;
-  }
+.gray {
+  color: #bbb;
+}
 
+.grayscale {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+.small {
+  font-size: 0.75em;
+}
+
+.mw-800 {
+  max-width: 800px;
+}
+
+.scrollable {
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: auto;
+}
 </style>
