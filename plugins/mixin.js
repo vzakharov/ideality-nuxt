@@ -50,6 +50,18 @@ Vue.mixin({
       if (!window.axios)
         window.axios = axios 
 
+      if (this._name=='<MySidebarred>') console.log(this)
+      if ( typeof this.width !== 'undefined' ) {
+        let setWidth = () => {
+          this.width = window.innerWidth
+        }
+  
+        setWidth()
+        window.onresize = () => {
+          setWidth()
+        }  
+      }
+
     }
 
   },
@@ -206,7 +218,11 @@ Vue.mixin({
             return
           }
 
-          set(getData(), key, value)
+          if ( as && !select )
+            local = value // Todo: merge arrays
+          else
+            set(getData(), key, value)
+
           localStorage.setItem(localKey, dump(local))
 
           if ( key == 'slug' ) {
