@@ -209,8 +209,8 @@ Vue.mixin({
         $localLoaded: true
       })
       
-      forEach(select ? isArray(select) ? select : [select] : keys(this.$data), key => {
-
+      forEach(select ? isArray(select) ? select : [select] : as ? [as] : keys(this.$data), key => {
+        
         this.$watch(key, { deep: true, handler(value) {
           
           if ( slugifyName && key == 'name' ) {
