@@ -19,7 +19,7 @@
     computed: {
 
       nowSection() {
-        return this.$route.params.section
+        return this.route.params.section
       },
 
       route({ section } = this) {

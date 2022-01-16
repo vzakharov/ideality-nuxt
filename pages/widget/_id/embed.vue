@@ -26,7 +26,7 @@
 
     computed: {
 
-      box() { return this.$route.query.box }
+      box() { return this.route.query.box }
       
     },
 

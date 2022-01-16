@@ -9,7 +9,7 @@
           >
             <nuxt-link :class="`
                 nav-link nocolor grayscale
-                ${section==$route.params.section && 'active'}
+                ${section==route.params.section && 'active'}
               `"
               :to="appendedTarget({params: {section}})" v-text="sections[section]"
             />
@@ -25,7 +25,7 @@
           }
         }">
           <template v-for="build in sortedBuilds">
-            <BuildCard :key="build.id" :ref="build.slug" v-bind="{ build, bookmarkedOnly: $route.params.section=='bookmarked', active: build==vm.build}"/>
+            <BuildCard :key="build.id" :ref="build.slug" v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: build==vm.build}"/>
           </template> 
         </b-row>
       </template>
@@ -84,13 +84,13 @@
           this.setFieldsFor(build, local)
         }
       }
-      this.setBuild(this.$route.hash.slice?.(1))
+      this.setBuild(this.route.hash.slice?.(1))
     },
 
     computed: {
 
       build() {
-        let { builds, $route: { hash: slug } } = this
+        let { builds, route: { hash: slug } } = this
         if (builds && slug ) {
           slug = slug.slice(1)
           return find(builds, { slug })
@@ -98,7 +98,7 @@
       },
 
       sortedBuilds() {
-        switch(this.$route.params.section) {
+        switch(this.route.params.section) {
           case 'shuffled': return shuffle(this.builds)
           case 'a-z':
           case 'bookmarked': return sortBy(this.builds, 'name')

@@ -145,7 +145,6 @@
         content: {},
         shared: false,
         secret: null,
-        section: this.$route.params.section,
         widgets: null,
         hideDescription: false
       }
@@ -154,7 +153,7 @@
 
     async mounted() {
 
-      let { params: { slug }, query: { secret }} = this.$route
+      let { params: { slug }, query: { secret }} = this.route
 
       this.syncLocal('builds', {
         where: { slug },
@@ -207,12 +206,16 @@
 
       firstTime: {
         get() {
-          return this.$route.hash == '#firstTime'
+          return this.route.hash == '#firstTime'
         },
 
         set() {
           this.$router.push(this.appendedTarget({ reset: { hash: true }}))
         }
+      },
+
+      section() {
+        return this.route.params.section
       }
 
     },

@@ -78,7 +78,6 @@
             }"
             v-text="item.caption"
             :to="appendedTarget({query: { section: item.slug }})"
-            @click="section=item.slug"
           />
         </li>
       </ul>
@@ -152,8 +151,7 @@ export default {
       editYaml: false,
       deleteRequested: false,
       example: get(this, 'widget.setup.examples[0]'),
-      oldConfig: null,
-      section: this.$route.query['section'] || 'setup'
+      oldConfig: null
     }
   },
 
@@ -182,6 +180,10 @@ export default {
 
     embedRoute() {
       return { name: 'widget-id-embed', params: { id: this.widget.slug || this.widget.id }}
+    },
+
+    section() {
+      return this.route.query['section'] || 'setup'
     },
 
     widgetYaml: {
@@ -224,7 +226,7 @@ export default {
     async clone() {
       let { id } = this.widget
       let { response: { newWidget }} = await this.bubble.go('wf/cloneWidget', { id })
-      this.$router.push({...this.$route, name: 'widget-id-config', params: { id: newWidget._id }})
+      this.$router.push({...this.route, name: 'widget-id-config', params: { id: newWidget._id }})
     },
 
     async unlink() {

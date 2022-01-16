@@ -318,7 +318,7 @@ export default {
     //   }
     // },
 
-    $route: {
+    route: {
       immediate: true,
       handler(route, oldRoute) {
 

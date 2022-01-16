@@ -43,7 +43,7 @@ function isAdmin() {
 
 function queryFlags() {
   return mapValues(
-    pickBy(this.$route.query,
+    pickBy(this.route.query,
       tag => !tag && ( typeof tag !== 'undefined' )
     ), () => true)
 }
@@ -282,7 +282,7 @@ Vue.mixin({
       let vm = this
       Object.defineProperty(object, 'state', {
         get() {
-          return vm.$route.hash.slice(1) == tag
+          return vm.route.hash.slice(1) == tag
         },
         set(value) {
           vm.$router.push({ hash: value ? `#${tag}` : null })

@@ -111,7 +111,7 @@
                   display.CTAContent
                   .replace('<input>', content.input)
                   .replace('<output>', content.output)
-                  .replace('<query>', new window.URLSearchParams($route.query).toString())
+                  .replace('<query>', new window.URLSearchParams(route.query).toString())
                 )
                 : `mailto:${display.leadgenEmail}?subject=${encodeURI(content.input)}&body=Hi, I got the following AI suggestions to my request:\n\n${encodeURI(content.output)}\n\nIs that correct?`" 
               target="_blank"
@@ -185,7 +185,7 @@
     async fetch() {
       if ( this.queryFlags.admin ) {
         if ( !await getUser(this) ) {
-          this.$router.push({name: 'login', query: { then: this.$route.fullPath }})
+          this.$router.push({name: 'login', query: { then: this.route.fullPath }})
         } 
       }
     },
@@ -221,9 +221,9 @@
           let { duringSetup, exampleIndex } = this
           let { ai } = this
           // let { engine, temperature } = ai || {}
-          let { apiKey, engine, temperature } = {...slate, ...ai, ...this, ...this.$route.query} || {}
+          let { apiKey, engine, temperature } = {...slate, ...ai, ...this, ...this.route.query} || {}
           
-          let { code } = this.$route.query
+          let { code } = this.route.query
 
           if ( !content ) (
             { content } = this 

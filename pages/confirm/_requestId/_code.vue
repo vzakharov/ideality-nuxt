@@ -21,7 +21,8 @@
       }
     },
 
-    async fetch({ $route: { params }} = this) {
+    async fetch() {
+      let { route: { params }} = this
       try {
         await this.bubble.go('confirmBuildRequest', params)
         this.ok = true

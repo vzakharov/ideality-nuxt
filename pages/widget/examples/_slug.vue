@@ -182,7 +182,7 @@
       setWidget(widget) {
         Object.assign(this, { widget })
         history.pushState(null, null,
-          this.$router.resolve({...this.$route, name: 'widget-examples-slug', params: { slug: widget.slug}}).href
+          this.$router.resolve({...this.route, name: 'widget-examples-slug', params: { slug: widget.slug}}).href
         )
         this.$store.commit('set', { path: window.location.pathname })
       }

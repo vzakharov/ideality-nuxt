@@ -43,7 +43,8 @@
         redirect(appendedTarget({ route, params: { section: 'assets' }}))
     },
 
-    mounted({ $route: { params: { project: slug }}} = this) {
+    mounted() {
+      let { route: { params: { project: slug }}} = this
       this.syncLocal('builder', {
         parentPath: 'projects',
         where: { slug },
@@ -52,7 +53,7 @@
     },
 
     computed: {
-      section() { return this.$route.params.section }
+      section() { return this.route.params.section }
     },
 
     methods: {

@@ -17,10 +17,10 @@
     },
 
     async fetch() {
-      let build = this.$route.params
+      let build = this.route.params
 
       if ( !build.code )
-        build = await this.bubble.get('build', this.$route.params.slug)
+        build = await this.bubble.get('build', this.route.params.slug)
       
       Object.assign(this, { build })
     } 

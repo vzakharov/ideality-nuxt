@@ -41,7 +41,7 @@
                 title: 'Studio', 
                 description: 'An AI-enabled text editor with tree-like structure so that you don’t miss a single idea.'
               }]" :key="i" xs="12" md="3" sm="4" class="text-center mb-4"
-              :class="{shadow: $route.hash=='#'+item.id}"
+              :class="{shadow: route.hash=='#'+item.id}"
             >
               <h3 :id="item.id" class="display-6">Ideality {{ item.title }}</h3>
               <p class="lead text-responsive">

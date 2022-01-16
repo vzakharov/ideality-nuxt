@@ -24,7 +24,7 @@
     methods: {
 
       async execute() {
-        let { instruction, $route: { params: { secret }}} = this
+        let { instruction, route: { params: { secret }}} = this
         try {
           let { data: { result } } = await this.$axios.post('api/terminal', {
             instruction, secret

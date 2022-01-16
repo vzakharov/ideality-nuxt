@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row align-h="center">
-      <WidgetConfig v-if="!$route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
+      <WidgetConfig v-if="!route.params.action" :value="widget" v-bind="{href, saver}" :ephemeral="true" class="mt-5">
         <div class="text-end">
           <small>
             <Copiable :fetch="getShortlink" class="gray">

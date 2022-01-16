@@ -86,7 +86,7 @@
     computed: {
 
       build() {
-        let { builds, $route: { hash: slug } } = this
+        let { builds, route: { hash: slug } } = this
         if (builds && slug ) {
           slug = slug.slice(1)
           return find(builds, { slug })
@@ -94,7 +94,7 @@
       },
 
       sortedBuilds() {
-        let { $route: { hash }} = this
+        let { route: { hash }} = this
         switch(hash) {
           case '#shuffled': return shuffle(this.builds)
           case '#my': 
