@@ -5,6 +5,51 @@ import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
 
+function bubble() {
+  return new Bubble(this)
+}
+
+function head() {
+  let { header } = this
+  if ( header ) {
+    let { title, description } = this.header
+    title += '🔺 Ideality, AI-powered ideation platform'
+    return {
+      title,
+      meta: [
+        { hid: 'description', name: 'description', content: description },
+        { hid: 'og:title', name: 'og:title', content: title},
+        { hid: 'og:description', name: 'og:description', content: title }
+      ]
+    }  
+  } else {
+    return {}
+  }
+}
+
+function widgetHeader() {
+  let { widget } = this
+  if ( widget ) {
+    let { name: title, description } = widget
+    return {
+      title, description 
+    }
+  }
+}
+
+function isAdmin() {
+  return this.$auth.user && this.$auth.user.isAdmin
+}
+
+function queryFlags() {
+  return mapValues(
+    pickBy(this.$route.query,
+      tag => !tag && ( typeof tag !== 'undefined' )
+    ), () => true)
+}
+
+function user() { return this.$auth.user || {}}
+
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
     if (typeof object[key] == 'undefined') {
@@ -67,50 +112,13 @@ Vue.mixin({
 
   computed: {
 
-    bubble() {
-      return new Bubble(this)
-    },
+    bubble,
+    head,
+    isAdmin,
+    queryFlags,
+    user,
+    widgetHeader,
 
-    head() {
-      let { header } = this
-      if ( header ) {
-        let { title, description } = this.header
-        title += '🔺 Ideality, AI-powered ideation platform'
-        return {
-          title,
-          meta: [
-            { hid: 'description', name: 'description', content: description },
-            { hid: 'og:title', name: 'og:title', content: title},
-            { hid: 'og:description', name: 'og:description', content: title }
-          ]
-        }  
-      } else {
-        return {}
-      }
-    },
-
-    widgetHeader() {
-      let { widget } = this
-      if ( widget ) {
-        let { name: title, description } = widget
-        return {
-          title, description 
-        }
-      }
-    },
-
-    isAdmin() {
-      return this.$auth.user && this.$auth.user.isAdmin
-    },
-
-    queryFlags() {
-      return mapValues(
-        pickBy(this.$route.query,
-          tag => !tag && ( typeof tag !== 'undefined' )
-        ), () => true)
-    },
-    
-    user() { return this.$auth.user || {}}
   },
 
   watch: {
