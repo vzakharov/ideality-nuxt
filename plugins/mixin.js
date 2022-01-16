@@ -48,6 +48,10 @@ function queryFlags() {
     ), () => true)
 }
 
+function route() {
+  return this.$store.state.route || this.$route
+}
+
 function user() { return this.$auth.user || {}}
 
 function setDefaults(object, defaults) {
@@ -116,6 +120,7 @@ Vue.mixin({
     head,
     isAdmin,
     queryFlags,
+    route,
     user,
     widgetHeader,
 
