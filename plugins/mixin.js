@@ -114,8 +114,8 @@ Vue.mixin({
   },
 
   watch: {
-    '$route': function() {
-      this.vms = []
+    '$route': () => {
+      window.vms = []
     }
   },
 
