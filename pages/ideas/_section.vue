@@ -7,11 +7,11 @@
           <li class="nav-item"
             v-for="section in keys(sections)" :key="section"
           >
-            <nuxt-link :class="`
+            <PseudoLink :class="`
                 nav-link nocolor grayscale
                 ${section==route.params.section && 'active'}
               `"
-              :to="appendedTarget({params: {section}})" v-text="sections[section]"
+              :to="{params: {section}}" v-text="sections[section]"
             />
           </li>
         </ul>

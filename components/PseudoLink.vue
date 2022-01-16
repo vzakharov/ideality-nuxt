@@ -7,14 +7,16 @@
 
 <script>
 
+  import { pick } from 'lodash'
+
   export default {
 
-    props: ['append', 'replace'],
+    props: ['to', 'replace'],
 
     computed: {
 
       updatedTarget() {
-        return this.appendedTarget(this.append)
+        return this.appendedTarget(this.to)
       },
 
       updatedUrl() {
@@ -30,7 +32,7 @@
         window.history[replace ? 'replaceState' : 'pushState'](
           null, null, updatedUrl
         )
-        this.$store.commit('set', { updatedTarget })
+        this.$store.commit('set', { route: pick(updatedTarget, ['params', 'query', 'hash']) })
       }
 
     }
