@@ -8,6 +8,7 @@ export const state = () => ({
   },
   toolCategories: null,
   headers: null,
+  route: null,
   updatedRoute: null,
   tree: {  },
   imagePromises: {}
