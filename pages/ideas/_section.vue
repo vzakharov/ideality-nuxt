@@ -77,13 +77,13 @@
         $store.commit('set', { builds })
       }
       Object.assign(this, { builds })
-      // this.syncLocal('builds', { as: 'localBuilds' })
-      // for ( let local of this.localBuilds ) {
-      //   let build = find(this.builds, { slug: local.slug })
-      //   if ( build ) {
-      //     this.setFieldsFor(build, local)
-      //   }
-      // }
+      this.syncLocal('builds', { as: 'localBuilds' })
+      for ( let local of this.localBuilds ) {
+        let build = find(this.builds, { slug: local.slug })
+        if ( build ) {
+          this.setFieldsFor(build, local)
+        }
+      }
       this.setBuild(this.$route.hash.slice?.(1))
     },
 
