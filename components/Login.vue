@@ -40,8 +40,8 @@ export default {
       let { data: { response: user }} = await this.$auth.loginWith('local', { data: { email, password } })
       console.log({user})
       this.$auth.setUser(user)
-      let then = this.$route.query.then || { name: 'dashboard' }
-      this.$router.push(then)
+      let { then } = this.$route.query
+      this.$router.push(then || { name: 'dashboard' })
       // this.$emit('login')
     }
 
