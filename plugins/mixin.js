@@ -56,8 +56,6 @@ function route() {
   return this.$store.state.route || this.$route
 }
 
-function user() { return this.$auth.user || {}}
-
 function setDefaults(object, defaults) {
   for (let key of keys(defaults)) {
     if (typeof object[key] == 'undefined') {
@@ -126,7 +124,6 @@ Vue.mixin({
     isAdmin,
     queryFlags,
     route,
-    user,
     widgetHeader,
 
   },
@@ -210,7 +207,7 @@ Vue.mixin({
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, select, where, slugifyName, as }) {
+    syncLocal(localKey, { from, select, where, slugifyName, as } = {}) {
 
       let local, data, item, id, items, collection, slug, path
 

@@ -40,7 +40,8 @@ If you haven’t already, please **follow the link in the confirmation email we 
         sending: false,
         email: '',
         comments: '',
-        accessRequested: false
+        accessRequested: false,
+        user: {}
       }
 
     },
@@ -50,6 +51,7 @@ If you haven’t already, please **follow the link in the confirmation email we 
         select: ['accessRequested'],
         where: { slug }
       })
+      this.syncLocal('user')
     },
 
     computed: {
