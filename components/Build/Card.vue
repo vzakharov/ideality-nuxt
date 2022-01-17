@@ -70,6 +70,7 @@
 
       toggleStarred() {
         let { $axios, build, local, local: { starred } } = this
+        build.starredCount = build.starredCount + ( starred ? -1 : 1 )
         $axios.post('/api/build/starred', { build, clear: starred }).then(({ data }) => this.setFieldsFor(this.build, this.log(data)))
         this.$set(local, 'starred', !starred)
       }

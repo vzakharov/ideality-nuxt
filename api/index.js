@@ -75,7 +75,6 @@ async function doComplete(
 
 
 // Star/unstar a build
-
 app.post('/build/starred', async ({
   ip, body: {
     build: { id: build }, clear
