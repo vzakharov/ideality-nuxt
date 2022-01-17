@@ -89,9 +89,9 @@ app.post('/build/starred', async ({
   if ( !!starred == !!clear) {
     if ( clear ) {
       let { id } = starred
-      BubbleAdmin.destroy('buildStar', { id })
+      await BubbleAdmin.destroy('buildStar', { id })
     } else {
-      BubbleAdmin.post('buildStar', { ip, build })
+      await BubbleAdmin.post('buildStar', { ip, build })
     }
   }
 

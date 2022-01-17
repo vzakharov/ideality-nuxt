@@ -8,32 +8,28 @@
         v-if="!bookmarkedOnly || bookmarked"
       >
         <template #header>
-          <div class="d-flex justify-content-between">
-            <h5>
-              <nuxt-link 
-                class="nocolor"
-                v-text="build.name"
-                :to="{hash: '#' + build.slug}"
-              />
-            </h5>
-            <div>
-              <nuxt-link
-                :to="{name:'i-slug', params: build}" target="_blank"
-                style="opacity: 30%; z-index: 2" class="small"
-              >
-                🔗
-              </nuxt-link>
-              <a href="#" class="nocolor"
-                @click.prevent="toggleStarred"
-                v-text="!local ? '☆' : local.secret ? '⚙️' : local.accessRequested ? '🔔' : local.starred ? '⭐' : '☆'"
-              />
-            </div>
-          </div>
+          <h5>
+            <nuxt-link 
+              class="nocolor"
+              v-text="build.name"
+              :to="{hash: '#' + build.slug}"
+            />
+          </h5>
         </template>
         <template #footer>
-          <div class="small text-muted font-italic"
-            v-text="new Date(build.createdDate).toDateString()"
-          /> 
+          <div class="d-flex justify-content-between">
+            <nuxt-link class="small text-muted font-italic"
+              :to="{name:'i-slug', params: build}" target="_blank"
+              v-text="new Date(build.createdDate).toDateString()"
+            />
+            <div>
+              <a href="#" class="nocolor"
+                @click.prevent="toggleStarred"
+                v-text="local.starred ? '⭐' : '☆'"
+              />
+              <span v-if="build.starredCount" v-text="build.starredCount"/>
+            </div>
+          </div>        
         </template>
         <p v-text="build.core"/>
       </b-card>
@@ -48,7 +44,7 @@
 
     data() {
       return {
-        local: null
+        local: {}
       }
     },
 
@@ -64,9 +60,7 @@
 
       bookmarked() {
         let { local } = this
-        let bookmarked = local && (
-          local.starred || local.accessRequested || local.secret
-        )
+        let bookmarked = local.starred || local.accessRequested || local.secret
         return bookmarked
       }
 
@@ -76,7 +70,7 @@
 
       toggleStarred() {
         let { $axios, build, local, local: { starred } } = this
-        $axios.post('/api/build/starred', { build, clear: starred })
+        $axios.post('/api/build/starred', { build, clear: starred }).then(({ data }) => this.setFieldsFor(this.build, this.log(data)))
         this.$set(local, 'starred', !starred)
       }
 
