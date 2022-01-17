@@ -17,7 +17,7 @@
           </h5>
         </template>
         <template #footer>
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between align-items-center">
             <nuxt-link class="small text-muted font-italic"
               :to="{name:'i-slug', params: build}" target="_blank"
               v-text="new Date(build.createdDate).toDateString()"
@@ -31,7 +31,7 @@
             </div>
           </div>        
         </template>
-        <p v-text="build.core"/>
+        <p v-text="build.code.blocks[0].content.input"/>
       </b-card>
     </b-col>
 </template>
