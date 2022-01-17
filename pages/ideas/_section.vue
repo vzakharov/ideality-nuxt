@@ -84,7 +84,6 @@
           this.setFieldsFor(build, local)
         }
       }
-      this.setBuild(this.route.hash.slice?.(1))
     },
 
     computed: {
@@ -145,13 +144,6 @@
       toggleStar({ slug }) {
         let localBuild = this.getLocalBuild({ slug })
         this.setLocalBuild({ slug }, { starred: !localBuild?.starred })
-      },
-
-      setBuild(slug) {
-        let { builds } = this
-        if (builds && slug ) {
-          return this.build = find(builds, { slug })
-        }
       },
 
       keys
