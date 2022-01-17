@@ -23,16 +23,28 @@
               v-text="new Date(build.createdDate).toDateString()"
             />
             <div>
+
               <a href="#" class="nocolor"
                 @click.prevent="toggleStarred"
                 v-text="local.starred ? '⭐' : '☆'"
               />
               <span v-if="build.starredCount" v-text="build.starredCount"/>
+
+              <a v-if="build.starred" href="#" :class="{ translucent: !build.accessRequested, grayscale: !build.accessRequested }"
+                @click.prevent="accessModal=true"
+              >
+                🔔
+              </a>
+              <BlockWaitlist v-if="accessModal" v-model="accessModal" v-bind="{build}"
+                message="Leave your email below if you want to stay tuned about this idea."
+              />
+
               <a v-if="admining" href="#" :class="{ translucent: !build.hidden }"
                 @click="bubble.patch('build', build, { hidden: !build.hidden }).then(() => $set(build, 'hidden', !build.hidden))"
               >
                 🙈
               </a>
+
             </div>
           </div>        
         </template>
@@ -49,6 +61,7 @@
 
     data() {
       return {
+        accessModal: false,
         local: {}
       }
     },
