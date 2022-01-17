@@ -3,7 +3,7 @@
     <Loading v-if="!builds" message="Loading the ideas, hold on a sec..."/>
     <MySidebarred v-else>
       <template #sidebar>
-        <ul class="nav nav-tabs sticky-top bg-white">
+        <ul class="nav nav-tabs bg-white">
           <li class="nav-item"
             v-for="section in keys(sections)" :key="section"
           >
