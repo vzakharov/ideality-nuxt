@@ -103,7 +103,7 @@ function Bubble({$auth, token } = {}) {
     },
 
     destroy: (type, thing) =>
-      axios.delete(`obj/${type}/${thing.id}`),
+      axios.delete(`obj/${type}/${thing.id}`).then(console.log),
 
     patch: (type, thing) => 
       axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id'))),
@@ -115,7 +115,7 @@ function Bubble({$auth, token } = {}) {
       } catch(error) {
         // console.log(error.response.data)
         let { statusCode, body } = error
-        throw({statusCode, ...body})
+        throw({error, statusCode, ...body})
       }
     },
 

@@ -24,7 +24,7 @@
                 🔗
               </nuxt-link>
               <a href="#" class="nocolor"
-                @click.prevent="$set(local, 'starred', !local.starred)"
+                @click.prevent="toggleStarred"
                 v-text="!local ? '☆' : local.secret ? '⚙️' : local.accessRequested ? '🔔' : local.starred ? '⭐' : '☆'"
               />
             </div>
@@ -68,6 +68,16 @@
           local.starred || local.accessRequested || local.secret
         )
         return bookmarked
+      }
+
+    },
+
+    methods: {
+
+      toggleStarred() {
+        let { $axios, build, local, local: { starred } } = this
+        $axios.post('/api/build/starred', { build, clear: starred })
+        this.$set(local, 'starred', !starred)
       }
 
     }

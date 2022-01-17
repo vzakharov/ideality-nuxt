@@ -141,11 +141,6 @@
         }
       },
 
-      toggleStar({ slug }) {
-        let localBuild = this.getLocalBuild({ slug })
-        this.setLocalBuild({ slug }, { starred: !localBuild?.starred })
-      },
-
       keys
 
     }

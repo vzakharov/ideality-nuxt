@@ -73,9 +73,34 @@ async function doComplete(
 
 }
 
+
+// Star/unstar a build
+
+app.post('/build/starred', async ({
+  ip, body: {
+    build: { id: build }, clear
+  }
+}, res) => {
+  let starred = (
+    await BubbleAdmin.get('buildStar', { ip, build })
+  )[0]
+
+  console.log({starred, clear})
+  if ( !!starred == !!clear) {
+    if ( clear ) {
+      let { id } = starred
+      BubbleAdmin.destroy('buildStar', { id })
+    } else {
+      BubbleAdmin.post('buildStar', { ip, build })
+    }
+  }
+
+  res.send(await BubbleAdmin.go('recountStars', { build }))
+})
+
+
 // Get image from Pexels
 // Todo: Add a check that the request actually comes from Ideality
-
 app.post('/getImage', async (
   {
     body: {
