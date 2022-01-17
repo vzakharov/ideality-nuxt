@@ -35,7 +35,7 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
   })  
 }
 
-async function getUser({ $axios, $auth }) {
+async function getUser({ $axios, $auth } = this) {
   try {
     let user = await (
       new Bubble({$auth, token: $auth.strategy.token.get()}).go('getUserInfo')
@@ -47,6 +47,7 @@ async function getUser({ $axios, $auth }) {
     // debugger
     console.log({error})
     $auth.setUser(null)
+    return null
   }
 }
 

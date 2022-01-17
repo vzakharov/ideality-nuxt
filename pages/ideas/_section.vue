@@ -25,7 +25,10 @@
           }
         }">
           <template v-for="build in sortedBuilds">
-            <BuildCard :key="build.id" :ref="build.slug" v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: build==vm.build}"/>
+            <BuildCard :key="build.id" :ref="build.slug" 
+              v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: build==vm.build}"
+              @remove="builds=without(builds, build)"
+            />
           </template> 
         </b-row>
       </template>
@@ -38,7 +41,7 @@
 
 <script>
 
-  import { filter,find, keys, map, shuffle, sortBy } from 'lodash'
+  import { filter,find, keys, map, shuffle, sortBy, without } from 'lodash'
 
   const sections = {
     top: 'top',
@@ -116,6 +119,7 @@
     },
 
     watch: {
+
       build: {
         immediate: true,
         handler(b) {
@@ -132,6 +136,7 @@
           }
         }
       }
+
     },
 
     methods: {
@@ -149,7 +154,7 @@
         }
       },
 
-      keys
+      keys, without
 
     }
 

@@ -28,6 +28,11 @@
                 v-text="local.starred ? '⭐' : '☆'"
               />
               <span v-if="build.starredCount" v-text="build.starredCount"/>
+              <a v-if="admining" href="#" class="grayscale translucent"
+                @click="bubble.patch('build', build, { hidden: true }).then(() => $emit('remove'))"
+              >
+                🙈
+              </a>
             </div>
           </div>        
         </template>

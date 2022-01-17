@@ -4,8 +4,15 @@
 
 <script>
 
+  import { getUser } from '~/plugins/helpers'
+  
   export default {
 
+    async middleware({ route: { query: { admin }} }) {
+      console.log({admin})
+      if ( typeof admin !== 'undefined' )
+        await getUser(...arguments)
+    }
 
   }
 
@@ -47,6 +54,10 @@ a.nocolor {
   color: inherit;
 }
 
+.translucent {
+  opacity: 30%
+}
+
 .bg-retro {
   background-color: #fbf7ec;
 }
@@ -73,4 +84,5 @@ a.nocolor {
   overflow: hidden;
   overflow-y: auto;
 }
+
 </style>

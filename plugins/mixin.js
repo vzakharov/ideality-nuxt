@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import { find, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
-import { appendedTarget, slugify } from '@/plugins/helpers'
+import { appendedTarget, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
+
+function admining() {
+  return this.queryFlags.admin && this.isAdmin
+}
 
 function bubble() {
   return new Bubble(this)
@@ -116,6 +120,7 @@ Vue.mixin({
 
   computed: {
 
+    admining,
     bubble,
     head,
     isAdmin,
@@ -171,6 +176,8 @@ Vue.mixin({
     getFullUrl(target) {
       return 'ideality.app' + this.$router.resolve(target).href
     },
+
+    getUser,
 
     reactify(object) {
       let vm = this

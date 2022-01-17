@@ -105,8 +105,8 @@ function Bubble({$auth, token } = {}) {
     destroy: (type, thing) =>
       axios.delete(`obj/${type}/${thing.id}`).then(console.log),
 
-    patch: (type, thing) => 
-      axios.patch(`obj/${type}/${thing.id}`, unparse(omit(thing, 'Slug', 'id'))),
+    patch: (type, thing, changes) => 
+      axios.patch(`obj/${type}/${thing.id}`, changes || unparse(omit(thing, 'slug', 'id'))),
 
     post: async (type, thing) => {
       try {
