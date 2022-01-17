@@ -41,6 +41,7 @@
   import { filter,find, keys, map, shuffle, sortBy } from 'lodash'
 
   const sections = {
+    top: 'top',
     recent: 'recent',
     bookmarked: '🔖',
     'a-z': 'a-z',
@@ -51,7 +52,7 @@
 
     middleware({ redirect, route: { params: { section }} }) {
       if (!section)
-      redirect({name: 'ideas-section', params: {section: 'recent'}})
+      redirect({name: 'ideas-section', params: {section: 'top'}})
     },
 
     data() {
@@ -97,12 +98,19 @@
       },
 
       sortedBuilds() {
-        switch(this.route.params.section) {
-          case 'shuffled': return shuffle(this.builds)
-          case 'a-z':
-          case 'bookmarked': return sortBy(this.builds, 'name')
+        let { builds, route: { params: { section }}} = this
+
+        if ( section == 'shuffled' )
+          builds = shuffle(builds)
+
+        if ( section != 'recent' )
+          builds = sortBy(builds, 'name')
+
+        if ( section == 'top' ) {
+          builds = sortBy(builds, b => (-b.starredCount || 0) - b.starred/2)
         }
-        return this.builds
+
+        return builds
       }
 
     },
