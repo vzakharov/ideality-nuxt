@@ -48,7 +48,8 @@
       this.syncLocal('builder', {
         parentPath: 'projects',
         where: { slug },
-        slugifyName: true
+        slugifyName: true,
+        inline: true
       })
     },
 

@@ -55,7 +55,8 @@
 
     mounted() {
       this.syncLocal('p/new', {
-        select: ['code']
+        select: ['code'],
+        inline: true
       })
       if ( !this.code )
         this.code = {}

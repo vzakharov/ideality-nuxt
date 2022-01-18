@@ -4,6 +4,7 @@ import { appendedTarget, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
+import { isPlural } from 'pluralize'
 
 function admining() {
   return this.queryFlags.admin && this.isAdmin
@@ -207,13 +208,16 @@ Vue.mixin({
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, select, where, slugifyName, as } = {}) {
+    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, inline } = {}) {
 
-      let local, data, item, id, items, collection, slug, path
+      let local, data, items, collection
+      let isList = isPlural(localKey)
+
+      if ( !inline && !as ) as = localKey
 
       const getData = () => {
         local = load(localStorage.getItem(localKey)) || (
-          where ? [] : {}
+          isPlural ? [] : {}
         )
         collection = from ? get(local, from) : local
         if ( where ) {
@@ -227,10 +231,18 @@ Vue.mixin({
         return data
       }
 
-      Object.assign(this, {
-        ...as ? { [as]: getData()} : getData(),
-        $localLoaded: true
-      })
+      getData()
+
+      if ( mergeBy ) {
+        let list = this[as]
+        for ( let item of list ) {
+          this.setFieldsFor(item, find( data, { [mergeBy]: item[mergeBy]} ) || {})
+        }
+      } else
+        Object.assign(this, {
+          ...as ? { [as]: data} : data,
+          $localLoaded: true
+        })
       
       forEach(select ? isArray(select) ? select : [select] : as ? [as] : keys(this.$data), key => {
         

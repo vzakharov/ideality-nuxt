@@ -157,11 +157,13 @@
 
       this.syncLocal('builds', {
         where: { slug },
-        select: ['secret', 'linkSent']
+        select: ['secret', 'linkSent'],
+        inline: true
       })
 
       this.syncLocal('user', {
-        select: 'email'
+        select: 'email',
+        inline: true
       })
 
       secret = secret || this.secret

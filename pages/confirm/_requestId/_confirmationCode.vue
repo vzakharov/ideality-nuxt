@@ -8,23 +8,32 @@
         Oops, the confirmation code seems incorrect. Please check your mailbox and try again.
       </b-alert>
     </div>
+    <Loading v-else message="Checking the code, one sec..."/>
   </div>
 </template>
 
 <script>
+
+  import { find } from 'lodash'
+
   export default {
 
     data() {
       return {
         ok: false,
-        loaded: false
+        loaded: false,
+        builds: null
       }
     },
 
-    async fetch() {
+    async mounted() {
+      this.syncLocal('builds')
+
       let { route: { params }} = this
       try {
-        await this.bubble.go('confirmBuildRequest', params)
+        let { id } = await this.bubble.go('confirmBuildRequest_v2', params)
+        let build = find(this.builds, { id })
+        this.setFieldsFor(build, params)
         this.ok = true
       } catch(e) {
       } finally {

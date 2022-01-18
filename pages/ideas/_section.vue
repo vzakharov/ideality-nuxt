@@ -81,13 +81,7 @@
         $store.commit('set', { builds })
       }
       Object.assign(this, { builds })
-      this.syncLocal('builds', { as: 'localBuilds' })
-      for ( let local of this.localBuilds ) {
-        let build = find(this.builds, { slug: local.slug })
-        if ( build ) {
-          this.setFieldsFor(build, local)
-        }
-      }
+      this.syncLocal('builds', { mergeBy: 'id' })
     },
 
     computed: {
@@ -140,19 +134,6 @@
     },
 
     methods: {
-
-      getLocalBuild({ slug }) {
-        return find(this.localBuilds, { slug })
-      },
-
-      setLocalBuild({ slug }, values) {
-        let localBuild = this.getLocalBuild({ slug })
-        if ( !localBuild ) {
-          this.localBuilds = [ ...this.localBuilds, { slug, ...values } ]
-        } else {
-          this.setFieldsFor(localBuild, values)
-        }
-      },
 
       keys, without
 

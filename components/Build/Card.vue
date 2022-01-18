@@ -26,7 +26,7 @@
 
               <a href="#" class="nocolor"
                 @click.prevent="toggleStarred"
-                v-text="local.starred ? '⭐' : '☆'"
+                v-text="build.starred ? '⭐' : '☆'"
               />
               <span v-if="build.starredCount" v-text="build.starredCount"/>
 
@@ -61,24 +61,23 @@
 
     data() {
       return {
-        accessModal: false,
-        local: {}
+        accessModal: false
       }
     },
 
-    mounted() {
-      let { slug } = this.build
-      this.syncLocal('builds', {
-        where: { slug },
-        as: 'local'
-      })
-    },
+    // mounted() {
+    //   let { id } = this.build
+    //   this.syncLocal('builds', {
+    //     where: { id },
+    //     as: 'local'
+    //   })
+    // },
 
     computed: {
 
       bookmarked() {
-        let { local } = this
-        let bookmarked = local.starred || local.accessRequested || local.secret
+        let { build } = this
+        let bookmarked = build.starred || build.accessRequested || build.secret
         return bookmarked
       }
 
@@ -87,10 +86,10 @@
     methods: {
 
       toggleStarred() {
-        let { $axios, build, local, local: { starred } } = this
+        let { $axios, build, build: { starred } } = this
         build.starredCount = build.starredCount + ( starred ? -1 : 1 )
         $axios.post('/api/build/starred', { build, clear: starred }).then(({ data }) => this.setFieldsFor(this.build, this.log(data)))
-        this.$set(local, 'starred', !starred)
+        build.starred = !starred
       }
 
     }
