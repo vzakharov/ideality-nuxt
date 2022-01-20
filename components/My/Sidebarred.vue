@@ -8,7 +8,7 @@
     <!-- <b-modal v-model="showModal" no-fade>
       <slot name="sidebar"/>
     </b-modal> -->
-    <b-col id="sidebar" :cols="$slots.content ? narrow ? 8 : 3 : 12"
+    <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
       v-show="!narrow || !$slots.content || showModal"
       :class="{
         scrollable: true,

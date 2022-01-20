@@ -3,7 +3,7 @@
     <b-row align-h="center">
       <b-col cols="12" class="border bg-light p-3">
         <h1>
-          {{ user.slug }}’s dashboard
+          {{ $auth.user.slug }}’s dashboard
         </h1>
         <a class="link-secondary small" href="#" v-text="'Log out'"
           @click="$auth.setUser(null); $auth.logout()"
@@ -16,7 +16,7 @@
         <div>
           <strong>TOTAL runs left</strong>:
             <Fetchable 
-              :promise="bubble.get('user', user.id)" 
+              :promise="bubble.get('user', $auth.user.id)" 
               v-model="userDetails"
             >
               {{ userDetails.runsLeft }}

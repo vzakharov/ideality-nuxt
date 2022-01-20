@@ -27,19 +27,14 @@
     <b-alert :show="accessRequested" variant="success" v-html="$md.render(
 `### We received your request!
 
-If you haven’t already, please **follow the link in the confirmation email we sent you**, so we can keep you posted.`)"/>
+Please **confirm your email** by clicking the link in an email we just sent you.
+
+You can withdraw your request at any time by following the unsubscribe link in the same email.`)"/>
     <b-alert :show="error" variant="danger">Something went wrong. Please try again later.</b-alert>
-    <b-button v-if="confirmationCode" variant="outline-secondary" size="sm"
-      @click="unsubscribe"
-    >
-      Unsubscribe
-    </b-button>
   </b-modal>
 </template>
 
 <script>
-
-  import { pick } from 'lodash'
 
   export default {
 
@@ -54,15 +49,17 @@ If you haven’t already, please **follow the link in the confirmation email we 
         comments: '',
         accessRequested: false,
         confirmationCode: null,
+        creationCode: null,
         requestId: null,
-        unsubscribed: false
+        unsubscribed: false,
+        justRequested: false
       }
 
     },
 
     mounted({ build: { id }} = this) {
       this.syncLocal('builds', {
-        select: ['accessRequested', 'unsubscribed', 'requestId', 'confirmationCode'],
+        select: ['accessRequested', 'unsubscribed', 'requestId', 'confirmationCode', 'creationCode'],
         where: { id },
         inline: true
       })
@@ -84,9 +81,10 @@ If you haven’t already, please **follow the link in the confirmation email we 
         let { email, comments, build} = this
         try {
           this.sending = true
-          await this.bubble.go('buildRequest', { build: build.id, email, comments })
+          this.creationCode = await this.bubble.go('buildRequest_v2', { build: build.id, email, comments })
           this.accessRequested = true
           this.build.accessRequested = true
+          this.justRequested = true
           // Todo: combine all into build
         } catch(error) {
           Object.assign(this, { error })
@@ -94,7 +92,9 @@ If you haven’t already, please **follow the link in the confirmation email we 
       },
 
       async unsubscribe() {
-        await this.bubble.go('cancelBuildRequest', pick(this, ['requestId', 'confirmationCode']))
+        let { email, creationCode } = this
+        let { id } = build
+        await this.bubble.go('cancelBuildRequest', { id, email, creationCode })
         let changes = {
           unsubscribed: true,
           accessRequested: undefined,
