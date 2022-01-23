@@ -4,7 +4,7 @@
       <span :class="{gray: section}"> {{ narrow && section ? '' : 'Ideality '}}▲ </span>
       <nuxt-link v-if="section" :to="target" class="nocolor" v-text="subsection || section"/>
     </b-navbar-brand>
-    <b-navbar-nav class="me-auto">
+    <b-navbar-nav class="me-auto" style="flex-direction:row">
       <slot name="custom-nav"/>
     </b-navbar-nav>
     <b-navbar-toggle target="navbar-collapse"/>
