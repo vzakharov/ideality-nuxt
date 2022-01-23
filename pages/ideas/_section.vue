@@ -111,7 +111,7 @@
           return
         let { build } = this.$store.state
         console.log(build)
-        if ( build )
+        if ( build?.slug == slug )
           return build
         if (builds && slug ) {
           build = find(builds, { slug })
