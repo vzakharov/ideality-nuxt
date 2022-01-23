@@ -15,7 +15,7 @@
         Ideality&nbsp;<span class="fw-bold">Builder</span>
       </template>
     </b-modal>
-    <Loading v-if="!builds" message="Loading the ideas, hold on a sec..."/>
+    <Loading v-if="!builds && !build" message="Loading the ideas, hold on a sec..."/>
     <MySidebarred v-else v-bind="{expanded}" v-on="{setFields}">
       <template #sidebar>
         <ul class="nav nav-tabs bg-white">
@@ -107,10 +107,16 @@
 
       build() {
         let { builds, $route: { params: { section: slug }} } = this
+        let { build } = this.$store.state
+        console.log(build)
+        if ( build )
+          return build
         if ( tabs[slug] || slug == 'about' )
           return
         if (builds && slug ) {
-          return find(builds, { slug })
+          build = find(builds, { slug })
+          this.$store.commit('set', { build })
+          return build
         }
       },
 

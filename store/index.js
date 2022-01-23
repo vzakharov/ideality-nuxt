@@ -1,6 +1,7 @@
 import { get } from 'lodash'
 
 export const state = () => ({
+  build: null,
   builds: null,
   path: '',
   local: {
