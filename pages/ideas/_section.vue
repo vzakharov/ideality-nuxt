@@ -107,12 +107,12 @@
 
       build() {
         let { builds, $route: { params: { section: slug }} } = this
+        if ( !slug || tabs[slug] || slug == 'about' )
+          return
         let { build } = this.$store.state
         console.log(build)
         if ( build )
           return build
-        if ( tabs[slug] || slug == 'about' )
-          return
         if (builds && slug ) {
           build = find(builds, { slug })
           this.$store.commit('set', { build })
