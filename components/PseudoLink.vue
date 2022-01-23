@@ -7,7 +7,7 @@
 
 <script>
 
-  import { pick } from 'lodash'
+  import { omit } from 'lodash'
 
   export default {
 
@@ -15,12 +15,16 @@
 
     computed: {
 
+      updatedRoute() {
+        return omit(this.$router.resolve(this.updatedTarget).route, ['matched'])
+      },
+
       updatedTarget() {
         return this.appendedTarget(this.to)
       },
 
       updatedUrl() {
-        return this.$router.resolve(this.updatedTarget).href
+        return this.updatedRoute.path
       }
 
     },
@@ -28,11 +32,11 @@
     methods: {
 
       updateRoute() {
-        let { updatedUrl, replace, updatedTarget } = this
+        let { updatedUrl, replace, updatedRoute: route } = this
         window.history[replace ? 'replaceState' : 'pushState'](
           null, null, updatedUrl
         )
-        this.$store.commit('set', { route: pick(updatedTarget, ['params', 'query', 'hash']) })
+        this.$store.commit('set', { route })
       }
 
     }

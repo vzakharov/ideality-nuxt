@@ -1,17 +1,27 @@
 <template>
-  <Nuxt />
+  <Nuxt/>
 </template>
 
 <script>
 
-  import { getUser } from '~/plugins/helpers'
-  
+  import { loggedInMiddleware } from '~/plugins/helpers'
+
   export default {
 
-    async middleware({ route: { query: { admin }} }) {
-      console.log({admin})
-      if ( typeof admin !== 'undefined' )
-        await getUser(...arguments)
+    async middleware({ route: { query } }) {
+      if ( typeof query.admin !== 'undefined' )
+        return loggedInMiddleware(...arguments)
+    },
+
+    mounted() {
+      let setWidth = () => {
+        this.$store.commit('set', { width: window.innerWidth })
+      }
+
+      setWidth()
+      window.onresize = () => {
+        setWidth()
+      }  
     }
 
   }

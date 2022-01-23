@@ -1,7 +1,7 @@
 <template>
   <b-container fluid="lg" class="pt-3">
     <b-row>
-      <Breadcrumbs v-if="!ephemeral"/>
+      <Breadcrumbs class="mb-3" v-if="!ephemeral"/>
       <b-navbar>
         <b-navbar-brand>
           <h2 class="ideality-widget-heading">

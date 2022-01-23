@@ -1,11 +1,16 @@
 <template>
   <NavPublic>
+    <template #subscript>
+      <div class="small gray">
+        <slot/>
+      </div>
+    </template>
     <b-navbar-nav>
       <b-nav-item-dropdown text="Products">
         <b-dropdown-item
           v-for="item in [
+            { caption: 'Builder', to: { name: 'ideas-section' } },
             { caption: 'Widget', to: {name: 'widget' }},
-            { caption: 'Chat', to: { name:'index', hash: '#chat' } },
             { caption: 'Studio', to: { name:'index', hash: '#studio' } }
           ]"
           :key="item.caption"

@@ -12,7 +12,8 @@
             <nuxt-link 
               class="nocolor"
               v-text="build.name"
-              :to="{hash: '#' + build.slug}"
+              :to="{params: {section: build.slug}}"
+              @click.native="$emit('routed')"
             />
           </h5>
         </template>

@@ -15,7 +15,7 @@
       </p>
       <b-form>
         <MyForm v-model="request" :fields="{
-          email: { id: 'email', type: 'email', placeholder: 'gbr@openai.com', lazy: true, handler: setSlugFromEmail,
+          email: { id: 'email', type: 'email', placeholder: 'gdb@openai.com', lazy: true, handler: setSlugFromEmail,
             props: {
               name: 'username',
               autocomplete: 'username'

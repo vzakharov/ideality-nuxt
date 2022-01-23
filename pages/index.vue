@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavHomepage/>
+    <NavPublic/>
     <b-container fluid>
       <b-row align-h="center" class="vh bg-retro gx-4">
           <b-col cols="12" md="5" align-self="center" class="text-center text-md-start">

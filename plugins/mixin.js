@@ -46,6 +46,10 @@ function isAdmin() {
   return this.$auth.user && this.$auth.user.isAdmin
 }
 
+function narrow() {
+  return this.width < 768
+}
+
 function queryFlags() {
   return mapValues(
     pickBy(this.route.query,
@@ -54,7 +58,7 @@ function queryFlags() {
 }
 
 function route() {
-  return this.$store.state.route || this.$route
+  return this.$route
 }
 
 function setDefaults(object, defaults) {
@@ -64,6 +68,10 @@ function setDefaults(object, defaults) {
     }
   }
   return object
+}
+
+function width() {
+  return this.$store.state.width
 }
 
 
@@ -95,23 +103,12 @@ Vue.mixin({
         window.vms = {}
       
       if (!window.vms[this._name])
-        window.vms[this._name] = []
+        window.vms[this._name] = {}
       
-      window.vms[this._name].push(this)
+      window.vms[this._name][this._uid] = this
 
       if (!window.axios)
         window.axios = axios 
-
-      if ( typeof this.width !== 'undefined' ) {
-        let setWidth = () => {
-          this.width = window.innerWidth
-        }
-  
-        setWidth()
-        window.onresize = () => {
-          setWidth()
-        }  
-      }
 
     }
 
@@ -123,17 +120,22 @@ Vue.mixin({
     bubble,
     head,
     isAdmin,
+    narrow,
     queryFlags,
     route,
     widgetHeader,
+    width
 
   },
 
-  watch: {
-    '$route': () => {
-      window.vms = []
-    }
-  },
+// watch: {
+//   '$route': { deep: true, handler: function(route) {
+//     if (this.$parent) return
+//     // window.vms = []
+//     console.log({route})
+//     // this.$store.commit('set', { route })
+//   }}
+// },
 
   methods: {
 
@@ -170,6 +172,8 @@ Vue.mixin({
       anchor.download = `${name}.${format}`
       anchor.click()
     },
+
+    get,
 
     getFullUrl(target) {
       return 'ideality.app' + this.$router.resolve(target).href
@@ -310,6 +314,15 @@ Vue.mixin({
       object.toggle = () => object.state = !object.state
 
       return object
+
+    },
+
+    isRoute(route, defaultRoute) {
+      
+      return Object.defineProperty({}, 'state', {
+        get: () => !!find(route, ( value, key ) => dump(this.$route[key]) == dump(value)),
+        set: value => this.$router.push(appendedTarget({ route: this.$route, ...value ? route : defaultRoute}))
+      })
 
     },
 

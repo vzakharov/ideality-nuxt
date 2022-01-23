@@ -1,6 +1,6 @@
 <template>
   <b-container class="mt-5" v-bind="{fluid}">
-    <Breadcrumbs v-if="!prop('hideBreadcrumbs')"/>
+    <Breadcrumbs class="mb-3" v-if="!prop('hideBreadcrumbs')"/>
     <slot/>
   </b-container>
 </template>

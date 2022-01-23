@@ -1,17 +1,32 @@
 <template>
+  <div>
+    <NavPublic section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }">
+      <template #custom-nav v-if="build">
+        <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
+        <b-nav-item :to="{ name: 'i-slug', params: build }" link-classes="ps-0">
+          ⛶
+        </b-nav-item>
+      </template>
+    </NavPublic>
   <b-container fluid>
+    <b-modal size="lg" hide-footer v-model="isRoute({ params: { section: 'about' } }, { params: { section: 'top'} }).state">
+      <h2 class="display-6">Turn your ideas into tangible assets</h2>
+      <template #modal-title>
+        Ideality&nbsp;<span class="fw-bold">Builder</span>
+      </template>
+    </b-modal>
     <Loading v-if="!builds" message="Loading the ideas, hold on a sec..."/>
-    <MySidebarred v-else>
+    <MySidebarred v-else v-bind="{expanded}" v-on="{setFields}">
       <template #sidebar>
         <ul class="nav nav-tabs bg-white">
           <li class="nav-item"
-            v-for="section in keys(sections)" :key="section"
+            v-for="section in keys(tabs)" :key="section"
           >
-            <PseudoLink :class="`
+            <nuxt-link :class="`
                 nav-link nocolor grayscale
                 ${section==route.params.section && 'active'}
               `"
-              :to="{params: {section}}" v-text="sections[section]"
+              :to="{params: {section}}" v-text="tabs[section]"
             />
           </li>
         </ul>
@@ -25,25 +40,28 @@
           }
         }">
           <template v-for="build in sortedBuilds">
-            <BuildCard :key="build.id" :ref="build.slug" 
+            <BuildCard :key="build.id" :id="'build-'+build.slug" 
               v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: build==vm.build}"
               @remove="builds=without(builds, build)"
+              @routed="expanded = false"
             />
           </template> 
         </b-row>
       </template>
       <template #content v-if="build">
-        <Build v-bind="{build}"/>
+        <Build v-bind="{build}" hide-powered/>
       </template>
     </MySidebarred>
   </b-container>
+  </div>
 </template>
 
 <script>
 
-  import { filter,find, keys, map, shuffle, sortBy, without } from 'lodash'
+  import { filter, find, keys, map, shuffle, sortBy, without } from 'lodash'
+  import { appendedTarget } from '~/plugins/helpers'
 
-  const sections = {
+  const tabs = {
     top: 'top',
     recent: 'recent',
     bookmarked: '🔖',
@@ -53,54 +71,58 @@
 
   export default {
 
-    middleware({ redirect, route: { params: { section }} }) {
-      if (!section)
-      redirect({name: 'ideas-section', params: {section: 'top'}})
+    // middleware({ redirect, route, route: { params: { section }} }) {
+    //   if (!section)
+    //     redirect(appendedTarget({route, name: 'ideas-section', params: {section: 'top'}}))
+    // },
+
+    key(route) {
+      return route.name
     },
 
     data() {
 
       return {
         builds: null,
+        expanded: null,
         localBuild: null,
         localBuilds: [],
-        sections
+        tabs
       }
 
     },
 
     async mounted() {
-      let { $store } = this
-      let builds = $store.state.builds?.map?.(build => ({...build}))
-      console.log({builds})
-      if ( !builds ) {
-        builds = await this.bubble.get('builds', {}, {
+      this.builds = await this.bubble.get('builds', {
+          ...!this.admining && { hidden: false }
+        }, {
           sort_field: 'Created Date',
           descending: true
         })
-        $store.commit('set', { builds })
-      }
-      Object.assign(this, { builds })
       this.syncLocal('builds', { mergeBy: 'id' })
+      window.builds = this.builds
     },
 
     computed: {
 
       build() {
-        let { builds, route: { hash: slug } } = this
+        let { builds, $route: { params: { section: slug }} } = this
+        if ( tabs[slug] || slug == 'about' )
+          return
         if (builds && slug ) {
-          slug = slug.slice(1)
           return find(builds, { slug })
         }
       },
 
       sortedBuilds() {
-        let { builds, route: { params: { section }}} = this
+        let { builds, $route: { params: { section }}} = this
+
+        if ( !this.tabs[section] )
+          section = 'top'
 
         if ( section == 'shuffled' )
           builds = shuffle(builds)
-
-        if ( section != 'recent' )
+        else if ( section != 'recent' )
           builds = sortBy(builds, 'name')
 
         if ( section == 'top' ) {
@@ -119,22 +141,34 @@
         handler(b) {
           if (b) {
             this.$nextTick(() => {
-              let element = this.$refs[b.slug]?.[0]
+              let element = document.getElementById('build-'+b.slug)//this.$refs['build-'+b.slug]?.[0]
               if ( element ) {
-                element.$el.scrollIntoView?.()
-                // console.log({element})
+                // element.$el.scrollIntoView()
+                element.scrollIntoViewIfNeeded()
+                console.log(element)
                 document.getElementById('sidebar')?.scrollBy(0, -50)
                 document.getElementById('content').scrollTop = 0
+                window.scrollTo(0, 0)
               }
             })
           }
         }
+      },
+
+      builds(builds) {
+        console.log({builds})
+        if (!builds)
+          this.builds = window.builds
+          // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
       }
 
     },
 
     methods: {
 
+      fetchBuilds() {
+
+      },
       keys, without
 
     }

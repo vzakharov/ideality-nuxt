@@ -45,7 +45,7 @@
         <b-form>
           <MyForm v-model="vm"
             :fields="{
-              email: { placeholder: 'gbr@openai.com'},
+              email: { placeholder: 'gdb@openai.com'},
               description: { placeholder: 'We are ….. We’re building an app for …. We want to …. Here are some links: …', multiline: true, description: 'Be as detailed as possible. The more we know, the more we can help you.' }
             }"
           />

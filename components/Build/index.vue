@@ -13,7 +13,7 @@
         />
       </b-col>
     </b-row>
-    <div style="position: absolute; bottom: 10px; right: 10px">
+    <div v-if="!prop('hidePowered')" style="position: absolute; bottom: 10px; right: 10px">
       <PoweredByIdeality target="12l" class="d-none d-md-block"/>
     </div>
     <BlockWaitlist v-bind="{build}"/>
@@ -24,7 +24,7 @@
 <script>
   export default {
 
-    props: ['build']
+    props: ['build', 'hidePowered']
 
   }
 

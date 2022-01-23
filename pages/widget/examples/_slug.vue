@@ -1,7 +1,7 @@
 <template>
   <b-container fluid="md" class="mt-3 mb-5" style="max-width: 920px">
     <b-row>
-      <Breadcrumbs/>
+      <Breadcrumbs class="mb-3"/>
     </b-row>
     <b-row>
       <b-col class="bg-white">

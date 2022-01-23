@@ -11,13 +11,14 @@ export const state = () => ({
   route: null,
   updatedRoute: null,
   tree: {  },
-  imagePromises: {}
+  imagePromises: {},
+  width: null
 })
 
 export const mutations = {
 
   set(state, values) {
-    Object.assign(state, JSON.parse(JSON.stringify(values)))
+    Object.assign(state, values)
   },
 
   setFields(state, [ key, values ]) {

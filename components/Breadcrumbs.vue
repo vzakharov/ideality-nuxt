@@ -1,8 +1,8 @@
 <template>
-  <div class="mb-3">
+  <div>
     <small v-for="(crumb, i) in crumbs" :key="partialPath(i)">
       <span v-if="i" v-text="' / '"/>
-      <nuxt-link :to="partialPath(i)" v-text="full[crumb] || crumb || '▲'"/>
+      <nuxt-link :to="partialPath(i)" v-text="full[crumb] || crumb || '▲' "/>
     </small>
   </div>
 </template>
@@ -11,23 +11,24 @@
 
   export default {
 
+    props: ['noHome'],
+
     data() {
       return {
         full: {
           i: 'ideas'
-        },
-        path: ''
+        }
       }
-    },
-
-    mounted() {
-      this.path = window.location.pathname
     },
 
     computed: {
 
+      path() {
+        return this.route.path
+      },
+
       crumbs() {
-        return this.path.split('/')
+        return this.path.split('/').slice(this.prop('noHome') ? 1 : 0)
       }
 
     },

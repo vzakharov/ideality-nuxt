@@ -65,6 +65,13 @@ async function keyedPromises(promises) {
 
 }
 
+async function loggedInMiddleware({ store: { state: { auth: { loggedIn }}}, redirect, route: { fullPath } }) {
+  if ( loggedIn )
+    await getUser(...arguments)
+  else
+    return redirect({name: 'login', query: { then: fullPath }})
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -84,6 +91,7 @@ export {
   filteredParameters,
   getUser,
   keyedPromises,
+  loggedInMiddleware,
   sleep,
   slugify
 

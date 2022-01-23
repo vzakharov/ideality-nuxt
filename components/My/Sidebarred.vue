@@ -1,57 +1,34 @@
 <template>
-  <b-row>
-    <b-navbar toggleable="md" v-if="$slots.content && width < 768">
-      <b-button @click="showModal=!showModal" variant="light" size="small" target="nav-collapse">
-        <span class="navbar-toggler-icon small"></span>
-      </b-button>
-    </b-navbar>
-    <!-- <b-modal v-model="showModal" no-fade>
-      <slot name="sidebar"/>
-    </b-modal> -->
-    <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
-      v-show="!narrow || !$slots.content || showModal"
-      :class="{
-        scrollable: true,
-        shadow: narrow
-      }"
-      :style="narrow && `position:absolute; top: ${$slots.content ? 50 : 0}px`"
-    >
-      <slot name="sidebar"/>
-    </b-col>
-    <b-col id="content" v-if="$slots.content" class="scrollable">
-      <div style="position:absolute;right:20px;top:0px;opacity:30%">
-        <nuxt-link class="close" :to="appendedTarget({ reset: { hash: true }})">
-          ×
-        </nuxt-link>
-      </div>
-      <slot name="content"/>
-    </b-col>
-  </b-row>
+  <div>
+    <b-row ref="container">
+      <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
+        v-show="!$slots.content || expanded"
+        :class="{
+          scrollable: expanded,
+          shadow: narrow
+        }"
+        :style="narrow && { position: 'absolute', top: $refs.container && ( $refs.container.offsetTop + 'px' )}"
+      >
+        <slot name="sidebar"/>
+      </b-col>
+      <b-col id="content" v-if="$slots.content" :class="{ scrollable: expanded }">
+        <slot name="content"/>
+      </b-col>
+    </b-row>
+  </div>
 </template>
 
 <script>
 
   export default {
 
-    data() {
-      return {
-        showModal: false,
-        width: null
-      }
-    },
+    props: ['expanded'],
 
-    watch: {
-      '$route.hash': function(hash) {
-        console.log({hash})
-        this.showModal = false  
-      }
-    },
-
-    computed: {
-      narrow() {
-        return this.width < 768
-      }
-    }
+    // watch: {
+    //   narrow: { immediate: true, handler(narrow) {
+    //     this.$emit('setFields', { expanded: !narrow })
+    //   }}
+    // }
 
   }
 
