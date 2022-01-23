@@ -13,7 +13,8 @@ export const state = () => ({
   updatedRoute: null,
   tree: {  },
   imagePromises: {},
-  width: null
+  width: null,
+  test: 'hello world'
 })
 
 export const mutations = {

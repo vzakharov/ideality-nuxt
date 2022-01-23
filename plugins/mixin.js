@@ -70,6 +70,13 @@ function setDefaults(object, defaults) {
   return object
 }
 
+function store() {
+  return Object.defineProperties({}, mapValues(this.$store.state, (value, key) => ({
+    get: () => this.$store.state[key],
+    set: value => this.$store.commit('set', { [key]: value })
+  })))
+}
+
 function width() {
   return this.$store.state.width
 }
@@ -123,6 +130,7 @@ Vue.mixin({
     narrow,
     queryFlags,
     route,
+    store,
     widgetHeader,
     width
 
