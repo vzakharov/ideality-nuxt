@@ -4,6 +4,7 @@ export const state = () => ({
   build: null,
   builds: null,
   headerHeight: 0,
+  imagePromises: {},
   path: '',
   local: {
     pending: true

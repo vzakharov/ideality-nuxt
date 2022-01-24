@@ -29,6 +29,12 @@
       window.onresize = () => {
         setWidth()
       }  
+    },
+
+    watch: {
+      '$route'() {
+        this.store.headerHeight = 0
+      }
     }
 
   }
