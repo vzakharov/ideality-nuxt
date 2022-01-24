@@ -27,7 +27,7 @@
     props: ['build', 'hidePowered'],
 
     mounted() {
-      this.store.headerHeight = this.$el.offsetTop
+      this.store.headerHeight = document.getElementById('header')?.offsetHeight || 0
     }
 
   }

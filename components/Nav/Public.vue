@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="sm" class="border-bottom bg-retro ps-3 px-2">
+  <b-navbar id="header" toggleable="sm" class="border-bottom bg-retro ps-3 px-2">
     <b-navbar-brand :to="{ name:'index' }">
       <span :class="{gray: section}"> {{ narrow && section ? '' : 'Ideality '}}▲ </span>
       <nuxt-link v-if="section" :to="target" class="nocolor" v-text="subsection || section"/>
@@ -34,11 +34,11 @@
             Dashboard
           </b-button>
         </b-nav-form>
-        <b-nav-form v-else>
+        <!-- <b-nav-form v-else>
           <b-button variant="primary" :to="{name: 'request-access'}">
             Request access
           </b-button>
-        </b-nav-form>
+        </b-nav-form> -->
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>

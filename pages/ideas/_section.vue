@@ -1,11 +1,18 @@
 <template>
   <div>
     <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }">
-      <template #custom-nav v-if="build">
-        <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
-        <b-nav-item :to="{ name: 'i-slug', params: build }" link-classes="ps-0">
-          ⛶
-        </b-nav-item>
+      <template #custom-nav>
+        <template v-if="build">
+          <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
+          <b-nav-item :to="{ name: 'i-slug', params: build }" link-classes="ps-0">
+            ⛶
+          </b-nav-item>
+        </template>
+        <b-nav-form v-else>
+          <b-button :to="{name: 'i-new'}" variant="outline-primary">
+            Start building
+          </b-button>
+        </b-nav-form>
       </template>
     </NavPublic>
   <b-container fluid>
@@ -18,15 +25,22 @@
     <Loading v-if="!builds && !build" message="Loading the ideas, hold on a sec..."/>
     <MySidebarred v-else v-bind="{expanded}" v-on="{setFields}">
       <template #sidebar>
+
+        <template v-if="build">
+          <b-row cols="4">
+          </b-row>
+        </template>
+
         <ul class="nav nav-tabs bg-white">
           <li class="nav-item"
             v-for="section in keys(tabs)" :key="section"
           >
-            <nuxt-link :class="`
-                nav-link nocolor grayscale
-                ${section==route.params.section && 'active'}
-              `"
-              :to="{params: {section}}" v-text="tabs[section]"
+            <nuxt-link :class="{
+                'nav-link nocolor grayscale': true,
+                active: section==tab
+              }"
+              :to="{ params: {section} }" v-text="tabs[section]"
+              @click.native="if (section=='shuffled') shuffleBuilds()"
             />
           </li>
         </ul>
@@ -41,7 +55,7 @@
         }">
           <template v-for="build in sortedBuilds">
             <BuildCard :key="build.id" :id="'build-'+build.slug" 
-              v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: build==vm.build}"
+              v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
               @remove="builds=without(builds, build)"
               @routed="expanded = false"
             />
@@ -49,6 +63,13 @@
         </b-row>
       </template>
       <template #content v-if="build">
+        <div style="position:absolute; right: 10px">
+          <nuxt-link class="close"
+            :to="{ name: 'ideas-section' }"
+          >
+            ×
+          </nuxt-link>
+        </div>
         <Build v-bind="{build}" hide-powered/>
       </template>
     </MySidebarred>
@@ -87,7 +108,8 @@
         expanded: null,
         localBuild: null,
         localBuilds: [],
-        tabs
+        tabs,
+        tab: 'top'
       }
 
     },
@@ -100,7 +122,7 @@
           descending: true
         })
       this.syncLocal('builds', { mergeBy: 'id' })
-      window.builds = this.builds
+      // window.builds = this.builds
     },
 
     computed: {
@@ -127,7 +149,7 @@
           section = 'top'
 
         if ( section == 'shuffled' )
-          builds = shuffle(builds)
+          this.shuffleBuilds()
         else if ( section != 'recent' )
           builds = sortBy(builds, 'name')
 
@@ -161,21 +183,34 @@
         }
       },
 
-      builds(builds) {
-        console.log({builds})
-        if (!builds)
-          this.builds = window.builds
+      $data: {deep: true, handler($data) {
+        let { _uid, mounted } = this
+        console.log({ $data, mounted })
+        if ( mounted )
+          window.data = {
+            [_uid]: $data
+          }
+        else
+          Object.assign(this, window.data[_uid] )
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
+      }},
+
+      '$route.params.section'(tab) {
+        if ( tabs[tab] ) {
+          Object.assign(this, { tab })
+        }
+        
       }
 
     },
 
     methods: {
 
-      fetchBuilds() {
-
+      shuffleBuilds() {
+        this.builds = shuffle(this.builds)
       },
-      keys, without
+
+      keys, shuffle, without
 
     }
 

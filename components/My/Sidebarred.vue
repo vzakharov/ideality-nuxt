@@ -1,8 +1,13 @@
 <template>
   <div>
     <b-row ref="container">
-      <transition :name="narrow && 'slide'">
-        <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
+      <transition :name="narrow && $slots.content ? 'slide' : ''">
+        <b-col id="sidebar" 
+          v-bind="{...$slots.content && {
+            cols: 9,
+            sm: 7,
+            md: 3
+          }}"
           v-show="!$slots.content || expanded"
           :class="{
             scrollable: expanded,

@@ -88,7 +88,8 @@ Vue.mixin({
 
     // If the vm involves loading data from localStorage, this is where we start
     return {
-      $localLoaded: false
+      localLoaded: false,
+      mounted: false
     }
 
   },
@@ -117,7 +118,9 @@ Vue.mixin({
       if (!window.axios)
         window.axios = axios 
 
+      this.mounted = true
     }
+    
 
   },
 
@@ -125,7 +128,6 @@ Vue.mixin({
 
     admining,
     bubble,
-    fullHeight,
     head,
     isAdmin,
     narrow,
@@ -254,7 +256,7 @@ Vue.mixin({
       } else
         Object.assign(this, {
           ...as ? { [as]: data} : data,
-          $localLoaded: true
+          localLoaded: true
         })
       
       forEach(select ? isArray(select) ? select : [select] : as ? [as] : keys(this.$data), key => {

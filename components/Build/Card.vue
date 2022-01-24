@@ -3,7 +3,9 @@
       <b-card class="m-2"
         footer-class="small text-muted"
         v-bind="{...active && {
-          'border-variant': 'dark'
+          'border-variant': 'dark',
+          'header-bg-variant': 'primary',
+          'header-text-variant': 'white'
         }}"
         v-if="!bookmarkedOnly || bookmarked"
       >
