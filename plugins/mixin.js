@@ -14,12 +14,6 @@ function bubble() {
   return new Bubble(this)
 }
 
-function fullHeight() {
-  return mapValues(this.$refs, elements => elements?.map(element => ({
-    style: `min-height: calc(100vh - ${element.offsetTop}px)`
-  })))
-}
-
 function head() {
   let { header } = this
   if ( header ) {
