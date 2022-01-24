@@ -24,7 +24,11 @@
 <script>
   export default {
 
-    props: ['build', 'hidePowered']
+    props: ['build', 'hidePowered'],
+
+    mounted() {
+      this.store.headerHeight = this.$el.offsetTop
+    }
 
   }
 

@@ -1,16 +1,18 @@
 <template>
   <div>
     <b-row ref="container">
-      <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
-        v-show="!$slots.content || expanded"
-        :class="{
-          scrollable: expanded,
-          shadow: narrow
-        }"
-        :style="narrow && { position: 'absolute', top: $refs.container && ( $refs.container.offsetTop + 'px' )}"
-      >
-        <slot name="sidebar"/>
-      </b-col>
+      <transition :name="narrow && 'slide'">
+        <b-col id="sidebar" :cols="$slots.content ? narrow ? 9 : 3 : 12"
+          v-show="!$slots.content || expanded"
+          :class="{
+            scrollable: expanded,
+            shadow: narrow
+          }"
+          :style="narrow && { position: 'absolute', top: $refs.container && ( $refs.container.offsetTop + 'px' )}"
+        >
+          <slot name="sidebar"/>
+        </b-col>
+      </transition>
       <b-col id="content" v-if="$slots.content" :class="{ scrollable: expanded }">
         <slot name="content"/>
       </b-col>
@@ -37,7 +39,15 @@
 <style>
 
   #sidebar {
-    background-color: white
+    background-color: white;
   }
+
+.slide-enter-active, .slide-leave-active {
+  transition: .5s;
+}
+.slide-enter, .slide-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transform: translate(-100%, 0);
+}
+
 
 </style>
