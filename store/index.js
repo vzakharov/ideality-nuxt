@@ -3,6 +3,7 @@ import { get } from 'lodash'
 export const state = () => ({
   build: null,
   builds: null,
+  headerHeight: 0,
   path: '',
   local: {
     pending: true

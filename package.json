@@ -34,6 +34,7 @@
     "pluralize": "^8.0.0",
     "vue-async-computed": "^3.9.0",
     "vue-lodash": "^2.1.2",
+    "vue-reactive-refs": "^0.0.2",
     "vue-textarea-autosize": "^1.1.1",
     "watchpack-chokidar2": "^2.0.1"
   }

@@ -85,10 +85,6 @@
 
 <style>
 
-  .vh {
-    height: calc(100vh - 56px);
-  }
-
   .bg-retro {
     background-color: #FBF7EC
   }

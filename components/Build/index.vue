@@ -3,8 +3,8 @@
     <b-row align-v="center" v-for="block, i in build.code.blocks" :key="block.type"
       :class="{
         'bg-light': i == 0,
-        'vh-100': i == 0,
-        'pt-5': i != 0
+        'pt-5': i != 0,
+        'vh': i == 0
       }"
     >
       <b-col>

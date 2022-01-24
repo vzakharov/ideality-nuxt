@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavPublic section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }">
+    <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }">
       <template #custom-nav v-if="build">
         <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
         <b-nav-item :to="{ name: 'i-slug', params: build }" link-classes="ps-0">

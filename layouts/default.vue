@@ -1,5 +1,12 @@
 <template>
-  <Nuxt/>
+  <div>
+    <style>
+      :root {
+        --full-minus-header: calc(100vh - {{ store.headerHeight }}px)
+      }
+    </style>
+    <Nuxt/>
+  </div>
 </template>
 
 <script>
@@ -90,9 +97,13 @@ a.nocolor {
 }
 
 .scrollable {
-  height: 100vh;
+  height: var(--full-minus-header);
   overflow: hidden;
   overflow-y: auto;
+}
+
+.vh {
+  height: var(--full-minus-header)
 }
 
 </style>
