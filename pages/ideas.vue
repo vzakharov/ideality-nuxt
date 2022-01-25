@@ -4,9 +4,6 @@
       <template #custom-nav>
         <template v-if="build">
           <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
-          <b-nav-item :to="{ name: 'i-slug', params: build }" link-classes="ps-0">
-            ⛶
-          </b-nav-item>
         </template>
         <b-nav-form v-else>
           <b-button :to="{name: 'i-new'}" variant="outline-primary">
@@ -22,73 +19,53 @@
         Ideality&nbsp;<span class="fw-bold">Builder</span>
       </template>
     </b-modal>
-    <Loading v-if="!builds && !build" message="Loading the ideas, hold on a sec..."/>
-    <MySidebarred v-else v-bind="{expanded}" v-on="{setFields}">
-      <template #sidebar>
+    <Loading v-if="!builds && !build" message="Loading, hold on a sec..."/>
+    <template v-else>
+      <NavBuildView v-if="build" v-bind="{ build, ...control('expanded') }"/>
+      <MySidebarred v-bind="{expanded}" v-on="{setFields}">
+        <template #sidebar>
 
-        <template v-if="build">
-          <b-row cols="4">
+          <template v-if="build">
+            <b-row cols="4">
+            </b-row>
+          </template>
+
+          <ul class="nav nav-tabs bg-white">
+            <li class="nav-item"
+              v-for="section in keys(tabs)" :key="section"
+            >
+              <nuxt-link :class="{
+                  'nav-link nocolor grayscale': true,
+                  active: section==tab
+                }"
+                :to="{ hash: '#' + section }" v-text="tabs[section]"
+                @click.native="if (section=='shuffled') shuffleBuilds()"
+              />
+            </li>
+          </ul>
+          <b-row v-bind="{
+            ...build ? { cols: 1 } : {
+              cols: 1,
+              'cols-sm': 2,
+              'cols-md': 3,
+              'cols-lg': 4,
+              'cols-xl': 5
+            }
+          }">
+            <template v-for="build in sortedBuilds">
+              <BuildCard :key="build.id" :id="'build-'+build.slug" 
+                v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
+                @remove="builds=without(builds, build)"
+                @routed="expanded = false"
+              />
+            </template> 
           </b-row>
         </template>
-
-        <ul class="nav nav-tabs bg-white">
-          <li class="nav-item"
-            v-for="section in keys(tabs)" :key="section"
-          >
-            <nuxt-link :class="{
-                'nav-link nocolor grayscale': true,
-                active: section==tab
-              }"
-              :to="{ hash: '#' + section }" v-text="tabs[section]"
-              @click.native="if (section=='shuffled') shuffleBuilds()"
-            />
-          </li>
-        </ul>
-        <b-row v-bind="{
-          ...build ? { cols: 1 } : {
-            cols: 1,
-            'cols-sm': 2,
-            'cols-md': 3,
-            'cols-lg': 4,
-            'cols-xl': 5
-          }
-        }">
-          <template v-for="build in sortedBuilds">
-            <BuildCard :key="build.id" :id="'build-'+build.slug" 
-              v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
-              @remove="builds=without(builds, build)"
-              @routed="expanded = false"
-            />
-          </template> 
-        </b-row>
-      </template>
-      <template #content v-if="build">
-        <transition name="slide-down">
-          <div class="sticky-top" v-show="!expanded">
-            <div style="position:absolute" class="mt-2">
-              <b-button v-for="item, i in [
-                  { icon: 'fullscreen', to: { name: 'i-slug', params: build } },
-                  { icon: 'x', to: { name: 'ideas' } }
-                ]" 
-                :key="i" size="sm" variant="outline-secondary" 
-                :to="item.to"
-              >
-                <b-icon :icon="item.icon"/>
-              </b-button>
-              
-            </div>
-            <div style="position:absolute; right: 10px">
-              <nuxt-link class="close"
-                :to="{ name: 'ideas' }"
-              >
-                ×
-              </nuxt-link>
-            </div>
-          </div>
-        </transition>
-        <Build v-bind="{build}" hide-powered/>
-      </template>
-    </MySidebarred>
+        <template #content v-if="build">
+          <Build v-bind="{build}" hide-powered/>
+        </template>
+      </MySidebarred>
+    </template>
   </b-container>
   </div>
 </template>
@@ -112,10 +89,6 @@
     //   if (!section)
     //     redirect(appendedTarget({route, name: 'ideas', params: {section: 'top'}}))
     // },
-
-    key(route) {
-      return route.name
-    },
 
     data() {
 
