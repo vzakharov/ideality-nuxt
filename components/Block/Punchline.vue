@@ -10,7 +10,7 @@
 <script>
 
   import dedent from 'dedent-js'
-  import render from '~/plugins/mixins/render'
+  import render from '~/plugins/render'
 
   export default {
 
