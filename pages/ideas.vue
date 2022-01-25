@@ -95,6 +95,7 @@
       console.log('data', this.$data)
 
       return {
+        build: this.$store.state.build,
         builds: null,
         expanded: null,
         localBuild: null,
@@ -117,21 +118,6 @@
     },
 
     computed: {
-
-      build() {
-        let { builds, hashRoute: slug  } = this
-        if ( !slug || tabs[slug] || slug == 'about' )
-          return
-        let { build } = this.$store.state
-        console.log(build)
-        if ( build?.slug == slug )
-          return build
-        if (builds && slug ) {
-          build = find(builds, { slug })
-          this.$store.commit('set', { build })
-          return build
-        }
-      },
 
       sortedBuilds() {
         let { builds, hashRoute: section } = this
@@ -185,11 +171,21 @@
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
       },
 
-      hashRoute(tab) {
-        if ( tabs[tab] ) {
-          Object.assign(this, { tab })
-        }
+      hashRoute(slug) {
         
+        if ( tabs[slug] ) {
+          Object.assign(this, { tab: slug })
+        } else {
+          let { builds } = this
+
+          if ( !builds || slug == 'about' )
+            return
+
+          let build = find(builds, { slug })
+          this.$store.commit('set', { build })
+          Object.assign(this, { build })
+        }
+
       }
 
     },
