@@ -23,7 +23,7 @@
           <b-alert :show="sent" variant="success">
             We received your request and will get back to you at <strong>{{ email }}</strong> in 24 hours!
           </b-alert>
-          <b-button :variant="sent ? 'outline-secondary' : 'primary'" :size="!sent && 'lg'" @click="hash('request').set()"
+          <b-button :variant="sent ? 'outline-secondary' : 'primary'" :size="!sent && 'lg'" @click="isHash('request').set()"
             v-text="sent ? 'Send another request' : 'Order now for $300'"
           />
         </div>
@@ -37,7 +37,7 @@
           </ul>
         </div>
       </b-row>
-      <b-modal centered hide-header hide-footer v-model="hash('request').state">
+      <b-modal centered hide-header hide-footer v-model="isHash('request').state">
         <div>
           <p>Thank you for your interest!</p>
           <p>Please describe your company, product or use case (if you know one already) below.</p>
@@ -50,7 +50,7 @@
             }"
           />
           <b-button :disabled="!email || !description" type="submit" size="lg" variant="primary" class="mb-2"
-            @click.prevent="bubble.go('sendConsultingRequest', {email, description}).then(() => { sent=true; hash('request').clear()}).catch(()=>window.alert('Something went wrong. Please contact me at vzakharov@gmail.com. ~Vova'))"
+            @click.prevent="bubble.go('sendConsultingRequest', {email, description}).then(() => { sent=true; isHash('request').clear()}).catch(()=>window.alert('Something went wrong. Please contact me at vzakharov@gmail.com. ~Vova'))"
           >
             Send request
           </b-button>

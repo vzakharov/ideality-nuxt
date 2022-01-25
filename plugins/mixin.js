@@ -14,6 +14,10 @@ function bubble() {
   return new Bubble(this)
 }
 
+function hash() {
+  return this.$route.hash.slice(1)
+}
+
 function head() {
   let { header } = this
   if ( header ) {
@@ -132,6 +136,7 @@ Vue.mixin({
 
     admining,
     bubble,
+    hash,
     head,
     isAdmin,
     narrow,
@@ -311,7 +316,7 @@ Vue.mixin({
       return what  
     },
 
-    hash(tag) {
+    isHash(tag) {
 
       let object = {}
       let vm = this
