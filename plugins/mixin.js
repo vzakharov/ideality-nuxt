@@ -211,10 +211,9 @@ Vue.mixin({
       })
     },
 
-    control(what) {
-      let key = findKey(this, what)
+    control(key) {
       return {
-        control: Object.defineProperty({}, what, {
+        model: Object.defineProperty({}, key, {
           get: () => this[key],
           set: value => this[key] = value
         })
