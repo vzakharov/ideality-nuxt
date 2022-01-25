@@ -1,14 +1,14 @@
-<template>
+<template functional>
   <b-button
     v-bind="{
       size: 'sm',
       variant: 'outline-secondary',
-      ...item
+      ...props.item
     }"
-    @click.prevent="item.onclick && item.onclick()"
+    @click.prevent="props.item.onclick && props.item.onclick()"
     onclick="this.blur()"
   >
-    <b-icon :icon="item.icon"/>
+    <b-icon :icon="props.item.icon"/>
   </b-button>
 </template>
 
