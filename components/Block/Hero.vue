@@ -34,11 +34,11 @@
 <script>
 
   import dedent from 'dedent-js'
-  import renderMixin from '~/plugins/render'
+  import render from '~/plugins/render'
 
   export default {
   
-    mixins: [ renderMixin ],
+    mixins: [ render ],
 
     props: ['content', 'size', 'build'],
 
