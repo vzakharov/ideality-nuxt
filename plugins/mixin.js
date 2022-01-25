@@ -332,7 +332,7 @@ Vue.mixin({
 
     },
 
-    isRoute(route, defaultRoute = { reset: mapValues(route, () => true) }) {
+    isRoute(route, defaultRoute = { reset: mapValues(route, always(true)) }) {
       
       return Object.defineProperty({}, 'state', {
         get: () => !!find(route, ( value, key ) => dump(this.$route[key]) == dump(value)),
