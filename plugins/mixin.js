@@ -14,7 +14,7 @@ function bubble() {
   return new Bubble(this)
 }
 
-function hash() {
+function hashRoute() {
   return this.$route.hash.slice(1)
 }
 
@@ -136,7 +136,7 @@ Vue.mixin({
 
     admining,
     bubble,
-    hash,
+    hashRoute,
     head,
     isAdmin,
     narrow,

@@ -55,7 +55,7 @@
         }">
           <template v-for="build in sortedBuilds">
             <BuildCard :key="build.id" :id="'build-'+build.slug" 
-              v-bind="{ build, bookmarkedOnly: hash=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
+              v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
               @remove="builds=without(builds, build)"
               @routed="expanded = false"
             />
@@ -146,7 +146,7 @@
     computed: {
 
       build() {
-        let { builds, hash: slug  } = this
+        let { builds, hashRoute: slug  } = this
         if ( !slug || tabs[slug] || slug == 'about' )
           return
         let { build } = this.$store.state
@@ -161,7 +161,7 @@
       },
 
       sortedBuilds() {
-        let { builds, hash: section } = this
+        let { builds, hashRoute: section } = this
 
         if ( !this.tabs[section] )
           section = 'top'
@@ -212,7 +212,7 @@
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
       },
 
-      hash(tab) {
+      hashRoute(tab) {
         if ( tabs[tab] ) {
           Object.assign(this, { tab })
         }
