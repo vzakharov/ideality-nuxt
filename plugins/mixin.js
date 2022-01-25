@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { find, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
+import { find, findKey, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
 import { always, appendedTarget, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -212,12 +212,12 @@ Vue.mixin({
     },
 
     control(what) {
-      for ( let key of keys(what)) {
-        let value = what[key]
-        return {
-          key: JSON.stringify(value),
-          [key]: value
-        }
+      let key = findKey(this, what)
+      return {
+        control: Object.defineProperty({}, what, {
+          get: () => this[key],
+          set: value => this[key] = value
+        })
       }
     },
 
