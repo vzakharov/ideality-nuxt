@@ -3,6 +3,7 @@ import { get } from 'lodash'
 export const state = () => ({
   build: null,
   builds: null,
+  data: {},
   headerHeight: 0,
   imagePromises: {},
   path: '',

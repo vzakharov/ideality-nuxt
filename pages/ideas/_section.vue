@@ -63,13 +63,29 @@
         </b-row>
       </template>
       <template #content v-if="build">
-        <div style="position:absolute; right: 10px">
-          <nuxt-link class="close"
-            :to="{ name: 'ideas-section' }"
-          >
-            ×
-          </nuxt-link>
-        </div>
+        <transition name="slide-down">
+          <div class="sticky-top" v-show="!expanded">
+            <div style="position:absolute" class="mt-2">
+              <b-button v-for="item, i in [
+                  { icon: 'fullscreen', to: { name: 'i-slug', params: build } },
+                  { icon: 'x', to: { name: 'ideas-section' } }
+                ]" 
+                :key="i" size="sm" variant="outline-secondary" 
+                :to="item.to"
+              >
+                <b-icon :icon="item.icon"/>
+              </b-button>
+              
+            </div>
+            <div style="position:absolute; right: 10px">
+              <nuxt-link class="close"
+                :to="{ name: 'ideas-section' }"
+              >
+                ×
+              </nuxt-link>
+            </div>
+          </div>
+        </transition>
         <Build v-bind="{build}" hide-powered/>
       </template>
     </MySidebarred>
@@ -79,7 +95,7 @@
 
 <script>
 
-  import { filter, find, keys, map, shuffle, sortBy, without } from 'lodash'
+  import { filter, find, keys, map, remove, shuffle, sortBy, without } from 'lodash'
   import { appendedTarget } from '~/plugins/helpers'
 
   const tabs = {
@@ -102,6 +118,8 @@
     },
 
     data() {
+
+      console.log('data', this.$data)
 
       return {
         builds: null,
@@ -183,16 +201,21 @@
         }
       },
 
-      $data: {deep: true, handler($data) {
-        let { _uid, mounted } = this
+      mounted(mounted) {
+        let { _uid, $data, store } = this
         console.log({ $data, mounted })
-        if ( mounted )
-          window.data = {
-            [_uid]: $data
-          }
-        else
-          Object.assign(this, window.data[_uid] )
+        if ( mounted ) {
+          this.$store.commit('setFields', ['data', { ...store.data, [_uid]: {...$data} }])
+        } else {
+          Object.assign(this, store.data[_uid] )
+        }
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
+      },
+
+      '$router.afterHooks[2]': {immediate: true, deep:true, handler(hooks) {
+        debugger
+        remove(hooks, {name: 'bound fixPrepatch'})
+        console.log({hooks})
       }},
 
       '$route.params.section'(tab) {

@@ -71,10 +71,14 @@ function setDefaults(object, defaults) {
 }
 
 function store() {
-  return Object.defineProperties({}, mapValues(this.$store.state, (value, key) => ({
-    get: () => this.$store.state[key],
-    set: value => this.$store.commit('set', { [key]: value })
-  })))
+  let { $store } = this
+  return Object.defineProperties({}, { 
+    ...mapValues($store.state, (value, key) => ({
+      get: () => $store.state[key],
+      set: value => $store.commit('set', { [key]: value })
+    })),
+    commit: (...args) => $store.commit(...args)
+  })
 }
 
 function width() {

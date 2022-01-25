@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-row ref="container">
-      <transition :name="narrow && $slots.content ? 'slide' : ''">
+      <transition :name="narrow && $slots.content ? 'slide-right' : ''">
         <b-col id="sidebar" 
           v-bind="{...$slots.content && {
             cols: 9,
@@ -11,7 +11,8 @@
           v-show="!$slots.content || expanded"
           :class="{
             scrollable: expanded,
-            shadow: narrow
+            shadow: narrow,
+            'bg-white': true
           }"
           :style="narrow && { position: 'absolute', top: $refs.container && ( $refs.container.offsetTop + 'px' )}"
         >
@@ -46,13 +47,6 @@
   #sidebar {
     background-color: white;
   }
-
-.slide-enter-active, .slide-leave-active {
-  transition: .5s;
-}
-.slide-enter, .slide-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  transform: translate(-100%, 0);
-}
 
 
 </style>

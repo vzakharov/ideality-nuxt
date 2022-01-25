@@ -106,4 +106,16 @@ a.nocolor {
   height: var(--full-minus-header)
 }
 
+.slide-right-enter-active, .slide-right-leave-active, .slide-down-enter-active, .slide-down-leave-active {
+  transition: .5s;
+}
+
+.slide-right-enter, .slide-right-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transform: translate(-100%, 0);
+}
+
+.slide-down-enter, .slide-down-leave-to {
+  transform: translate(100%, 0)
+}
+
 </style>
