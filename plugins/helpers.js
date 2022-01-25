@@ -13,6 +13,8 @@ function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
   }
 }
 
+let always = what => () => what
+
 function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration}) {
   let { parameters } = slate || tie
   if ( !parameters )
@@ -88,6 +90,7 @@ function slugify(name, items) {
 export {
 
   appendedTarget,
+  always,
   filteredParameters,
   getUser,
   keyedPromises,

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { find, forEach, get, isArray, set, keys, mapValues, pickBy } from 'lodash'
-import { appendedTarget, getUser, slugify } from '@/plugins/helpers'
+import { always, appendedTarget, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
@@ -332,7 +332,7 @@ Vue.mixin({
 
     },
 
-    isRoute(route, defaultRoute) {
+    isRoute(route, defaultRoute = { reset: mapValues(route, () => true) }) {
       
       return Object.defineProperty({}, 'state', {
         get: () => !!find(route, ( value, key ) => dump(this.$route[key]) == dump(value)),
