@@ -16,7 +16,7 @@
       </template>
     </NavPublic>
   <b-container fluid>
-    <b-modal size="lg" hide-footer v-model="isRoute({ params: { section: 'about' } }, { params: { section: 'top'} }).state">
+    <b-modal size="lg" hide-footer v-model="isRoute({ hash: '#about' }).state">
       <h2 class="display-6">Turn your ideas into tangible assets</h2>
       <template #modal-title>
         Ideality&nbsp;<span class="fw-bold">Builder</span>
@@ -39,7 +39,7 @@
                 'nav-link nocolor grayscale': true,
                 active: section==tab
               }"
-              :to="{ params: {section} }" v-text="tabs[section]"
+              :to="{ hash: '#' + section }" v-text="tabs[section]"
               @click.native="if (section=='shuffled') shuffleBuilds()"
             />
           </li>
@@ -55,7 +55,7 @@
         }">
           <template v-for="build in sortedBuilds">
             <BuildCard :key="build.id" :id="'build-'+build.slug" 
-              v-bind="{ build, bookmarkedOnly: route.params.section=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
+              v-bind="{ build, bookmarkedOnly: hash=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
               @remove="builds=without(builds, build)"
               @routed="expanded = false"
             />
@@ -146,7 +146,7 @@
     computed: {
 
       build() {
-        let { builds, $route: { params: { section: slug }} } = this
+        let { builds, hash: slug  } = this
         if ( !slug || tabs[slug] || slug == 'about' )
           return
         let { build } = this.$store.state
@@ -161,7 +161,7 @@
       },
 
       sortedBuilds() {
-        let { builds, $route: { params: { section }}} = this
+        let { builds, hash: section } = this
 
         if ( !this.tabs[section] )
           section = 'top'
@@ -212,13 +212,7 @@
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
       },
 
-      '$router.afterHooks[2]': {immediate: true, deep:true, handler(hooks) {
-        debugger
-        remove(hooks, {name: 'bound fixPrepatch'})
-        console.log({hooks})
-      }},
-
-      '$route.params.section'(tab) {
+      hash(tab) {
         if ( tabs[tab] ) {
           Object.assign(this, { tab })
         }
