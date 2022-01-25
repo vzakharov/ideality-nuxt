@@ -45,13 +45,14 @@
 </template>
 
 <script>
+
+  import header from '~/plugins/mixins/header'
+
   export default {
     props: ['section', 'subsection', 'target'],
-
-    mounted() {
-      this.store.headerHeight = this.$el.offsetHeight
-    }
+    mixins: [header]
   }
+
 </script>
 
 
