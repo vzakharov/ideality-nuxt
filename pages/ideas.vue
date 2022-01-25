@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }">
+    <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas' }">
       <template #custom-nav>
         <template v-if="build">
           <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
@@ -68,7 +68,7 @@
             <div style="position:absolute" class="mt-2">
               <b-button v-for="item, i in [
                   { icon: 'fullscreen', to: { name: 'i-slug', params: build } },
-                  { icon: 'x', to: { name: 'ideas-section' } }
+                  { icon: 'x', to: { name: 'ideas' } }
                 ]" 
                 :key="i" size="sm" variant="outline-secondary" 
                 :to="item.to"
@@ -79,7 +79,7 @@
             </div>
             <div style="position:absolute; right: 10px">
               <nuxt-link class="close"
-                :to="{ name: 'ideas-section' }"
+                :to="{ name: 'ideas' }"
               >
                 ×
               </nuxt-link>
@@ -110,7 +110,7 @@
 
     // middleware({ redirect, route, route: { params: { section }} }) {
     //   if (!section)
-    //     redirect(appendedTarget({route, name: 'ideas-section', params: {section: 'top'}}))
+    //     redirect(appendedTarget({route, name: 'ideas', params: {section: 'top'}}))
     // },
 
     key(route) {

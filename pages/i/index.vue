@@ -4,7 +4,7 @@
 
   export default {
     middleware({ redirect }) {
-      redirect({name: 'ideas-section', params: { section: 'top' }})
+      redirect({ name: 'ideas' })
     }
   }
 

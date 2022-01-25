@@ -13,7 +13,7 @@
         <b-nav-item-dropdown text="Tools">
           <b-dropdown-item
             v-for="item in [
-              { caption: 'Builder', to: { name: 'ideas-section', params: { section: 'about' }} },
+              { caption: 'Builder', to: { name: 'ideas', hash: '#about' } },
               { caption: 'Widget', to: {name: 'widget' }},
               { caption: 'Studio', to: { name:'index', hash: '#studio' } }
             ]"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavPublic section="Tools" subsection="Builder" :target="{ name: 'ideas-section' }"
+    <NavPublic section="Tools" subsection="Builder" :target="{ name: 'ideas' }"
       v-if="$route.query.from!='12l'"
     />
     <b-container fluid>

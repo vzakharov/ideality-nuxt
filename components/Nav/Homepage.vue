@@ -9,7 +9,7 @@
       <b-nav-item-dropdown text="Products">
         <b-dropdown-item
           v-for="item in [
-            { caption: 'Builder', to: { name: 'ideas-section' } },
+            { caption: 'Builder', to: { name: 'ideas' } },
             { caption: 'Widget', to: {name: 'widget' }},
             { caption: 'Studio', to: { name:'index', hash: '#studio' } }
           ]"
