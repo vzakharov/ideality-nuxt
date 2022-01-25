@@ -34,7 +34,7 @@
 <script>
 
   import dedent from 'dedent-js'
-  import render from '~/plugins/render'
+  import render from '~/plugins/mixins/render'
 
   export default {
   
