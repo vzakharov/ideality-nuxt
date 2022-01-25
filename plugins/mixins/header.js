@@ -1,11 +1,26 @@
+import { sumBy } from 'lodash'
+
 export default {
-  
-  mounted() {
-    this.store.headerHeight += this.$el.offsetHeight
+
+  data() {
+    return {
+      height: null
+    }
   },
 
-  beforeDestroy() {
-    this.store.headerHeight -= this.$el.offsetHeight
+  mounted() { 
+    this.height = this.$el.offsetHeight
+    this.recountNavHeight(+1) 
+  },
+
+  beforeDestroy() { this.recountNavHeight(-1) },
+
+  methods: {
+
+    recountNavHeight(direction) {
+      this.log(this.store.navHeight += direction * this.height)
+    }
+
   }
 
 }

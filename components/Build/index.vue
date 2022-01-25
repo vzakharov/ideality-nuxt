@@ -4,7 +4,7 @@
       :class="{
         'bg-light': i == 0,
         'pt-5': i != 0,
-        'vh': i == 0
+        'vh-minus-navs': i == 0
       }"
     >
       <b-col>
@@ -24,11 +24,7 @@
 <script>
   export default {
 
-    props: ['build', 'hidePowered'],
-
-    mounted() {
-      this.store.headerHeight = document.getElementById('header')?.offsetHeight || 0
-    }
+    props: ['build', 'hidePowered']
 
   }
 

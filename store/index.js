@@ -1,10 +1,10 @@
-import { get } from 'lodash'
+import { get, mapValues } from 'lodash'
 
 export const state = () => ({
   build: null,
   builds: null,
   data: {},
-  headerHeight: 0,
+  navHeight: 0,
   imagePromises: {},
   path: '',
   local: {
@@ -22,12 +22,17 @@ export const state = () => ({
 
 export const mutations = {
 
+
   set(state, values) {
     Object.assign(state, values)
   },
 
   setFields(state, [ key, values ]) {
     Object.assign(get(state, key), values)
+  },
+
+  do(state, callback ) {
+    callback(state)
   }
 
 }

@@ -1,5 +1,5 @@
 <template>
-  <b-navbar id="header" toggleable="sm" class="border-bottom bg-retro ps-3 px-2">
+  <b-navbar toggleable="sm" class="border-bottom bg-retro ps-3 px-2">
     <b-navbar-brand :to="{ name:'index' }">
       <span :class="{gray: section}"> {{ narrow && section ? '' : 'Ideality '}}▲ </span>
       <nuxt-link v-if="section" :to="target" class="nocolor" v-text="subsection || section"/>

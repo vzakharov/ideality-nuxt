@@ -2,7 +2,7 @@
   <div>
     <style>
       :root {
-        --full-minus-header: calc(100vh - {{ store.headerHeight }}px)
+        --vh-minus-navs: calc(100vh - {{ store.navHeight }}px)
       }
     </style>
     <Nuxt/>
@@ -12,6 +12,7 @@
 <script>
 
   import { loggedInMiddleware } from '~/plugins/helpers'
+  import { sumBy } from 'lodash'
 
   export default {
 
@@ -29,6 +30,10 @@
       window.onresize = () => {
         setWidth()
       }  
+    },
+
+    methods: {
+      sumBy
     }
 
   }
@@ -97,25 +102,31 @@ a.nocolor {
 }
 
 .scrollable {
-  height: var(--full-minus-header);
+  height: var(--vh-minus-navs);
   overflow: hidden;
   overflow-y: auto;
 }
 
+.vh-minus-navs {
+  height: var(--vh-minus-navs)
+}
+
 .vh {
-  height: var(--full-minus-header)
+  height: 100vh
 }
 
 .slide-right-enter-active, .slide-right-leave-active, .slide-down-enter-active, .slide-down-leave-active {
-  transition: .5s;
+  transition: .5s
 }
 
 .slide-right-enter, .slide-right-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  transform: translate(-100%, 0);
+  transform: translateX(-100%);
+  opacity: 0
 }
 
 .slide-down-enter, .slide-down-leave-to {
-  transform: translate(100%, 0)
+  transform: translateY(-100%);
+  opacity: 0
 }
 
 </style>

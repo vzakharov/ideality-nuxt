@@ -2,7 +2,7 @@
   <div>
     <NavPublic/>
     <b-container fluid>
-      <b-row align-h="center" class="vh bg-retro gx-4">
+      <b-row align-h="center" class="vh-minus-navs bg-retro gx-4">
           <b-col cols="12" md="5" align-self="center" class="text-center text-md-start">
             <h1 class="display-2"><strong>Ideality&nbsp;🔺</strong></h1>
             <div class="display-6"><small>AI&#8209;driven&nbsp;ideation&nbsp;platform</small></div>
