@@ -1,7 +1,6 @@
 <template>
   <MyToolbar :close="{ to: { name: 'ideas' } }" :items="[
-      { icon: log(model.expanded) ? 'chevron-double-left' : 'chevron-double-right', onclick() { model.expanded = !model.expanded } },
-      { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' },
+      { if: !model.expanded, icon: 'chevron-double-right', onclick() { model.expanded = !model.expanded } },
       { icon: 'link-45deg', to: { name: 'i-slug', params: build } },
     ]" 
   />

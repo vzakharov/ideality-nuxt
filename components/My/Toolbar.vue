@@ -1,5 +1,5 @@
 <template functional>
-  <b-row class="border-bottom bg-white py-1">
+  <b-row class="border-bottom bg-white py-1 sticky-top" style="z-index:100">
     <b-col>
       <MyNavButton v-for="item in props.items" 
         :key="item.icon"

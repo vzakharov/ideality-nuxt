@@ -24,7 +24,11 @@
       <MySidebarred v-model="expanded">
         <template #sidebar>
 
-          
+          <MyToolbar :items="[
+              { if: log(build), icon: 'chevron-double-left', onclick() { expanded = false } },
+              { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
+            ]" 
+          />
 
           <ul class="nav nav-tabs bg-white">
             <li class="nav-item"
@@ -58,7 +62,9 @@
           </b-row>
         </template>
         <template #content v-if="build">
-          <NavBuildView v-bind="{ build, ...control('expanded') }"/>
+          <transition name="slide-down">
+            <NavBuildView v-if="!expanded || !narrow" v-bind="{ build, ...control('expanded') }"/>
+          </transition>
           <Build v-bind="{build}" hide-powered/>
         </template>
       </MySidebarred>

@@ -14,7 +14,7 @@
             shadow: narrow,
             'bg-white': true
           }"
-          :style="narrow && { position: 'absolute', top: $refs.container && ( $refs.container.offsetTop + 'px' )}"
+          :style="narrow && { position: 'absolute' }"
         >
           <slot name="sidebar"/>
         </b-col>

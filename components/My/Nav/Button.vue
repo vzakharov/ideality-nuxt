@@ -1,5 +1,5 @@
 <template functional>
-  <b-button v-if="props.if || typeof props.if === 'undefined'"
+  <b-button v-if="!('if' in props) || props.if"
     size="sm"
     :variant="props.variant || 'outline-secondary'"
     :to="props.to"
