@@ -389,8 +389,8 @@ Vue.mixin({
       }
     },
 
+    setDefaults,
 
-    setDefaults
   }
 
 })

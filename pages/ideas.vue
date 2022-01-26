@@ -21,15 +21,25 @@
     </b-modal>
     <Loading v-if="!builds && !build" message="Loading, hold on a sec..."/>
     <template v-else>
-      <MySidebarred v-model="expanded">
-        <template #sidebar>
-
-          <MyToolbar :items="[
-              { if: log(build), icon: 'chevron-double-left', onclick() { expanded = false } },
+      <MySidebarred v-model="expanded" v-bind="{
+        toolbars: {
+          sidebar: {
+            items: [
+              { if: build, icon: 'chevron-double-left', onclick() { expanded = false } },
               { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
-            ]" 
-          />
-
+            ]
+          },
+          content: {
+            close: { to: { name: 'ideas' } },
+            items: [
+              { if: !expanded, icon: 'chevron-double-right', onclick() { expanded = !expanded } },
+              { icon: 'link-45deg', to: { name: 'i-slug', params: build } },
+            ] 
+          }
+        }
+      }"
+      >
+        <template #sidebar>
           <ul class="nav nav-tabs bg-white">
             <li class="nav-item"
               v-for="section in keys(tabs)" :key="section"
@@ -62,9 +72,6 @@
           </b-row>
         </template>
         <template #content v-if="build">
-          <transition name="slide-down">
-            <NavBuildView v-if="!expanded || !narrow" v-bind="{ build, ...control('expanded') }"/>
-          </transition>
           <Build v-bind="{build}" hide-powered/>
         </template>
       </MySidebarred>

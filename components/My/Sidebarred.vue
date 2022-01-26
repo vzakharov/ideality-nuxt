@@ -10,17 +10,25 @@
           }}"
           v-show="!$slots.content || expanded"
           :class="{
-            scrollable: expanded,
             shadow: narrow,
             'bg-white': true
           }"
           :style="narrow && { position: 'absolute' }"
         >
-          <slot name="sidebar"/>
+          <MyToolbar v-if="toolbars && toolbars.sidebar"
+            v-bind="toolbars.sidebar"/>
+          <b-row :class="{scrollable: expanded}">
+            <slot name="sidebar" />
+          </b-row>  
         </b-col>
       </transition>
-      <b-col id="content" v-if="$slots.content" :class="{ scrollable: expanded }">
-        <slot name="content"/>
+      <b-col id="content" v-if="$slots.content">
+        <MyToolbar v-if="toolbars && toolbars.content"
+          v-bind="toolbars.content"
+        />
+        <b-row :class="{ scrollable: expanded }">
+          <slot name="content" />
+        </b-row>  
       </b-col>
     </b-row>
   </div>
@@ -30,7 +38,7 @@
 
   export default {
 
-    props: ['value'],
+    props: ['value', 'toolbars'],
 
     watch: {
       narrow: { immediate: true, handler(narrow) {
