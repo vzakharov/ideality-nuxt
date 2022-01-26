@@ -1,11 +1,11 @@
-<template functional>
+<template>
   <b-row class="border-bottom bg-white py-1 sticky-top" style="z-index:100">
     <b-col>
-      <MyNavButton v-for="item in props.items" 
+      <MyNavButton v-for="item in items" 
         :key="item.icon"
         v-bind="item"
       />
-      <MyCloseButton v-if="props.close" :onclick="props.close.onclick" :to="props.close.to"/>
+      <MyCloseButton v-if="close" v-bind="{close}"/>
     </b-col>
   </b-row>
 </template>
