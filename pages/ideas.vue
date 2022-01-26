@@ -96,7 +96,7 @@
       return {
         build,
         builds: null,
-        expanded: null,
+        expanded: false,
         localBuild: null,
         localBuilds: [],
         tabs,
