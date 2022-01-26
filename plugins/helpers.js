@@ -74,6 +74,13 @@ async function loggedInMiddleware({ store: { state: { auth: { loggedIn }}}, redi
     return redirect({name: 'login', query: { then: fullPath }})
 }
 
+function objectify(array, value = {} ) {
+  return Object.assign(
+    array.length > 1 ? objectify(array.slice(1), value) : {},
+    { [array[0]]: value }
+  )
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -95,6 +102,7 @@ export {
   getUser,
   keyedPromises,
   loggedInMiddleware,
+  objectify,
   sleep,
   slugify
 

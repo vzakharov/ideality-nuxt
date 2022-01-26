@@ -1,25 +1,21 @@
 <template functional>
   <b-button
-    v-bind="{
-      size: 'sm',
-      variant: 'outline-secondary',
-      ...props.item
-    }"
-    @click.prevent="props.item.onclick && props.item.onclick()"
+    size="sm"
+    :variant="props.variant || 'outline-secondary'"
+    :to="props.to"
+    @click.prevent="props.onclick && props.onclick()"
     onclick="this.blur()"
   >
-    <b-icon :icon="props.item.icon"/>
+    <b-icon :icon="props.icon"/>
   </b-button>
 </template>
 
 <script>
-
+  
   export default {
-    props: ['item']
+
+    props: ['icon', 'to', 'onclick', 'variant']
+
   }
 
 </script>
-
-<style>
-
-</style>

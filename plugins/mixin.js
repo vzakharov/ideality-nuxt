@@ -51,7 +51,7 @@ function isAdmin() {
 }
 
 function narrow() {
-  return this.width < 768
+  return this.store.narrow
 }
 
 function queryFlags() {

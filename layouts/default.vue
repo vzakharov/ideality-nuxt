@@ -23,13 +23,21 @@
 
     mounted() {
       let setWidth = () => {
-        this.$store.commit('set', { width: window.innerWidth })
+        this.store.width = window.innerWidth
       }
 
       setWidth()
       window.onresize = () => {
         setWidth()
       }  
+    },
+
+    watch: {
+      'store.width'(width) {
+        let narrow = width < 768
+        if ( narrow != this.store.narrow )
+          this.store.narrow = narrow
+      }
     },
 
     methods: {

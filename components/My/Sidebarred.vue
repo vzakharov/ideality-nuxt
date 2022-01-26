@@ -30,13 +30,20 @@
 
   export default {
 
-    props: ['expanded'],
+    props: ['value'],
 
-    // watch: {
-    //   narrow: { immediate: true, handler(narrow) {
-    //     this.$emit('setFields', { expanded: !narrow })
-    //   }}
-    // }
+    watch: {
+      narrow: { immediate: true, handler(narrow) {
+        console.log({narrow})
+        this.$emit('input', !narrow )
+      }}
+    },
+
+    computed: {
+
+      expanded() { return this.value }
+
+    }
 
   }
 

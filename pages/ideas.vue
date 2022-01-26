@@ -21,14 +21,10 @@
     </b-modal>
     <Loading v-if="!builds && !build" message="Loading, hold on a sec..."/>
     <template v-else>
-      <NavBuildView v-if="build" v-bind="{ build, ...control('expanded') }"/>
-      <MySidebarred v-bind="{expanded}" v-on="{setFields}">
+      <MySidebarred v-model="expanded">
         <template #sidebar>
 
-          <template v-if="build">
-            <b-row cols="4">
-            </b-row>
-          </template>
+          
 
           <ul class="nav nav-tabs bg-white">
             <li class="nav-item"
@@ -56,12 +52,13 @@
               <BuildCard :key="build.id" :id="'build-'+build.slug" 
                 v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
                 @remove="builds=without(builds, build)"
-                @routed="expanded = false"
+                @routed="if (narrow) expanded = false"
               />
             </template> 
           </b-row>
         </template>
         <template #content v-if="build">
+          <NavBuildView v-bind="{ build, ...control('expanded') }"/>
           <Build v-bind="{build}" hide-powered/>
         </template>
       </MySidebarred>
@@ -94,8 +91,10 @@
 
       console.log('data', this.$data)
 
+      let { build } = this.$store.state
+
       return {
-        build: this.$store.state.build,
+        build,
         builds: null,
         expanded: null,
         localBuild: null,

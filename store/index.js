@@ -16,7 +16,10 @@ export const state = () => ({
   updatedRoute: null,
   tree: {  },
   imagePromises: {},
+
   width: null,
+  narrow: undefined,
+  
   test: 'hello world'
 })
 
