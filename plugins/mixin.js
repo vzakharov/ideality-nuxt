@@ -202,8 +202,6 @@ Vue.mixin({
 
     getUser,
 
-
-
     reactify(object) {
       let vm = this
       forEach(object, ( value, key ) => {
@@ -243,7 +241,7 @@ Vue.mixin({
 
       const getData = () => {
         local = load(localStorage.getItem(localKey)) || (
-          isPlural ? [] : {}
+          isList ? [] : {}
         )
         collection = from ? get(local, from) : local
         if ( where ) {
@@ -274,6 +272,7 @@ Vue.mixin({
         
         this.$watch(key, { deep: true, handler(value) {
           
+          
           if ( slugifyName && key == 'name' ) {
             Object.assign(this, { slug: slugify(value, items) })
             return
@@ -282,7 +281,7 @@ Vue.mixin({
           if ( !as )
             set(getData(), key, value)
 
-          localStorage.setItem(localKey, dump(local))
+          localStorage.setItem(localKey, dump(this.log(local)))
 
           if ( key == 'slug' ) {
             this.$router.push(this.appendedTarget({ params: { [name]: this.slug }}))
@@ -387,6 +386,7 @@ Vue.mixin({
       for ( let key of keys(fields) ) {
         this.$set(object, key, fields[key])
       }
+      return object
     },
 
     setDefaults,
