@@ -1,43 +1,61 @@
 <template>
-  <ul>
+  <li>
 
-    <b-icon class="me-1"
-      v-if="children.length" :icon="node.collapsed ? 'chevron-double-down' : 'chevron-double-up'"
-      @click="toggle(node)"
-    />
+    <template v-if="node.id">
 
-    <span v-if="node.text" v-text="node.text"/>
-    <em v-else v-text="node.id"/>
+      <a class="me-1 nocolor" href="#"
+        v-if="hasChildren(node)"
+        v-text="node.collapsed ? '⊞' : '⊟'"
+        @click="doWithNode(toggle)"
+      />
 
-    <b-icon-x-circle class="ms-3"
-      @click="destroy(node)"
-    />
+      <a class="nocolor" href="#"
+        v-text="node.text || node.id"
+        @click="nudge(node)"
+      />
 
-    <transition name="slide-down">
-      <div v-if="!node.collapsed">
-        <transition-group name="slide-down" tag="div">
-          <li v-for="node in children" :key="node.id">
-              <TreeNode v-bind="{ tree, node }"/>
-          </li>
-        </transition-group>
-        <div>
-          <b-icon-plus-circle
-            @click="addChild(node)"
-          />
-        </div>
-      </div>
+      <a class="ms-3 nocolor" href="#"
+        @click="destroy(node)"
+        v-text="'×'"
+      />
+    </template>
+
+
+    <div>
+      <a class="nocolor" href="#"
+        @click="addChild(node)"
+        v-text="'…'"
+      />
+    </div>
+
+    <transition name="slide-down"
+    >
+      <transition-group ref="list" name="slide-down" tag="ul"
+        v-if="hasChildren(node) && !node.collapsed"
+      >
+        <TreeNode
+          @created="childHeight = 0"
+          @mounted="log('mounted', childHeight += $event.$el.offsetHeight)"
+          v-for="child in getChildren(node)" :key="child.id"
+          v-bind="{ tree, node: child }"
+        />
+      </transition-group>
     </transition>
 
-  </ul>
+  </li>
 </template>
 
 <script>
 
+  import { sumBy } from 'lodash'
   import treeMethods from '~/plugins/tree.js'
+  import beacon from '~/plugins/mixins/beacon.js'
 
-  console.log({treeMethods})
+  console.log({beacon})
   
   export default {
+
+    mixins: [ beacon ],
 
     props: {
       node: {},
@@ -45,10 +63,31 @@
     },
 
     computed: {
-      children() { return this.getChildren(this.node) }
+
+      heightListeners() { 
+        return {
+          'before-enter': element => this.recalculateHeight(element),
+          'before-leave': element => this.recalculateHeight(element)
+        }
+      }
+
     },
 
     methods: {
+
+      doWithNode(what) {
+        what(this.node)
+        this.store.nodeHeight = this.childHeight
+      },
+
+      recalculateHeight(element) {
+        this.$nextTick(() => this.log(
+          this.store.nodeHeight = sumBy(Array.from(element.children), 'offsetHeight')
+        ))
+      },
+
+      sumBy,
+
       ...treeMethods
     }
 
@@ -57,6 +96,10 @@
 
 </script>
 
-<style>
+<style scoped>
+
+  li::marker {
+    display: none;
+  }
 
 </style>

@@ -2,7 +2,8 @@
   <div>
     <style>
       :root {
-        --vh-minus-navs: calc(100vh - {{ store.navHeight }}px)
+        --vh-minus-navs: calc(100vh - {{ store.navHeight }}px);
+        --node-height: {{ store.nodeHeight }}px
       }
     </style>
     <Nuxt/>
@@ -123,8 +124,8 @@ a.nocolor {
   height: 100vh
 }
 
-.slide-right-enter-active, .slide-right-leave-active, .slide-down-enter-active, .slide-down-leave-active {
-  transition: .5s
+.slide-right-enter-active, .slide-down-enter-active {
+  transition: .5s;
 }
 
 .slide-right-enter, .slide-right-leave-to /* .fade-leave-active below version 2.1.8 */ {
@@ -133,8 +134,24 @@ a.nocolor {
 }
 
 .slide-down-enter, .slide-down-leave-to {
-  transform: translateY(-100%);
-  opacity: 0
+  max-height: 0;
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  /* position: absolute; */
+}
+
+.slide-down-enter-to, .slide-down-leave {
+  max-height: var(--node-height);
+  /* transform: translateY(0); */
+}
+
+.slide-down-leave-active, .slide-right-leave-active  {
+  transition: all .5s;
+}
+
+.slide-down-move {
+  transition: transform .5s;
 }
 
 </style>

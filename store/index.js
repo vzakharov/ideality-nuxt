@@ -5,6 +5,7 @@ export const state = () => ({
   builds: null,
   data: {},
   navHeight: 0,
+  nodeHeight: 0,
   imagePromises: {},
   path: '',
   local: {
@@ -19,7 +20,7 @@ export const state = () => ({
 
   width: null,
   narrow: undefined,
-  
+
   test: 'hello world'
 })
 

@@ -1,20 +1,15 @@
-<template>
+<template functional>
   <a
-    :href="appendedUrl(to)"
-    @click.prevent=""
-  />  
+    href="#"
+    class="nocolor"
+    v-bind="props"
+  >
+    <slot/>
+  </a>
 </template>
 
 <script>
-
-  export default {
-
-    props: ['to']
-
-  }
-
+export default {
+  
+}
 </script>
-
-<style>
-
-</style>
