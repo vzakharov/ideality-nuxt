@@ -43,10 +43,6 @@
       }
     },
 
-    mounted() {
-      this.syncLocal('dahnencode', { select: ['number'] })
-    },
-
     watch: {
 
       code(code) {
@@ -54,7 +50,7 @@
         if ( this.ignoreCodeChange )
           return this.ignoreCodeChange = false
 
-        this.number = decode(this.code)
+        this.number = decode(code)
 
       },
 
