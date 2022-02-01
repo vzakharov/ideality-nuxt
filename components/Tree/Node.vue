@@ -41,7 +41,6 @@
           <TreeNode
             @descendantMounted="
               descendants = [...descendants, ...log($event)]
-              $emit('descendantMounted', [ vm, ...$event ])
             "
             v-for="child in getChildren(node)" :key="child.id"
             v-bind="{ tree, node: child }"
@@ -55,7 +54,7 @@
 
 <script>
 
-  import { last, sumBy } from 'lodash'
+  import { last, map, sum, sumBy } from 'lodash'
   import treeMethods from '~/plugins/tree.js'
   // import beacon from '~/plugins/mixins/beacon.js'
   import { ms } from '~/plugins/helpers.js'
@@ -78,8 +77,9 @@
 
     mounted() {
       let { node } = this
-      if ( !this.hasChildren(node) ) {
         this.$emit('descendantMounted', this)
+      if ( !this.hasChildren(node) ) {
+        // this.$emit('descendantMounted', this)
 
         // Todo: Find a better way to calculate the height for each individual node before it's created
         if ( !this.$store.state.singleNodeHeight ) {
@@ -116,7 +116,7 @@
           ms('toggled')
           this.$nextTick(() => {
             ms('next tick')
-            this.log(store.nodeHeight = sumBy(this.descendants, '$el.offsetHeight'))
+            this.log(store.nodeHeight = sum(this.log(map(this.log(this.descendants), '$el.offsetHeight'))))
             ms('height calculated')
           })
         }
