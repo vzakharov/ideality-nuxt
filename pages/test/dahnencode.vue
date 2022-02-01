@@ -52,14 +52,14 @@
 
     watch: {
 
-      code(code) {
+      // code(code) {
 
-        if ( this.ignoreCodeChange )
-          return this.ignoreCodeChange = false
+      //   if ( this.ignoreCodeChange )
+      //     return this.ignoreCodeChange = false
 
-        this.number = decode(code)
+      //   this.number = decode(code)
 
-      },
+      // },
 
       number: { immediate: true, handler(number) {
         this.code = encode(number)
@@ -68,7 +68,6 @@
       } },
 
       time(time) {
-
         if ( this.ignoreCodeChange )
           return this.ignoreCodeChange = false  
         
