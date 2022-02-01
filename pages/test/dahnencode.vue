@@ -4,17 +4,21 @@
       <Loading v-if="!mounted" message="One second..."/>
       <template v-else>
         <MyInput
-          caption="Number"
-          v-model="number"
+          caption="Time"
+          v-model="time"
+          lazy
         />
-        <p class="small text-muted">
-          (As date: {{ new Date(number) }})
-        </p>
+
         <b-button variant="outline-secondary"
           @click="number=Date.now()"
         >
-          Use current timestamp
+          Use current time
         </b-button>
+
+        <MyInput
+          caption="Number"
+          v-model="number"
+        />
 
         <MyInput
           caption="Dahnencode"
@@ -41,6 +45,7 @@
       return {
         number: Date.now(),
         code: null,
+        time: null,
         ignoreCodeChange: false
       }
     },
@@ -58,8 +63,18 @@
 
       number: { immediate: true, handler(number) {
         this.code = encode(number)
+        this.time = new Date(number)
         this.ignoreCodeChange = true
-      } }
+      } },
+
+      time(time) {
+
+        if ( this.ignoreCodeChange )
+          return this.ignoreCodeChange = false  
+        
+        this.number = Date.parse(time)
+
+      }
 
     }
 
