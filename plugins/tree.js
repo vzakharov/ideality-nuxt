@@ -1,4 +1,5 @@
 import { filter, find, orderBy, without, uniqueId } from 'lodash'
+import { funcode } from '~/plugins/helpers'
 
 // In all the functions below, `this` refers to the Vue vm. It is assumed that it has a `this.tree` defined.
 
@@ -7,7 +8,7 @@ function addChild(node)  {
   let { tree } = this
 
   let child = {
-    id: uniqueId(`${Date.now()}_`),
+    id: uniqueId(`${funcode(Date.now())}_`),
     nudged: new Date(),
     parent: node,
     collapsed: false

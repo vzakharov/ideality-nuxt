@@ -1,4 +1,4 @@
-import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, values } from 'lodash'
+import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
@@ -35,6 +35,39 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
       )
     )
   })  
+}
+
+function funcode(number) {
+  const letters = [
+    'bcdfghklmnpqrstvwxyz',
+    'aeiou',
+    'bcdfghklmnpqrstvwxyz'
+  ]
+  
+  let index = letters.length - 1
+  let divider = 1
+
+  while ( number >= divider * letters[index].length ) {
+    divider *= letters[index].length
+    index = index ? index - 1 : letters.length - 1
+  }
+
+  let word = ''
+  
+  while ( divider >= 1) {
+    let division = Math.floor( number / divider )
+    let remainder = number % divider
+
+    word += letters[index][division]
+    // console.log({number, divider, division, remainder, index, word})
+    number = remainder
+    index = ( index + 1 ) % letters.length
+    divider /= letters[index].length
+  }
+
+  word = word.replace(/.{6}(?=.{2,}$)/g, '$&-')
+
+  return word
 }
 
 async function getUser({ $axios, $auth } = this) {
@@ -113,6 +146,7 @@ export {
   appendedTarget,
   always,
   filteredParameters,
+  funcode,
   getUser,
   keyedPromises,
   loggedInMiddleware,
