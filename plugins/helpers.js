@@ -70,6 +70,24 @@ function funcode(number) {
   return word
 }
 
+function unfuncode(text) {
+  const letters = [
+    'bcdfghklmnpqrstvwxyz',
+    'aeiou',
+    'bcdfghklmnpqrstvwxyz'
+  ]
+  text = text.replace(/[^bcdfghklmnpqrstvwxyzaeiou]/,'')
+  let index = 0  
+  let multiplier = 1
+  let number = 0
+  for (let i = text.length - 1; i >= 0 ; i--) {
+    number += letters[index].indexOf(text[i]) * multiplier
+    multiplier *= letters[index].length
+    index = ++index % letters.length
+  }
+  return number
+}
+
 async function getUser({ $axios, $auth } = this) {
   try {
     let user = await (
@@ -147,6 +165,7 @@ export {
   always,
   filteredParameters,
   funcode,
+  unfuncode,
   getUser,
   keyedPromises,
   loggedInMiddleware,
