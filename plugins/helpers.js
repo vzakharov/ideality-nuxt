@@ -37,57 +37,6 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
   })  
 }
 
-function dahnencode(number) {
-  const letters = [
-    'bcdfghklmnpqrstvwxyz',
-    'aeiou',
-    'bcdfghklmnpqrstvwxyz'
-  ]
-  
-  let index = letters.length - 1
-  let divider = 1
-
-  while ( number >= divider * letters[index].length ) {
-    divider *= letters[index].length
-    index = index ? index - 1 : letters.length - 1
-  }
-
-  let word = ''
-  
-  while ( divider >= 1) {
-    let division = Math.floor( number / divider )
-    let remainder = number % divider
-
-    word += letters[index][division]
-    // console.log({number, divider, division, remainder, index, word})
-    number = remainder
-    index = ( index + 1 ) % letters.length
-    divider /= letters[index].length
-  }
-
-  word = word.replace(/.{6}(?=.{2,}$)/g, '$&-')
-
-  return word
-}
-
-function undahnencode(text) {
-  const letters = [
-    'bcdfghklmnpqrstvwxyz',
-    'aeiou',
-    'bcdfghklmnpqrstvwxyz'
-  ]
-  text = text.replace(/[^bcdfghklmnpqrstvwxyzaeiou]/,'')
-  let index = 0  
-  let multiplier = 1
-  let number = 0
-  for (let i = text.length - 1; i >= 0 ; i--) {
-    number += letters[index].indexOf(text[i]) * multiplier
-    multiplier *= letters[index].length
-    index = ++index % letters.length
-  }
-  return number
-}
-
 async function getUser({ $axios, $auth } = this) {
   try {
     let user = await (
@@ -164,8 +113,6 @@ export {
   appendedTarget,
   always,
   filteredParameters,
-  dahnencode,
-  undahnencode,
   getUser,
   keyedPromises,
   loggedInMiddleware,

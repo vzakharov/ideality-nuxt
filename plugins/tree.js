@@ -1,5 +1,5 @@
 import { filter, find, orderBy, without, uniqueId } from 'lodash'
-import { dahnencode } from '~/plugins/helpers'
+import { encode } from 'dahnencode'
 
 // In all the functions below, `this` refers to the Vue vm. It is assumed that it has a `this.tree` defined.
 
@@ -8,7 +8,7 @@ function addChild(node)  {
   let { tree } = this
 
   let child = {
-    id: uniqueId(`${dahnencode(Date.now())}_`),
+    id: uniqueId(`${encode(Date.now())}_`),
     nudged: new Date(),
     parent: node,
     collapsed: false
