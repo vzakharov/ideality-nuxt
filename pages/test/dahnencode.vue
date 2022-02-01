@@ -63,7 +63,7 @@
 
       number: { immediate: true, handler(number) {
         this.code = encode(number)
-        this.time = new Date(number)
+        this.time = new Date(parseInt(number))
         this.ignoreCodeChange = true
       } },
 
