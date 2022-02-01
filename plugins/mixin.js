@@ -140,7 +140,7 @@ Vue.mixin({
     head,
     isAdmin,
     narrow,
-    props() { return this.$props },
+    // props() { return this.$props },
     queryFlags,
     route,
     store,
