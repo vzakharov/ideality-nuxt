@@ -3,7 +3,8 @@
     <style>
       :root {
         --vh-minus-navs: calc(100vh - {{ store.navHeight }}px);
-        --node-height: {{ store.nodeHeight }}px
+        --node-height: {{ store.nodeHeight }}px;
+        --animation-speed: .3s;
       }
     </style>
     <Nuxt/>
@@ -125,7 +126,7 @@ a.nocolor {
 }
 
 .slide-right-enter-active, .slide-down-enter-active, .node-enter-active, .node-group-enter-active {
-  transition: .5s;
+  transition: var(--animation-speed);
 }
 
 .slide-right-enter, .slide-right-leave-to /* .fade-leave-active below version 2.1.8 */ {
@@ -152,11 +153,11 @@ a.nocolor {
 }
 
 .slide-down-leave-active, .slide-right-leave-active, .node-group-leave-active, .node-leave-active  {
-  transition: all .5s;
+  transition: all var(--animation-speed);
 }
 
 .slide-down-move, .node-group-move {
-  transition: transform .5s;
+  transition: transform var(--animation-speed);
 }
 
 </style>
