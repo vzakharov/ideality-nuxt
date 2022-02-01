@@ -1,31 +1,33 @@
 <template>
   <div class="p-4">
-    <Loading v-if="!mounted" message="One second..."/>
-    <template v-else>
-      <MyInput
-        caption="Number"
-        v-model="number"
-      />
-      <p class="small text-muted">
-        (As date: {{ new Date(number) }})
-      </p>
-      <b-button variant="outline-secondary"
-        @click="number=Date.now()"
-      >
-        Use current timestamp
-      </b-button>
+    <client-only>
+      <Loading v-if="!mounted" message="One second..."/>
+      <template v-else>
+        <MyInput
+          caption="Number"
+          v-model="number"
+        />
+        <p class="small text-muted">
+          (As date: {{ new Date(number) }})
+        </p>
+        <b-button variant="outline-secondary"
+          @click="number=Date.now()"
+        >
+          Use current timestamp
+        </b-button>
 
-      <MyInput
-        caption="Dahnencode"
-        v-model="code"
-        disabled
-      />
+        <MyInput
+          caption="Dahnencode"
+          v-model="code"
+          disabled
+        />
 
-      <Copiable :value="code" class="text-muted btn btn-light small">
-        Copy
-      </Copiable>
+        <Copiable :value="code" class="text-muted btn btn-light small">
+          Copy
+        </Copiable>
 
-    </template>
+      </template>
+    </client-only>
   </div>
 </template>
 
