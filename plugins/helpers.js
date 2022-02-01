@@ -37,7 +37,7 @@ function filteredParameters({setup, slate, tie, onlyRecitals, duringGeneration})
   })  
 }
 
-function funcode(number) {
+function dahnencode(number) {
   const letters = [
     'bcdfghklmnpqrstvwxyz',
     'aeiou',
@@ -70,7 +70,7 @@ function funcode(number) {
   return word
 }
 
-function unfuncode(text) {
+function undahnencode(text) {
   const letters = [
     'bcdfghklmnpqrstvwxyz',
     'aeiou',
@@ -164,8 +164,8 @@ export {
   appendedTarget,
   always,
   filteredParameters,
-  funcode,
-  unfuncode,
+  dahnencode,
+  undahnencode,
   getUser,
   keyedPromises,
   loggedInMiddleware,
