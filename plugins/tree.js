@@ -28,7 +28,7 @@ function getChildren(node) {
   )
 }
 
-function destroy(node) {
+function remove(node) {
   this.tree.nodes = without(this.tree.nodes, node)
 }
 
@@ -76,13 +76,13 @@ function toggle(node) {
 export default { 
   addChild, 
   getChildren,
-  destroy,
   hasChildren,
   hasSiblings,
   isHeir,
   isRoot,
   nudge,
   orderNodes,
+  remove,
   siblings,
   toggle
 }

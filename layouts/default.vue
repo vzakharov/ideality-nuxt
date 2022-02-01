@@ -124,7 +124,7 @@ a.nocolor {
   height: 100vh
 }
 
-.slide-right-enter-active, .slide-down-enter-active {
+.slide-right-enter-active, .slide-down-enter-active, .node-enter-active, .node-group-enter-active {
   transition: .5s;
 }
 
@@ -133,7 +133,7 @@ a.nocolor {
   opacity: 0
 }
 
-.slide-down-enter, .slide-down-leave-to {
+.slide-down-enter, .slide-down-leave-to, .node-enter, .node-leave-to, .node-group-enter, .node-group-leave-to {
   max-height: 0;
   opacity: 0;
   transform: scaleY(0);
@@ -141,16 +141,21 @@ a.nocolor {
   /* position: absolute; */
 }
 
-.slide-down-enter-to, .slide-down-leave {
+/* .node-group-enter, .node-group-leave-to {
+  transform: scaleY(0);
+  transform-origin: top;
+} */
+
+.slide-down-enter-to, .slide-down-leave, .node-enter-to, .node-leave, .node-group-enter-to, .node-group-leave {
   max-height: var(--node-height);
   /* transform: translateY(0); */
 }
 
-.slide-down-leave-active, .slide-right-leave-active  {
+.slide-down-leave-active, .slide-right-leave-active, .node-group-leave-active, .node-leave-active  {
   transition: all .5s;
 }
 
-.slide-down-move {
+.slide-down-move, .node-group-move {
   transition: transform .5s;
 }
 

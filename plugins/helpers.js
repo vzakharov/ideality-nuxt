@@ -81,6 +81,20 @@ function objectify(array, value = {} ) {
   )
 }
 
+let timestamp = Date.now()
+
+function ms(message, reset) {
+
+  if ( reset ) {
+    timestamp = Date.now()
+    console.log(message)
+  } else {
+    console.log(message, `${Date.now() - timestamp} ms`)
+    timestamp = Date.now()
+  }
+
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -102,8 +116,9 @@ export {
   getUser,
   keyedPromises,
   loggedInMiddleware,
+  ms,
   objectify,
   sleep,
-  slugify
+  slugify,
 
 }

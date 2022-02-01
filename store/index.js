@@ -5,7 +5,10 @@ export const state = () => ({
   builds: null,
   data: {},
   navHeight: 0,
+
   nodeHeight: 0,
+  singleNodeHeight: 0,
+  
   imagePromises: {},
   path: '',
   local: {

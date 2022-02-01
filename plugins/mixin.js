@@ -313,7 +313,8 @@ Vue.mixin({
     },
 
     log(...what) {
-      console.log(what)
+      if (process.env.NUXT_ENV_LOGMODE)
+        console.log(...what)
       return last(what)
     },
 
