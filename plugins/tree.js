@@ -8,7 +8,7 @@ function addChild(node)  {
   let { tree } = this
 
   let child = {
-    id: uniqueId(`${encode(Date.now())}_`),
+    id: encode( Date.now() + parseInt(uniqueId()) ),
     nudged: new Date(),
     parent: node,
     collapsed: false
