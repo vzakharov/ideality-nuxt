@@ -1,7 +1,7 @@
 <template>
-  <b-container fluid="lg" class="pt-3">
-    <b-row>
-      <Breadcrumbs class="mb-3" v-if="!ephemeral"/>
+  <b-container fluid="lg" class="pt-3 pb-5">
+    <Breadcrumbs class="mb-3" v-if="!ephemeral"/>
+   <b-row class="sticky-top bg-white border-bottom mb-3">
       <b-navbar>
         <b-navbar-brand>
           <h2 class="ideality-widget-heading">
@@ -38,7 +38,7 @@
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-navbar>
-      <small v-if="!ephemeral" class="text-muted">
+      <!-- <small v-if="!ephemeral" class="text-muted">
         <p class="mb-0">
           Id: <Copiable v-model="widget.id"/>
         </p>
@@ -46,7 +46,7 @@
           Embed:
           <nuxt-link class="text-secondary" :to="embedRoute" v-text="'https://ideality.app'+$router.resolve(embedRoute).href"/>
         </p>
-      </small>
+      </small> -->
     </b-row>
     <b-row>
       <ul class="nav nav-pills ms-4">
