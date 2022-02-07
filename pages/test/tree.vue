@@ -63,7 +63,10 @@
         nextNum: 10,
         tree: {
           nodes: [
-            { id: 0 }
+            { 
+              id: 0,
+              created: new Date()
+            }
           ]
         }
       }
