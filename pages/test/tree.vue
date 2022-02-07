@@ -51,7 +51,7 @@
 
 <script>
 
-  import tree from '~/plugins/mixins/tree.js'
+  import tree from '~/plugins/mixins/tree/index.js'
   import { repeat } from 'lodash'
 
   export default {

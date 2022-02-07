@@ -55,7 +55,7 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import tree from '~/plugins/mixins/tree.js'
+  import tree from '~/plugins/mixins/tree/index.js'
   // import beacon from '~/plugins/mixins/beacon.js'
   import { ms } from '~/plugins/helpers.js'
 
