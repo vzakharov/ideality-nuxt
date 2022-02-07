@@ -4,14 +4,14 @@
     <template v-if="node.id">
 
       <a class="me-1 nocolor" href="#"
-        v-if="hasChildren(node)"
+        v-if="hasChildren()"
         v-text="node.collapsed ? '⊞' : '⊟'"
         @click="goToggle"
       />
 
       <a class="nocolor" href="#"
         v-text="node.text || node.id"
-        @click="nudge(node)"
+        @click="nudge()"
       />
 
       <a class="ms-3 nocolor" href="#"
@@ -32,7 +32,7 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <template v-if="hasChildren(node)">
+      <template v-if="hasChildren()">
         <transition-group ref="list" name="node-group" tag="ul"
           v-show="!node.collapsed"
           @before-enter="log('enter (group)')"
@@ -42,7 +42,7 @@
             @descendantMounted="
               descendants = [...descendants, ...log($event)]
             "
-            v-for="child in getChildren(node)" :key="child.id"
+            v-for="child in getChildren()" :key="child.id"
             v-bind="{ tree, node: child }"
           />
         </transition-group>
@@ -55,13 +55,13 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import tree from '~/plugins/mixins/tree/index.js'
+  import Node from '~/plugins/mixins/tree/node.js'
   // import beacon from '~/plugins/mixins/beacon.js'
   import { ms } from '~/plugins/helpers.js'
 
   export default {
 
-    mixins: [ tree ],
+    mixins: [ Node ],
 
     props: {
       node: {},
