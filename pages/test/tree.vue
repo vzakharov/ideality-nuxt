@@ -51,11 +51,12 @@
 
 <script>
 
-  import treeMethods from '~/plugins/tree.js'
+  import tree from '~/plugins/mixins/tree.js'
   import { repeat } from 'lodash'
 
   export default {
 
+    mixins: [ tree ],
     data() {
 
       return {
@@ -78,7 +79,6 @@
     },
 
     methods: {
-      ...treeMethods,
       repeat,
       randomIndex: function () {
         return Math.floor(Math.random() * this.items.length)

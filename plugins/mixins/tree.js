@@ -75,15 +75,19 @@ function toggle(node) {
 }
 
 export default { 
-  addChild, 
-  getChildren,
-  hasChildren,
-  hasSiblings,
-  isHeir,
-  isRoot,
-  nudge,
-  orderNodes,
-  remove,
-  siblings,
-  toggle
+
+  methods: {
+    addChild, 
+    getChildren,
+    hasChildren,
+    hasSiblings,
+    isHeir,
+    isRoot,
+    nudge,
+    orderNodes,
+    remove,
+    siblings,
+    toggle  
+  }
+  
 }

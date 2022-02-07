@@ -55,13 +55,13 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import treeMethods from '~/plugins/tree.js'
+  import tree from '~/plugins/mixins/tree.js'
   // import beacon from '~/plugins/mixins/beacon.js'
   import { ms } from '~/plugins/helpers.js'
 
   export default {
 
-    // mixins: [ beacon ],
+    mixins: [ tree ],
 
     props: {
       node: {},
@@ -122,9 +122,7 @@
         }
       },
 
-      ms,
-
-      ...treeMethods
+      ms
     }
 
 
