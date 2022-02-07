@@ -4,7 +4,7 @@
     <template v-if="node.id">
 
       <a class="me-1 nocolor" href="#"
-        v-if="hasChildren()"
+        v-if="hasChildren"
         v-text="node.collapsed ? '⊞' : '⊟'"
         @click="goToggle"
       />
@@ -32,7 +32,7 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <template v-if="hasChildren()">
+      <template v-if="hasChildren">
         <transition-group ref="list" name="node-group" tag="ul"
           v-show="!node.collapsed"
           @before-enter="log('enter (group)')"
@@ -42,7 +42,7 @@
             @descendantMounted="
               descendants = [...descendants, ...log($event)]
             "
-            v-for="child in getChildren()" :key="child.id"
+            v-for="child in children" :key="child.id"
             v-bind="{ tree, node: child }"
           />
         </transition-group>
@@ -76,9 +76,9 @@
     },
 
     mounted() {
-      let { node } = this
-        this.$emit('descendantMounted', this)
-      if ( !this.hasChildren(node) ) {
+      // let { node } = this
+      this.$emit('descendantMounted', this)
+      if ( !this.hasChildren ) {
         // this.$emit('descendantMounted', this)
 
         // Todo: Find a better way to calculate the height for each individual node before it's created
@@ -92,7 +92,7 @@
     methods: {
 
       goAddChild() {
-        this.addChild(this.node)
+        this.addChild()
         this.$nextTick(() => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight
@@ -101,7 +101,7 @@
 
       goRemove() {
         this.log(this.store.nodeHeight = this.$el.offsetHeight)
-        this.remove(this.node)
+        this.remove()
       },
 
       goToggle() {
@@ -110,9 +110,9 @@
         ms('toggling', true)
         if ( !node.collapsed ) {
           store.nodeHeight = offsetHeight
-          this.toggle(node)
+          this.toggle()
         } else {
-          this.toggle(node)
+          this.toggle()
           ms('toggled')
           this.$nextTick(() => {
             ms('next tick')

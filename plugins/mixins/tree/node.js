@@ -22,8 +22,8 @@ function addChild()  {
 
 }
 
-function getChildren() {
-  let { node, tree } = this
+function children({ node } = this) {
+  let { tree } = this
   return orderBy(
     filter(tree.nodes, { parent: node }),
     'nudged', 'desc'
@@ -36,15 +36,15 @@ function remove() {
 }
 
 function hasChildren() {
-  return this.getChildren().length
+  return this.children.length
 }
 
 function hasSiblings() {
-  return this.siblings().length
+  return this.siblings.length
 }
 
 function isHeir() {
-  return !this.hasSiblings() || !find(this.siblings(), sibling => sibling.nudged > node.nudged)
+  return !this.hasSiblings || !find(this.siblings, sibling => sibling.nudged > node.nudged)
 }
 
 function isRoot() {
@@ -59,7 +59,7 @@ function nudge({ node } = this) {
 }
 
 function siblings({ node } = this) {
-  return without(this.getChildren(node.parent), node)
+  return without(children.call(this, { node: node.parent }), node)
 }
 
 
@@ -69,16 +69,19 @@ function toggle({ node } = this) {
 
 export default { 
 
-  methods: {
-    addChild, 
-    getChildren,
+  computed: {
     hasChildren,
+    children,
     hasSiblings,
     isHeir,
     isRoot,
+    siblings
+  },
+
+  methods: {
+    addChild, 
     nudge,
     remove,
-    siblings,
     toggle  
   }
   
