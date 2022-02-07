@@ -1,62 +1,21 @@
 <template>
   <div v-if="mounted">
-    <!-- <div id="list-complete-demo" class="demo">
-      <button v-on:click="shuffle">Shuffle</button>
-      <button v-on:click="add">Add</button>
-      <button v-on:click="remove">Remove</button>
-      <transition-group name="list-complete" tag="p">
-        <div
-          v-for="{ node } in orderNodes(tree.nodes[0])"
-          v-bind:key="node.id"
-        >
-          {{ node.id }}
-        </div>
-      </transition-group>
-    </div> -->
+    <TreeParse v-bind="{tree}"/>
 
     <ul style="list-style-type:none">
       <TreeNode v-bind="{ tree, node: tree.nodes[0] }"/>
     </ul>
 
-      
-      <!-- <transition-group name="slide-down" v-if="mounted" tag="div">
-        <div v-for="{node, depth} in orderNodes(tree.nodes[0])" :key="node.id">
-        
-        {{ repeat('-', depth) }} 
-
-        <b-icon-arrow-up
-          @click="nudge(node)"
-        />
-
-        <b-icon-plus-circle
-          @click="addChild(node)"
-        />
-
-        <b-icon class="me-1"
-          v-if="log('children', getChildren(log('node', node))).length" :icon="node.collapsed ? 'chevron-double-down' : 'chevron-double-up'"
-          @click="toggle(node)"
-        />
-
-        {{ node.id }}
-
-        <b-icon-x-circle class="ms-3"
-          @click="destroy(node)"
-        />
-
-      </div>
-    </transition-group> -->
    
   </div>
 </template>
 
 <script>
 
-  import tree from '~/plugins/mixins/tree/index.js'
   import { repeat } from 'lodash'
 
   export default {
 
-    mixins: [ tree ],
     data() {
 
       return {
