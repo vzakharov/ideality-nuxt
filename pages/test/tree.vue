@@ -1,6 +1,6 @@
 <template>
   <div v-if="mounted">
-    <TreeParse v-bind="{tree}" @parsed="parsed.resolve()"/>
+    <TreeParse v-bind="{tree}" v-on="{parsed}"/>
 
     <b-container fluid>
       <b-row>
@@ -26,10 +26,10 @@
 
     data() {
 
-      let parsed = {
-        resolve: () => {}
-      }
-      parsed.promise = new Promise(resolve => Object.assign(parsed, { resolve }))
+      // let parsed = {
+      //   resolve: () => {}
+      // }
+      // parsed.promise = new Promise(resolve => Object.assign(parsed, { resolve }))
 
       return {
         items: [1,2,3,4,5,6,7,8,9],
@@ -42,7 +42,7 @@
               created: new Date()
             }
         },
-        parsed
+        // parsed
       }
 
     },
@@ -51,15 +51,16 @@
       this.syncLocal('writer', { select: ['tree'], inline: true })
     },
 
-    watch: {
+    methods: {
 
-      hashRoute: { immediate: true, async handler(id) {
-        await this.parsed.promise
+      parsed() {
+        let id = this.hashRoute
         if ( id ) {
           id = parseInt(id)
           find(this.tree.nodes, { id }).nudge()
         }
-      } }
+      }
+
 
     }
 

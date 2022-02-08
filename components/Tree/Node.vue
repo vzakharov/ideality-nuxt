@@ -12,10 +12,11 @@
       <nuxt-link class="nocolor"
         v-text="node.text || node.id"
         :to="{ hash: '#' + node.id }"
+        @click.native="node.nudge()"
       />
 
       <a class="ms-3 nocolor" href="#"
-        @click="goRemove"
+        @click="remove"
         v-text="'×'"
       />
     </template>
@@ -23,7 +24,7 @@
 
     <div>
       <a class="nocolor" href="#"
-        @click.prevent="goAddChild()"
+        @click.prevent="addChild()"
         v-text="'…'"
       />
     </div>
@@ -34,8 +35,9 @@
     >
       <transition-group ref="list" name="node-group" tag="ul"
         v-show="!node.collapsed"
-        @before-enter="log('enter (group)')"
+        @before-enter="log('enter (group)'); transition.start()"
         @before-leave="log('leave (group)')"
+        @after-enter="transition.end()"
       >
         <TreeNode
           @descendantMounted="
@@ -54,8 +56,11 @@
 
   import { last, map, sum, sumBy } from 'lodash'
   import { ms } from '~/plugins/helpers.js'
+  import Awaitable from '~/plugins/mixins/awaitable.js'
 
   export default {
+
+    mixins: [ Awaitable('transition') ],
 
     props: {
       node: {},
@@ -72,7 +77,7 @@
     mounted() {
       // let { node } = this
       this.$emit('descendantMounted', this)
-      if ( !this.hasChildren ) {
+      if ( !this.node.hasChildren ) {
         // this.$emit('descendantMounted', this)
 
         // Todo: Find a better way to calculate the height for each individual node before it's created
@@ -85,15 +90,18 @@
 
     methods: {
 
-      goAddChild() {
-        this.node.addChild()
-        this.$nextTick(() => {
+      addChild() {
+        let child = this.node.addChild()
+        this.$nextTick(async () => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight
+          // this.$nextTick(() => this.$router.push({ hash: '#' + child.id}))
+          await this.transition.done
+          child.nudge()
         })
       },
 
-      goRemove() {
+      remove() {
         this.log(this.store.nodeHeight = this.$el.offsetHeight)
         this.node.remove()
       },

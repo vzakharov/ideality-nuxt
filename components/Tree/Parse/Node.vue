@@ -84,8 +84,6 @@
             ...node.children || []
           ])
 
-          vm.$router.push({ hash: '#' + child.id})
-
           return child
 
         },
@@ -94,7 +92,7 @@
 
           let { parent } = node
           if ( parent ) {
-            parent.children = [ node, ...node.siblings ]
+            vm.$set(parent, 'children', [ node, ...node.siblings ])
             parent.nudge()
           }
 
@@ -121,7 +119,7 @@
     methods: {
 
       emit_parsed() {
-        console.log('parsed', this.node.id)
+        // console.log('parsed', this.node.id)
         this.$emit('parsed', this)
       }
 
