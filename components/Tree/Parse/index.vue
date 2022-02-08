@@ -14,12 +14,12 @@
 
     created() {
 
-      let { tree } = this
+      let { tree, tree: { root }} = this
 
 
       assignProperties(tree, {
 
-        nodes: () => tree.root.descendants
+        nodes: () => [ root, ...root.descendants ]
 
       })   
     }

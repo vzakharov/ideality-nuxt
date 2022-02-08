@@ -1,12 +1,16 @@
 <template>
   <component :is="'template'">
-    <TreeParseNode v-for="child in node.children" :key="child.id" :node="child" :parent="node"/>
+    <TreeParseNode v-for="child in node.children" :key="child.id" v-bind="{
+      node: child,
+      parent: node,
+      tree
+    }"/>
   </component>
 </template>
 
 <script>
 
-  import { without, uniqueId } from 'lodash'
+  import { map, max, without, uniqueId } from 'lodash'
   import { encode } from 'dahnencode'
   import { assignMethods, assignProperties } from '~/plugins/helpers.js'
 
@@ -24,9 +28,11 @@
 
         parent, tree,
 
-        descendants: () => node.children?.map?.( child =>
+        ancestors: () => parent ? [ ...parent.ancestors, parent ] : [],
+
+        descendants: () => node.children?.map( child =>
           [ child, ...child.descendants || [] ]
-        ).flat(),
+        ).flat() || [],
 
         hasChildren: () => node.children?.length,
 
@@ -47,11 +53,16 @@
         addChild() {
 
           let child = {
-            id: encode( ( Date.now() - new Date(node.root.created) + uniqueId() ) / 100 ),
+            id: max([
+              tree.max_id,
+              max(map(tree.nodes, 'id'))
+            ]) + 1,
             created: new Date()
             // nudged: new Date(),
             // collapsed: false
           }
+
+          vm.$set(tree, 'max_id', child.id)
 
           vm.$set(node, 'children', [
             child,
@@ -73,7 +84,7 @@
         },
 
         remove() {
-          parent.children = without(parent.children, node)
+          parent.children = vm.log(without(parent.children, node))
         },
 
         toggle() {
