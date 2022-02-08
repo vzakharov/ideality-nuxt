@@ -4,7 +4,7 @@
     <template v-if="node.id">
 
       <a class="me-1 nocolor" href="#"
-        v-if="hasChildren"
+        v-if="node.hasChildren"
         v-text="node.collapsed ? '⊞' : '⊟'"
         @click="goToggle"
       />
@@ -32,7 +32,7 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <template v-if="hasChildren">
+      <template v-if="node.hasChildren">
         <transition-group ref="list" name="node-group" tag="ul"
           v-show="!node.collapsed"
           @before-enter="log('enter (group)')"
@@ -55,13 +55,9 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import Node from '~/plugins/mixins/tree/node.js'
-  // import beacon from '~/plugins/mixins/beacon.js'
   import { ms } from '~/plugins/helpers.js'
 
   export default {
-
-    mixins: [ Node ],
 
     props: {
       node: {},
@@ -101,7 +97,7 @@
 
       goRemove() {
         this.log(this.store.nodeHeight = this.$el.offsetHeight)
-        this.remove()
+        this.node.remove()
       },
 
       goToggle() {
@@ -110,9 +106,9 @@
         ms('toggling', true)
         if ( !node.collapsed ) {
           store.nodeHeight = offsetHeight
-          this.toggle()
+          node.toggle()
         } else {
-          this.toggle()
+          node.toggle()
           ms('toggled')
           this.$nextTick(() => {
             ms('next tick')

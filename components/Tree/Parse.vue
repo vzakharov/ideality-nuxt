@@ -22,17 +22,19 @@
 
       assignProperties(node, {
 
-        // Getters
+        hasChildren: () => node.children?.length,
+
+        hasSiblings: () => node.siblings?.length,
+
+        isHeir: () => parent.children[0] == node,
+
+        isRoot: () => !parent,
 
         parent,
 
         siblings: () => without(parent?.children, node),
 
-        root: parent ? parent.root : node,
-
-        isRoot: !parent,
-
-        // Methods
+        root: () => node.isRoot ? node : parent.root,
 
       })
 
@@ -48,8 +50,8 @@
           }
 
           vm.$set(node, 'children', [
-            ...node.children || [],
-            child
+            child,
+            ...node.children || []
           ])
 
           return child
@@ -64,7 +66,15 @@
             parent.nudge()
           }
 
-        } 
+        },
+
+        remove() {
+          parent.children = without(parent.children, node)
+        },
+
+        toggle() {
+          vm.$set(node, 'collapsed', !node.collapsed)
+        }
 
       }
 )
