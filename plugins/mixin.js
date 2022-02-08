@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { find, findKey, forEach, get, isArray, last, set, keys, mapValues, pickBy } from 'lodash'
+import { find, findIndex, findKey, forEach, get, isArray, last, set, keys, mapValues, pickBy } from 'lodash'
 import { always, appendedTarget, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
@@ -115,13 +115,19 @@ Vue.mixin({
         console: window.console
       })
   
-      if (!window.vms)
-        window.vms = {}
+      let { vms } = window
+      if (!vms)
+        vms = window.vms = {}
+
+      let { _uid, _name } = this
+
+      if (!vms[_name])
+        vms[_name] = []
       
-      if (!window.vms[this._name])
-        window.vms[this._name] = {}
-      
-      window.vms[this._name][this._uid] = this
+      let i = findIndex(vms, { _uid })
+      i + 1 ?
+        vms[_name][i] = this
+        : vms[_name].push(this)
 
       if (!window.axios)
         window.axios = axios 
