@@ -9,8 +9,9 @@ function addChild()  {
 
   let child = {
     id: encode( ( Date.now() - new Date(this.tree.root.created) + uniqueId() ) / 100 ),
-    nudged: new Date(),
-    collapsed: false
+    created: new Date()
+    // nudged: new Date(),
+    // collapsed: false
   }
 
   this.$set(node, 'children', [
@@ -47,9 +48,10 @@ function isRoot() {
 }
 
 function nudge({ node } = this) {
-  this.$set(node, 'nudged', new Date())
-  if ( node.parent )
-    nudge.call(this, { node: node.parent })
+  node.nudge()
+  // this.$set(node, 'nudged', new Date())
+  // if ( node.parent )
+  //   nudge.call(this, { node: node.parent })
 }
 
 function siblings({ node } = this) {

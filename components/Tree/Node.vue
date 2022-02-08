@@ -11,7 +11,7 @@
 
       <a class="nocolor" href="#"
         v-text="node.text || node.id"
-        @click="nudge()"
+        @click="node.nudge()"
       />
 
       <a class="ms-3 nocolor" href="#"
@@ -92,7 +92,7 @@
     methods: {
 
       goAddChild() {
-        this.addChild()
+        this.node.addChild()
         this.$nextTick(() => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight

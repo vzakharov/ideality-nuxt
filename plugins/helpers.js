@@ -109,10 +109,29 @@ function slugify(name, items) {
   return slug
 }
 
+function assignProperties(object, properties) {
+  Object.defineProperties(object, mapValues( properties, value => ({
+    configurable: true,
+    ...typeof value == 'function' 
+      ? { get: value } 
+      : { writeable: false, value } 
+  })
+  ))
+}
+
+function assignMethods(object, methods) {
+  Object.defineProperties(object, mapValues( methods, method => ({
+    configurable: true,
+    value: method
+  })))
+}
+
 export {
 
   appendedTarget,
   always,
+  assignMethods,
+  assignProperties,
   filteredParameters,
   getUser,
   keyedPromises,

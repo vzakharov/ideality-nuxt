@@ -6,7 +6,9 @@
 
 <script>
 
-  import { without } from 'lodash'
+  import { without, uniqueId } from 'lodash'
+  import { encode } from 'dahnencode'
+  import { assignMethods, assignProperties } from '~/plugins/helpers.js'
 
   export default {
 
@@ -14,15 +16,59 @@
 
     created() {
 
-      let { node } = this
+      let { node, parent } = this
 
-      Object.defineProperties(node, {
+      let vm = this
 
-        parent: { get: () => this.parent },
-        siblings: { get: () => without(node.parent?.children, node) },
-        hello: { get: () => 'world' }
+      assignProperties(node, {
+
+        // Getters
+
+        parent,
+
+        siblings: () => without(parent?.children, node),
+
+        root: parent ? parent.root : node,
+
+        isRoot: !parent,
+
+        // Methods
 
       })
+
+      assignMethods(node, {
+
+        addChild() {
+
+          let child = {
+            id: encode( ( Date.now() - new Date(node.root.created) + uniqueId() ) / 100 ),
+            created: new Date()
+            // nudged: new Date(),
+            // collapsed: false
+          }
+
+          vm.$set(node, 'children', [
+            ...node.children || [],
+            child
+          ])
+
+          return child
+
+        },
+
+        nudge() {
+
+          let { parent } = node
+          if ( parent ) {
+            parent.children = [ node, ...node.siblings ]
+            parent.nudge()
+          }
+
+        } 
+
+      }
+)
+
 
     }
 
