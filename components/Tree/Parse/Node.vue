@@ -84,6 +84,8 @@
             ...node.children || []
           ])
 
+          vm.$router.push({ hash: '#' + child.id})
+
           return child
 
         },

@@ -53,7 +53,7 @@
 
     watch: {
 
-      $route: { immediate: true, async handler({ query: { id }}) {
+      hashRoute: { immediate: true, async handler(id) {
         await this.parsed.promise
         if ( id ) {
           id = parseInt(id)

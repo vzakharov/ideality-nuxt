@@ -11,7 +11,7 @@
 
       <nuxt-link class="nocolor"
         v-text="node.text || node.id"
-        :to="{ query: { id: node.id }}"
+        :to="{ hash: '#' + node.id }"
       />
 
       <a class="ms-3 nocolor" href="#"
@@ -23,7 +23,7 @@
 
     <div>
       <a class="nocolor" href="#"
-        @click="goAddChild()"
+        @click.prevent="goAddChild()"
         v-text="'…'"
       />
     </div>
