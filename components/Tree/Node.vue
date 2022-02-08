@@ -9,9 +9,9 @@
         @click="goToggle"
       />
 
-      <a class="nocolor" href="#"
+      <nuxt-link class="nocolor"
         v-text="node.text || node.id"
-        @click="node.nudge()"
+        :to="{ query: { id: node.id }}"
       />
 
       <a class="ms-3 nocolor" href="#"

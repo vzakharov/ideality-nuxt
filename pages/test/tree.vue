@@ -1,22 +1,35 @@
 <template>
   <div v-if="mounted">
-    <TreeParse v-bind="{tree}"/>
+    <TreeParse v-bind="{tree}" @parsed="parsed.resolve()"/>
 
-    <ul style="list-style-type:none">
-      <TreeNode v-bind="{ tree, node: tree.root }"/>
-    </ul>
+    <b-container fluid>
+      <b-row>
+        <b-col cols="12" sm="5" md="3" class="bg-light">
+          <ul style="list-style-type:none">
+            <TreeNode v-bind="{ tree, node: tree.root }"/>
+          </ul>
+        </b-col>
+        <b-col>
 
+        </b-col>
+      </b-row>
+    </b-container>
    
   </div>
 </template>
 
 <script>
 
-  import { repeat } from 'lodash'
+  import { find, repeat } from 'lodash'
 
   export default {
 
     data() {
+
+      let parsed = {
+        resolve: () => {}
+      }
+      parsed.promise = new Promise(resolve => Object.assign(parsed, { resolve }))
 
       return {
         items: [1,2,3,4,5,6,7,8,9],
@@ -28,7 +41,8 @@
               id: 0,
               created: new Date()
             }
-        }
+        },
+        parsed
       }
 
     },
@@ -37,20 +51,16 @@
       this.syncLocal('writer', { select: ['tree'], inline: true })
     },
 
-    methods: {
-      repeat,
-      randomIndex: function () {
-        return Math.floor(Math.random() * this.items.length)
-      },
-      add: function () {
-        this.items.splice(this.randomIndex(), 0, this.nextNum++)
-      },
-      remove: function () {
-        this.items.splice(this.randomIndex(), 1)
-      },
-      shuffle: function () {
-        this.items = _.shuffle(this.items)
-      }
+    watch: {
+
+      $route: { immediate: true, async handler({ query: { id }}) {
+        await this.parsed.promise
+        if ( id ) {
+          id = parseInt(id)
+          find(this.tree.nodes, { id }).nudge()
+        }
+      } }
+
     }
 
 

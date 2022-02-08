@@ -1,5 +1,5 @@
 <template>
-  <TreeParseNode v-bind="{ node: tree.root, tree }"/>
+  <TreeParseNode v-bind="{ node: tree.root, tree }" v-on="$listeners"/>
 </template>
 
 <script>

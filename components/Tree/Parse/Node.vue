@@ -1,10 +1,13 @@
 <template>
   <component :is="'template'">
-    <TreeParseNode v-for="child in node.children" :key="child.id" v-bind="{
-      node: child,
-      parent: node,
-      tree
-    }"/>
+    <TreeParseNode v-for="child in node.children" :key="child.id" 
+      v-bind="{
+        node: child,
+        parent: node,
+        tree
+      }"
+      @parsed="!--leftToParse && emit_parsed"
+    />
   </component>
 </template>
 
@@ -17,6 +20,14 @@
   export default {
 
     props: [ 'node', 'parent', 'tree' ],
+
+    data() {
+
+      return {
+        leftToParse: this.node.children?.length || 0
+      }
+
+    },
 
     created() {
 
@@ -38,6 +49,8 @@
 
         hasSiblings: () => node.siblings?.length,
 
+        heirs: () => node.hasChildren ? [ node.children[0], ...node.children[0].heirs ] : [],
+
         isHeir: () => parent.children[0] == node,
 
         isRoot: () => !parent,
@@ -45,6 +58,8 @@
         siblings: () => without(parent?.children, node),
 
         root: () => node.isRoot ? node : parent.root,
+
+        thread: () => [...node.ancestors, node, ...node.heirs]
 
       })
 
@@ -94,6 +109,19 @@
       }
 )
 
+    },
+
+    mounted() {
+      if ( !this.leftToParse )
+        this.emit_parsed()
+    },
+
+    methods: {
+
+      emit_parsed() {
+        console.log('parsed', this.node.id)
+        this.$emit('parsed', this)
+      }
 
     }
 
