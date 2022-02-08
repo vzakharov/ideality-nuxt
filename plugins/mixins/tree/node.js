@@ -5,12 +5,11 @@ import { encode } from 'dahnencode'
 
 function addChild()  {
 
-  let { node, tree } = this
+  let { node } = this
 
   let child = {
     id: encode( ( Date.now() - new Date(this.tree.root.created) + uniqueId() ) / 100 ),
     nudged: new Date(),
-    parent: node,
     collapsed: false
   }
 
@@ -19,14 +18,14 @@ function addChild()  {
     child
   ])
 
-  this.reactify(child)
+  // this.reactify(child)
 
   return child
 
 }
 
 function remove() {
-  let { node, parent } = this
+  let { node, node: { parent }} = this
   parent.children = without(parent.children, node)
 }
 
