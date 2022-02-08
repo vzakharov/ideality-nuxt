@@ -1,6 +1,6 @@
 <template>
   <div v-if="mounted">
-    <TreeParse :node="tree.root"/>
+    <TreeParse v-bind="{tree}"/>
 
     <ul style="list-style-type:none">
       <TreeNode v-bind="{ tree, node: tree.root }"/>

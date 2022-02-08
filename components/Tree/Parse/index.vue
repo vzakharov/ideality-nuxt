@@ -1,7 +1,5 @@
 <template>
-  <component :is="'template'">
-    <TreeParse v-for="child in node.children" :key="child.id" :node="child" :parent="node"/>
-  </component>
+  <TreeParseNode v-bind="{ node: tree.root, tree }"/>
 </template>
 
 <script>
@@ -12,84 +10,20 @@
 
   export default {
 
-    props: [ 'node', 'parent' ],
+    props: [ 'tree' ],
 
     created() {
 
-      let { node, parent } = this
-
-      let vm = this
-
-      assignProperties(node, {
-
-        descendants: () => node.children?.map?.( child =>
-          [ child, ...child.descendants || [] ]
-        ).flat(),
-
-        hasChildren: () => node.children?.length,
-
-        hasSiblings: () => node.siblings?.length,
-
-        isHeir: () => parent.children[0] == node,
-
-        isRoot: () => !parent,
-
-        parent,
-
-        siblings: () => without(parent?.children, node),
-
-        root: () => node.isRoot ? node : parent.root,
-
-      })
-
-      assignMethods(node, {
-
-        addChild() {
-
-          let child = {
-            id: encode( ( Date.now() - new Date(node.root.created) + uniqueId() ) / 100 ),
-            created: new Date()
-            // nudged: new Date(),
-            // collapsed: false
-          }
-
-          vm.$set(node, 'children', [
-            child,
-            ...node.children || []
-          ])
-
-          return child
-
-        },
-
-        nudge() {
-
-          let { parent } = node
-          if ( parent ) {
-            parent.children = [ node, ...node.siblings ]
-            parent.nudge()
-          }
-
-        },
-
-        remove() {
-          parent.children = without(parent.children, node)
-        },
-
-        toggle() {
-          vm.$set(node, 'collapsed', !node.collapsed)
-        }
-
-      }
-)
+      let { tree } = this
 
 
+      assignProperties(tree, {
+
+        nodes: () => tree.root.descendants
+
+      })   
     }
 
-  }
+}
   
 </script>
-
-<style>
-
-</style>
