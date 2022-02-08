@@ -22,6 +22,10 @@
 
       assignProperties(node, {
 
+        descendants: () => node.children?.map?.( child =>
+          [ child, ...child.descendants || [] ]
+        ).flat(),
+
         hasChildren: () => node.children?.length,
 
         hasSiblings: () => node.siblings?.length,
