@@ -8,13 +8,16 @@ function addChild()  {
   let { node, tree } = this
 
   let child = {
-    id: encode( ( Date.now() - new Date(this.tree.nodes[0].created) + uniqueId() ) / 100 ),
+    id: encode( ( Date.now() - new Date(this.tree.root.created) + uniqueId() ) / 100 ),
     nudged: new Date(),
     parent: node,
     collapsed: false
   }
 
-  tree.nodes = [ ...tree.nodes, child ]
+  this.$set(node, 'children', [
+    ...node.children || [],
+    child
+  ])
 
   this.reactify(child)
 
@@ -22,25 +25,17 @@ function addChild()  {
 
 }
 
-function children({ node } = this) {
-  let { tree } = this
-  return orderBy(
-    filter(tree.nodes, { parent: node }),
-    'nudged', 'desc'
-  )
-}
-
 function remove() {
-  let { node, tree } = this
-  tree.nodes = without(tree.nodes, node)
+  let { node, parent } = this
+  parent.children = without(parent.children, node)
 }
 
 function hasChildren() {
-  return this.children.length
+  return this.node.children?.length
 }
 
 function hasSiblings() {
-  return this.siblings.length
+  return this.siblings?.length
 }
 
 function isHeir() {
@@ -48,8 +43,8 @@ function isHeir() {
 }
 
 function isRoot() {
-  let { tree: { nodes }, node } = this
-  return node == nodes[0]
+  let { tree: { root }, node } = this
+  return node == root
 }
 
 function nudge({ node } = this) {
@@ -59,7 +54,7 @@ function nudge({ node } = this) {
 }
 
 function siblings({ node } = this) {
-  return without(children.call(this, { node: node.parent }), node)
+  return without(node.parent.children, node)
 }
 
 
@@ -71,7 +66,6 @@ export default {
 
   computed: {
     hasChildren,
-    children,
     hasSiblings,
     isHeir,
     isRoot,

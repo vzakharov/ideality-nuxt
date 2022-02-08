@@ -42,7 +42,7 @@
             @descendantMounted="
               descendants = [...descendants, ...log($event)]
             "
-            v-for="child in children" :key="child.id"
+            v-for="child in node.children" :key="child.id"
             v-bind="{ tree, node: child }"
           />
         </transition-group>

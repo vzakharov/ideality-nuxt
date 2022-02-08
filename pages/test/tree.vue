@@ -3,7 +3,7 @@
     <TreeParse v-bind="{tree}"/>
 
     <ul style="list-style-type:none">
-      <TreeNode v-bind="{ tree, node: tree.nodes[0] }"/>
+      <TreeNode v-bind="{ tree, node: tree.root }"/>
     </ul>
 
    
@@ -22,12 +22,11 @@
         items: [1,2,3,4,5,6,7,8,9],
         nextNum: 10,
         tree: {
-          nodes: [
+          root:
             { 
-              id: 0,
+              id: '0',
               created: new Date()
             }
-          ]
         }
       }
 
