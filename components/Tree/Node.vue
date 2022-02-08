@@ -32,21 +32,19 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <template v-if="node.hasChildren">
-        <transition-group ref="list" name="node-group" tag="ul"
-          v-show="!node.collapsed"
-          @before-enter="log('enter (group)')"
-          @before-leave="log('leave (group)')"
-        >
-          <TreeNode
-            @descendantMounted="
-              descendants = [...descendants, ...log($event)]
-            "
-            v-for="child in node.children" :key="child.id"
-            v-bind="{ tree, node: child }"
-          />
-        </transition-group>
-      </template>
+      <transition-group ref="list" name="node-group" tag="ul"
+        v-show="!node.collapsed"
+        @before-enter="log('enter (group)')"
+        @before-leave="log('leave (group)')"
+      >
+        <TreeNode
+          @descendantMounted="
+            descendants = [...descendants, ...log($event)]
+          "
+          v-for="child in node.children" :key="child.id"
+          v-bind="{ tree, node: child }"
+        />
+      </transition-group>
     </transition>
 
   </li>
