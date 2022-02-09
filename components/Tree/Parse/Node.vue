@@ -49,7 +49,7 @@
 
         hasSiblings: () => node.siblings?.length,
 
-        heirs: () => node.hasChildren ? [ node.children[0], ...node.children[0].heirs ] : [],
+        heirs: () => node.hasChildren ? [ node.children[0], ...node.children[0].heirs || [] ] : [],
 
         isHeir: () => parent.children[0] == node,
 
@@ -88,12 +88,14 @@
 
         },
 
-        nudge() {
+        nudge(secondary) {
 
           let { parent } = node
           if ( parent ) {
             vm.$set(parent, 'children', [ node, ...node.siblings ])
-            parent.nudge()
+            parent.nudge(true)
+            if ( !secondary )
+              vm.setFieldsFor(tree, { node })
           }
 
         },

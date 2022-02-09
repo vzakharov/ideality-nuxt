@@ -9,11 +9,16 @@
         @click="goToggle"
       />
 
-      <nuxt-link class="nocolor"
-        v-text="node.text || node.id"
-        :to="{ hash: '#' + node.id }"
-        @click.native="node.nudge()"
-      />
+      <span :class="{ 
+        'gray': !tree.node.thread.includes(node),
+        'fw-bold': tree.node == node
+      }">
+        <nuxt-link class="nocolor"
+          v-text="node.text || node.id"
+          :to="{ hash: '#' + node.id }"
+          @click.native="node.nudge()"
+        />
+      </span>
 
       <a class="ms-3 nocolor" href="#"
         @click="remove"
