@@ -13,9 +13,7 @@
 
 <script>
 
-  import { map, max, without, uniqueId } from 'lodash'
-  import { encode } from 'dahnencode'
-  import { assignMethods, assignProperties } from '~/plugins/helpers.js'
+  import { TreeNode } from '~/plugins/tree.js'
 
   export default {
 
@@ -31,85 +29,9 @@
 
     created() {
 
-      let { node, parent, tree } = this
-
-      let vm = this
-
-      assignProperties(node, {
-
-        parent, tree,
-
-        ancestors: () => parent ? [ ...parent.ancestors, parent ] : [],
-
-        descendants: () => node.children?.map( child =>
-          [ child, ...child.descendants || [] ]
-        ).flat() || [],
-
-        hasChildren: () => node.children?.length,
-
-        hasSiblings: () => node.siblings?.length,
-
-        heirs: () => node.hasChildren ? [ node.children[0], ...node.children[0].heirs || [] ] : [],
-
-        isHeir: () => parent.children[0] == node,
-
-        isRoot: () => !parent,
-
-        siblings: () => without(parent?.children, node),
-
-        root: () => node.isRoot ? node : parent.root,
-
-        thread: () => [...node.ancestors, node, ...node.heirs]
-
-      })
-
-      assignMethods(node, {
-
-        addChild() {
-
-          let child = {
-            id: max([
-              tree.max_id,
-              max(map(tree.nodes, 'id'))
-            ]) + 1,
-            created: new Date()
-            // nudged: new Date(),
-            // collapsed: false
-          }
-
-          vm.$set(tree, 'max_id', child.id)
-
-          vm.$set(node, 'children', [
-            child,
-            ...node.children || []
-          ])
-
-          return child
-
-        },
-
-        nudge(secondary) {
-
-          let { parent } = node
-          if ( parent ) {
-            vm.$set(parent, 'children', [ node, ...node.siblings ])
-            parent.nudge(true)
-            if ( !secondary )
-              vm.setFieldsFor(tree, { node })
-          }
-
-        },
-
-        remove() {
-          parent.children = vm.log(without(parent.children, node))
-        },
-
-        toggle() {
-          vm.$set(node, 'collapsed', !node.collapsed)
-        }
-
-      }
-)
+      let { node } = this 
+      if ( this.log(node.constructor.name) != 'TreeNode' )
+        TreeNode.call(node, this)
 
     },
 
