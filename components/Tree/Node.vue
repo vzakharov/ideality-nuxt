@@ -67,7 +67,6 @@
     data() {
       return {
         descendants: [],
-        hello: null,
         transition: new Awaitable() 
       }
     },
@@ -93,7 +92,6 @@
         this.$nextTick(async () => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight
-          // this.$nextTick(() => this.$router.push({ hash: '#' + child.id}))
           await this.transition.done
           child.nudge()
         })
