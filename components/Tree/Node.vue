@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <div class="ms-1 ps-1 border-start border-top">
 
     <template v-if="node.id">
 
@@ -33,7 +33,7 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <transition-group ref="list" name="node-group" tag="ul"
+      <transition-group ref="list" name="node-group" tag="div"
         v-show="!node.collapsed"
         @before-enter="log('enter (group)'); transition.start()"
         @before-leave="log('leave (group)')"
@@ -49,7 +49,7 @@
       </transition-group>
     </transition>
 
-  </li>
+  </div>
 </template>
 
 <script>
