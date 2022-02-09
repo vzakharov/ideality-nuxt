@@ -4,7 +4,7 @@
 
     <b-container fluid>
       <b-row>
-        <b-col cols="12" sm="5" md="3" class="bg-light">
+        <b-col cols="12" sm="5" md="3" class="bg-light vh" style="overflow-x: auto">
           <ul style="list-style-type:none">
             <TreeNode v-bind="{ tree, node: tree.root }"/>
           </ul>
