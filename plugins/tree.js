@@ -84,7 +84,9 @@ function TreeNode({ vm, parent, tree }, values) {
     },
 
     toggle() {
-      node.collapsed = !node.collapsed
+      vm.assignReactive(node, {
+        collapsed: node.collapsed ? undefined : true
+      })
     }
 
   })
