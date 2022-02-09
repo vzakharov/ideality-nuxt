@@ -46,7 +46,7 @@
     },
 
     mounted() {
-      this.syncLocal('writer', { select: ['tree'], inline: true })
+      this.syncLocal('studio', { select: ['tree'], inline: true })
     },
 
     methods: {
