@@ -1,4 +1,4 @@
-import { filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { assign, filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
@@ -76,7 +76,7 @@ async function loggedInMiddleware({ store: { state: { auth: { loggedIn }}}, redi
 
 function objectify(array, initialize = () => ({}) ) {
   let key = array[0]
-  return Object.assign(
+  return assign(
     array.length > 1 ? objectify(array.slice(1), initialize) : {},
     { [key]: initialize(key) }
   )
@@ -126,14 +126,16 @@ function assignMethods(object, methods) {
   })))
 }
 
-function awaitable() {
-  return {
+function Awaitable() {
+
+  assign(this, {
     done: null,
     end: () => {},
     start() {
       this.done = new Promise(resolve => this.end = resolve)
     }
-  }
+  })
+
 }
 
 export {
@@ -142,7 +144,7 @@ export {
   always,
   assignMethods,
   assignProperties,
-  awaitable,
+  Awaitable,
   filteredParameters,
   getUser,
   keyedPromises,

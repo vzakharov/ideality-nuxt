@@ -55,7 +55,7 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import { awaitable, ms } from '~/plugins/helpers.js'
+  import { Awaitable, ms } from '~/plugins/helpers.js'
 
   export default {
 
@@ -68,7 +68,7 @@
       return {
         descendants: [],
         hello: null,
-        transition: awaitable()
+        transition: new Awaitable() 
       }
     },
 
