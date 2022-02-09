@@ -55,12 +55,9 @@
 <script>
 
   import { last, map, sum, sumBy } from 'lodash'
-  import { ms } from '~/plugins/helpers.js'
-  import Awaitable from '~/plugins/mixins/awaitable.js'
+  import { awaitable, ms } from '~/plugins/helpers.js'
 
   export default {
-
-    mixins: [ Awaitable('transition') ],
 
     props: {
       node: {},
@@ -70,7 +67,8 @@
     data() {
       return {
         descendants: [],
-        hello: null
+        hello: null,
+        transition: awaitable()
       }
     },
 

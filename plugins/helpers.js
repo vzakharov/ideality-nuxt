@@ -126,12 +126,23 @@ function assignMethods(object, methods) {
   })))
 }
 
+function awaitable() {
+  return {
+    done: null,
+    end: () => {},
+    start() {
+      this.done = new Promise(resolve => this.end = resolve)
+    }
+  }
+}
+
 export {
 
   appendedTarget,
   always,
   assignMethods,
   assignProperties,
+  awaitable,
   filteredParameters,
   getUser,
   keyedPromises,
