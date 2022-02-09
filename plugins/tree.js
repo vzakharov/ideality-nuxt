@@ -54,10 +54,10 @@ function TreeNode({ vm, parent, tree }, values) {
 
       vm.$set(tree, 'max_id', child.id)
 
-      vm.$set(node, 'children', [
-        child,
-        ...node.children || []
-      ])
+      vm.assignReactive(node, {
+        children: [ child, ...node.children || [] ],
+        collapsed: undefined
+      })
 
       return child
 
@@ -67,7 +67,7 @@ function TreeNode({ vm, parent, tree }, values) {
 
       let { parent } = node
       if ( parent ) {
-        vm.$set(parent, 'children', [ node, ...node.siblings ])
+        vm.assignReactive(parent, { children: [ node, ...node.siblings ] })
         parent.nudge(true)
         if ( !secondary ) {
           vm.assignReactive(tree, { node })
@@ -79,6 +79,8 @@ function TreeNode({ vm, parent, tree }, values) {
 
     remove() {
       parent.children = vm.log(without(parent.children, node))
+      if ( node == tree.node )
+        ( node.siblings?.[0] || parent ).nudge()
     },
 
     toggle() {

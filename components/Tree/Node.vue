@@ -9,7 +9,7 @@
         @click="goToggle"
       />
 
-      <span :class="{ 
+      <span :class="tree.node && { 
         'gray': !tree.node.thread.includes(node),
         'fw-bold': tree.node == node
       }">
