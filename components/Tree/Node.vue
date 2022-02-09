@@ -40,7 +40,7 @@
     >
       <transition-group ref="list" name="node-group" tag="div"
         v-show="!node.collapsed"
-        @before-enter="log('enter (group)'); transition.start()"
+        @before-enter="log('enter (group)')"
         @before-leave="log('leave (group)')"
         @after-enter="transition.end()"
       >
@@ -92,7 +92,8 @@
 
     methods: {
 
-      addChild() {
+      async addChild() {
+        await this.transition.waitAndStart()
         let child = this.node.addChild()
         this.$nextTick(async () => {
           // Todo: find a way to calculate individually

@@ -129,11 +129,27 @@ function assignMethods(object, methods) {
 function Awaitable() {
 
   assign(this, {
-    done: null,
+    pending: false,
+    done: Promise.resolve(),
     end: () => {},
+
     start() {
-      this.done = new Promise(resolve => this.end = resolve)
+      this.pending = true
+      this.done = new Promise(resolve => 
+        this.end = result => {
+          this.pending = false
+          resolve(result)
+        }
+      )
+    },
+
+    async waitAndStart() {
+      while ( this.pending ) {
+        await this.done
+      } 
+      this.start()
     }
+
   })
 
 }
