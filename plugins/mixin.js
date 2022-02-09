@@ -266,7 +266,7 @@ Vue.mixin({
       if ( mergeBy ) {
         let list = this[as]
         for ( let item of list ) {
-          this.setFieldsFor(item, find( data, { [mergeBy]: item[mergeBy]} ) || {})
+          this.assignReactive(item, find( data, { [mergeBy]: item[mergeBy]} ) || {})
         }
       } else
         Object.assign(this, {
@@ -389,7 +389,7 @@ Vue.mixin({
       Object.assign(this, fields)
     },
 
-    setFieldsFor(object, fields) {
+    assignReactive(object, fields) {
       for ( let key of keys(fields) ) {
         this.$set(object, key, fields[key])
       }

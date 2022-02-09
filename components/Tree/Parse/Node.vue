@@ -30,7 +30,7 @@
     created() {
 
       let { node } = this 
-      if ( this.log(node.constructor.name) != 'TreeNode' )
+      if ( node.constructor.name != 'TreeNode' )
         TreeNode.call(node, this)
 
     },

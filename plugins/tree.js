@@ -70,7 +70,7 @@ function TreeNode({ vm, parent, tree }, values) {
         vm.$set(parent, 'children', [ node, ...node.siblings ])
         parent.nudge(true)
         if ( !secondary ) {
-          vm.setFieldsFor(tree, { node })
+          vm.assignReactive(tree, { node })
           vm.log(node)
         }
       }

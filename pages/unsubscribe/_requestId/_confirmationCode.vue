@@ -30,7 +30,7 @@
         try {
           let id = await this.bubble.go('cancelBuildRequest', params)
           let build = find(this.builds, { id })
-          build && this.setFieldsFor(build, params)
+          build && this.assignReactive(build, params)
         } catch(error) {
           if ( error.statusCode != 400 )
             throw(error)

@@ -10,7 +10,7 @@
           v-text="item.content"
           @input="currentContent=$event.target.innerText.replace(/\n/g, '')"
           @focus="currentContent=item.content"
-          @blur="setFieldsFor(item, { content: currentContent, nudged: new Date() })"
+          @blur="assignReactive(item, { content: currentContent, nudged: new Date() })"
         />
       </template>
     </div>
