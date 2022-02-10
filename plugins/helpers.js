@@ -74,11 +74,11 @@ async function loggedInMiddleware({ store: { state: { auth: { loggedIn }}}, redi
     return redirect({name: 'login', query: { then: fullPath }})
 }
 
-function objectify(array, initialize = () => ({}) ) {
+function objectify(array, initialize ) {
   let key = array[0]
   return assign(
     array.length > 1 ? objectify(array.slice(1), initialize) : {},
-    { [key]: initialize(key) }
+    { [key]: initialize?.(key) || {} }
   )
 }
 
