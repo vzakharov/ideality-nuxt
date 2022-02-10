@@ -1,5 +1,5 @@
 <template>
-  <TreeParseNode v-bind="{ node: tree.root, tree: vm }" v-on="$listeners"/>
+  <TreeParseNode v-bind="{ node: root, tree }" v-on="$listeners"/>
 </template>
 
 <script>
@@ -11,7 +11,20 @@
   export default {
 
     mixins: [
-      Internalize('tree', 'current_node_id max_id'.split(' '))
+      Internalize(
+        'tree', 
+        'root current_node_id max_id'.split(' '), {
+          computed: {
+
+            nodes({ root } = this) { return [ root, ...root.descendants ]},
+
+            node({ nodes, current_node_id: id, root } = this ) { 
+              return find(nodes, { id }) || root 
+            }
+
+          }
+        }
+      )
     ],
 
     props: [ 'tree' ],
@@ -28,17 +41,7 @@
     //   })   
     // },
 
-    computed: {
 
-      root() { return this.$children[0] },
-
-      nodes({ root } = this) { return [ root, ...root.descendants ]},
-
-      node({ nodes, current_node_id: id, root } = this ) { 
-        return find(nodes, { id }) || root 
-      }
-
-    }
 
 }
   

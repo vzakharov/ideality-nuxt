@@ -1,14 +1,10 @@
 import { assign, find, map, mapValues, max, without, uniqueId } from 'lodash'
-import { assignMethods, assignProperties, objectify } from '~/plugins/helpers.js'
+import { assignMethods, assignProperties, Internalize, objectify } from '~/plugins/helpers.js'
 
 const computed = {
 
   ancestors() { 
-    return this.parent.isTreeNode ? [ ...this.parent.ancestors, this.parent ] : []
-  },
-
-  children () {
-    return this.node.children?.map(({ id }) => find(this.$children, { id }))
+    return this.parent ? [ ...this.parent.ancestors, this.parent ] : []
   },
 
   descendants() {
@@ -23,96 +19,83 @@ const computed = {
 
   heirs() { return this.hasChildren ? [ this.children[0], ...this.children[0].heirs || [] ] : [] },
 
-  isHeir() { return this.parent.children[0] == this },
+  isHeir() { return this.parent.children[0] == this.node },
 
   isRoot() { return !this.parent },
 
-  parent() {
-    return this.$parent
-  },
+  siblings() { return without(this.parent?.children, this.node) },
 
-  siblings() { return without(this.parent?.children, this) },
+  root() { return this.isRoot ? this.node : this.tree.root },
 
-  // root() { return this.isRoot ? this : this.parent.root },
-
-  thread() { return [...this.ancestors, this, ...this.heirs] },
+  thread() { return [...this.ancestors, this.node, ...this.heirs] },
 
 }
 
-let NodeMixin = {
+const methods = {
 
-  created() {
+  addChild() {
 
-    // let { parent, tree } = this
+    let { node } = this
 
-    // assignProperties(this.node, {
-    //   ...mapValues( computeds, 
-    //     ( value, key ) => () => this[key],
-    //   ), tree, parent
-    // })
+    let child = new TreeNode({ 
+      vm, parent: node, tree 
+    }, {
+      id: max([
+        tree.max_id,
+        max(map(tree.nodes, 'id'))
+      ]) + 1,
+      created: new Date()
+    })
+
+    vm.$set(tree, 'max_id', child.id)
+
+    vm.assignReactive(node, {
+      children: [ child, ...node.children || [] ],
+      collapsed: undefined
+    })
+
+    return child
 
   },
 
-  computed,
+  nudge(secondary) {
 
-  methods: {
+    let { parent, tree } = this
 
-    addChild() {
-
-      let { node } = this
-
-      let child = new TreeNode({ 
-        vm, parent: node, tree 
-      }, {
-        id: max([
-          tree.max_id,
-          max(map(tree.nodes, 'id'))
-        ]) + 1,
-        created: new Date()
-      })
-
-      vm.$set(tree, 'max_id', child.id)
-
-      vm.assignReactive(node, {
-        children: [ child, ...node.children || [] ],
-        collapsed: undefined
-      })
-
-      return child
-
-    },
-
-    nudge(secondary) {
-
-      let { node, parent, tree } = this
-
-      if ( parent ) {
-        parent.node.children = [ node, ...map(this.siblings, node => node.node) ]
-        // parent.nudge(true)
-        // if ( !secondary ) {
-        //   vm.assignReactive(tree, { node })
-        //   vm.log(node)
-        // }
+    if ( parent ) {
+      parent.children = [ this, ...this.siblings ]
+      parent.nudge(true)
+      if ( !secondary ) {
+        tree.current_node_id = this.id
       }
+    }
 
-    },
+  },
 
-    remove() {
+  remove() {
 
-      let { node, parent, tree } = this
+    let { node, parent, tree } = this
 
-      parent.children = vm.log(without(parent.children, node))
-      if ( node == tree.node )
-        ( node.siblings?.[0] || parent ).nudge()
-    },
+    parent.children = vm.log(without(parent.children, node))
+    if ( node == tree.node )
+      ( node.siblings?.[0] || parent ).nudge()
+  },
 
-    toggle() {
+  toggle() {
+    this.collapsed = this.collapsed ? undefined : true
+  }    
 
-      this.collapsed = this.collapsed ? undefined : true
+}
 
-    }    
+const NodeMixin = {
 
-  }
+  mixins: [
+    Internalize(
+      'node', 
+      'children collapsed created id text'.split(' '),
+      { computed, methods }
+    ),
+  ]
 
 }
 

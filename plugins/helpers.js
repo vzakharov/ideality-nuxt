@@ -1,4 +1,4 @@
-import { assign, filter, find, forEach, kebabCase, isObject, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { assign, filter, find, forEach, kebabCase, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
@@ -154,21 +154,56 @@ function Awaitable() {
 
 }
 
-function Internalize(prop, subKeys = keys(prop)) {
+function Internalize(propName, subKeys = keys(propName), { computed, methods } = {}) {
 
   return {
 
-    computed: objectify(subKeys, key => ({
+    created() {
 
-      get() { 
-        return this[prop][key] 
-      },
+      let prop = this[propName]
 
-      set(value) {
-        this.$set(this[prop], key, value)
+      for ( let key of subKeys ) {
+        if ( !prop[key] ) {
+          Object.defineProperty(prop, key, {
+            configurable: true,
+            set: value => {
+              delete prop[key]
+              this.$set(prop, key, value)
+            }
+          })
+        }
       }
 
-    }))
+      computed && assignProperties(this[propName], {
+        ...mapValues( computed, 
+          ( value, key ) => () =>  this[key],
+        ),
+        ...omit(this.$props, propName)
+      })
+
+      methods && assignMethods(this[propName], 
+        methods
+      )
+
+    },
+
+    computed: {
+
+      ...objectify(subKeys, key => ({
+
+        get() { 
+          return this[propName][key] 
+        },
+
+        set(value) {
+          this.$set(this[propName], key, value)
+        }
+
+      })),
+      
+      ...computed
+
+    }
 
   }
 

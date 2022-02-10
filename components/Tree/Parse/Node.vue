@@ -3,8 +3,8 @@
     <TreeParseNode v-for="child in node.children" :key="child.id" 
       v-bind="{
         node: child,
-        tree,
-        root
+        parent: node,
+        tree
       }"
       @parsed="!--leftToParse && emit_parsed"
     />
@@ -18,23 +18,16 @@
 
   export default {
 
-    props: {
-      ...objectify([ 'node', 'tree' ]),
-      root: {
-        default() { return this.tree.root }
-      }
-    },
+    props: [ 'node', 'tree', 'parent' ],
 
     mixins: [ 
-      Internalize('node', 'collapsed created id text'.split(' ')),
       NodeMixin
     ],
 
     data() {
 
       return {
-        leftToParse: this.node.children?.length || 0,
-        isTreeNode: true
+        leftToParse: this.node.children?.length || 0
       }
 
     },
