@@ -154,6 +154,26 @@ function Awaitable() {
 
 }
 
+function Internalize(prop, subKeys = keys(prop)) {
+
+  return {
+
+    computed: objectify(subKeys, key => ({
+
+      get() { 
+        return this[prop][key] 
+      },
+
+      set(value) {
+        this.$set(this[prop], key, value)
+      }
+
+    }))
+
+  }
+
+}
+
 export {
 
   appendedTarget,
@@ -163,6 +183,7 @@ export {
   Awaitable,
   filteredParameters,
   getUser,
+  Internalize,
   keyedPromises,
   loggedInMiddleware,
   ms,
