@@ -163,14 +163,8 @@ function Internalize(propName, subKeys = keys(propName), { computed, methods } =
       let prop = this[propName]
 
       for ( let key of subKeys ) {
-        if ( !prop[key] ) {
-          Object.defineProperty(prop, key, {
-            configurable: true,
-            set: value => {
-              delete prop[key]
-              this.$set(prop, key, value)
-            }
-          })
+        if ( typeof prop[key] === 'undefined' ) {
+          this.$set(prop, key, undefined)
         }
       }
 
