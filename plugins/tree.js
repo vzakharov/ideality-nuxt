@@ -1,46 +1,65 @@
-import { assign, map, max, without, uniqueId } from 'lodash'
-import { assignMethods, assignProperties } from '~/plugins/helpers.js'
+import { assign, find, map, mapValues, max, without, uniqueId } from 'lodash'
+import { assignMethods, assignProperties, objectify } from '~/plugins/helpers.js'
 
-function TreeNode({ vm, parent, tree }, values) {
+const computed = {
 
-  let node = this
+  ancestors() { 
+    return this.parent.isTreeNode ? [ ...this.parent.ancestors, this.parent ] : []
+  },
 
-  assign(node, values)
+  children () {
+    return this.node.children?.map(({ id }) => find(this.$children, { id }))
+  },
 
-  !parent && ({ parent } = vm)
-  !tree && ({ tree } = vm)
-
-  assignProperties(node, {
-
-    parent, tree,
-
-    ancestors: () => parent ? [ ...parent.ancestors, parent ] : [],
-
-    descendants: () => node.children?.map( child =>
+  descendants() {
+    return this.children?.map( child =>
       [ child, ...child.descendants || [] ]
-    ).flat() || [],
+    ).flat() || []
+  },
 
-    hasChildren: () => node.children?.length,
+  hasChildren() { return this.children?.length },
 
-    hasSiblings: () => node.siblings?.length,
+  hasSiblings() { return this.siblings?.length },
 
-    heirs: () => node.hasChildren ? [ node.children[0], ...node.children[0].heirs || [] ] : [],
+  heirs() { return this.hasChildren ? [ this.children[0], ...this.children[0].heirs || [] ] : [] },
 
-    isHeir: () => parent.children[0] == node,
+  isHeir() { return this.parent.children[0] == this },
 
-    isRoot: () => !parent,
+  isRoot() { return !this.parent },
 
-    siblings: () => without(parent?.children, node),
+  parent() {
+    return this.$parent
+  },
 
-    root: () => node.isRoot ? node : parent.root,
+  siblings() { return without(this.parent?.children, this) },
 
-    thread: () => [...node.ancestors, node, ...node.heirs]
+  // root() { return this.isRoot ? this : this.parent.root },
 
-  })
+  thread() { return [...this.ancestors, this, ...this.heirs] },
 
-  assignMethods(node, {
+}
+
+let NodeMixin = {
+
+  created() {
+
+    // let { parent, tree } = this
+
+    // assignProperties(this.node, {
+    //   ...mapValues( computeds, 
+    //     ( value, key ) => () => this[key],
+    //   ), tree, parent
+    // })
+
+  },
+
+  computed,
+
+  methods: {
 
     addChild() {
+
+      let { node } = this
 
       let child = new TreeNode({ 
         vm, parent: node, tree 
@@ -65,34 +84,38 @@ function TreeNode({ vm, parent, tree }, values) {
 
     nudge(secondary) {
 
-      let { parent } = node
+      let { node, parent, tree } = this
+
       if ( parent ) {
-        vm.assignReactive(parent, { children: [ node, ...node.siblings ] })
-        parent.nudge(true)
-        if ( !secondary ) {
-          vm.assignReactive(tree, { node })
-          vm.log(node)
-        }
+        parent.node.children = [ node, ...map(this.siblings, node => node.node) ]
+        // parent.nudge(true)
+        // if ( !secondary ) {
+        //   vm.assignReactive(tree, { node })
+        //   vm.log(node)
+        // }
       }
 
     },
 
     remove() {
+
+      let { node, parent, tree } = this
+
       parent.children = vm.log(without(parent.children, node))
       if ( node == tree.node )
         ( node.siblings?.[0] || parent ).nudge()
     },
 
     toggle() {
-      vm.assignReactive(node, {
-        collapsed: node.collapsed ? undefined : true
-      })
-    }
 
-  })
+      this.collapsed = this.collapsed ? undefined : true
+
+    }    
+
+  }
 
 }
 
 export {
-  TreeNode
+  NodeMixin
 }
