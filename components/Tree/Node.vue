@@ -1,5 +1,5 @@
 <template>
-  <div class="ms-1 ps-1 border-start border-top">
+  <div :id="node.id" class="ms-1 ps-1 border-start border-top">
 
     <template v-if="node.id">
 

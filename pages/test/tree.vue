@@ -9,11 +9,12 @@
         </b-col>
         <b-col>
           <template v-if="node">
-            <span v-for="node in node.ancestors" :key="node.id" v-text="node.text"/>
-            <MyInput
-              v-model="node.text"
-            />
-            <span v-for="node in node.heirs" :key="node.id" v-text="node.text"/>
+            <template v-for="node in node.thread">
+              <StudioSpan v-if="node != tree.node" :key="node.id" v-bind="{node}"/>
+              <MyInput v-else :key="node.id"
+                v-model="node.text"
+              />
+            </template>
           </template>
           <Loading v-else message="Processing, please wait"/>
         </b-col>
