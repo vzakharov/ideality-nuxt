@@ -68,6 +68,15 @@ const methods = {
 
   },
 
+  focus() {
+    let { id, tree } = this
+    assign(tree, {
+      current_node_id: id,
+      focused: true
+    })
+    
+  },
+
   nudge(secondary) {
 
     let { parent, tree } = this
@@ -76,7 +85,7 @@ const methods = {
       parent.children = [ this, ...this.siblings ]
       parent.nudge(true)
       if ( !secondary ) {
-        tree.current_node_id = this.id
+        this.focus()
       }
     }
 

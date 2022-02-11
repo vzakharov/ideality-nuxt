@@ -1,6 +1,20 @@
-<template functional>
+<template>
   <nuxt-link class="nocolor"
-    :to="{hash: '#' + props.node.id }"
-    v-text="props.node.text"
+    :to="{hash: '#' + node.id }"
+    v-html="escape(node.text).replace(/\n/g, '<br>')"
   />
 </template>
+
+<script>
+
+  import { escape } from 'lodash'
+
+  export default {
+    
+    props: ['node', 'text'],
+    
+    methods: { escape }
+
+  }
+
+</script>

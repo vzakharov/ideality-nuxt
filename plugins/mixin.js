@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { find, findIndex, findKey, forEach, get, isArray, last, set, keys, mapValues, pickBy } from 'lodash'
-import { always, appendedTarget, getUser, slugify } from '@/plugins/helpers'
+import { always, appendedTarget, Awaitable, getUser, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
@@ -97,7 +97,8 @@ Vue.mixin({
     // If the vm involves loading data from localStorage, this is where we start
     return {
       localLoaded: false,
-      mounted: false
+      mounted: false,
+      mounting: new Awaitable(true)
     }
 
   },
@@ -133,6 +134,8 @@ Vue.mixin({
         window.axios = axios 
 
       this.mounted = true
+
+      this.mounting.resolve()
     }
     
 

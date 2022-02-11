@@ -11,7 +11,7 @@
 
       <span :class="tree.node && tree.node.thread && { 
         'gray': !tree.node.thread.includes(node),
-        'fw-bold': tree.node == node
+        'fw-bold': tree.node == node && tree.focused
       }">
         <nuxt-link class="nocolor"
           v-text="node.text || node.id"
@@ -98,7 +98,7 @@
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight
           await this.transition.promise
-          child.nudge()
+          this.$router.push({ hash: '#' + child.id })
         })
       },
 
@@ -133,10 +133,7 @@
 
 </script>
 
-<style scoped>
+<style>
 
-  li::marker {
-    display: none;
-  }
 
 </style>

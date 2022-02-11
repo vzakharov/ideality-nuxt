@@ -9,12 +9,32 @@
         </b-col>
         <b-col>
           <template v-if="node">
-            <template v-for="node in node.thread">
-              <StudioSpan v-if="node != tree.node" :key="node.id" v-bind="{node}"/>
-              <MyInput v-else :key="node.id"
+            <StudioThread v-bind="{
+              node: tree.root,
+              tree
+            }"/>
+            <!-- <transition-group name="node-span" tag="div">
+              <Editable v-for="node in node.thread" :key="node.id"
+                tag="div"
+                :class="{
+                  'd-inline': true,
+                  'fw-bold': node == tree.node && tree.focused
+                }"
                 v-model="node.text"
+                @focus.native="$router.push({ hash: '#'+node.id }); tree.focused = true"
+                @blur.native="tree.focused = false"
+                :id="'span-'+node.id"
+                :ref="'span-'+node.id"
               />
-            </template>
+            </transition-group> -->
+
+            <!-- <template v-for="node in node.thread">
+              <StudioSpan v-if="node != tree.node" :key="node.id" v-bind="{node}"/>
+              <MyInput ref="input" id="input" v-else :key="node.id"
+                v-model="node.text"
+                multiline=true
+              />
+            </template> -->
           </template>
           <Loading v-else message="Processing, please wait"/>
         </b-col>
@@ -85,6 +105,10 @@
 
         node?.nudge()
 
+        await this.$refs['span-'+node.id]?.mounting?.promise
+
+        document.getElementById('span-'+node.id)?.focus()
+
       }}
 
     }
@@ -95,15 +119,5 @@
 </script>
 
 <style>
-.list-complete-move {
-  transition: all 1s;
-}
-.list-complete-enter, .list-complete-leave-to
-/* .list-complete-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  transform: translateY(30px);
-}
-.list-complete-leave-active {
-  position: absolute;
-}
+
 </style>

@@ -128,8 +128,6 @@ function assignMethods(object, methods) {
 
 function Awaitable(immediate) {
 
-  console.log(this)
-
   assign(this, {
     idle: true,
     pending: undefined,
