@@ -62,7 +62,7 @@ const methods = {
       collapsed: undefined
     })
 
-    await meta.done
+    await meta.promise
 
     return child
 

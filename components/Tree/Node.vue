@@ -16,7 +16,6 @@
         <nuxt-link class="nocolor"
           v-text="node.text || node.id"
           :to="{ hash: '#' + node.id }"
-          @click.native="node.nudge()"
         />
       </span>
 
@@ -42,7 +41,7 @@
         v-show="!node.collapsed"
         @before-enter="log('enter (group)')"
         @before-leave="log('leave (group)')"
-        @after-enter="transition.end()"
+        @after-enter="transition.resolve()"
       >
         <TreeNode
           @descendantMounted="
@@ -98,7 +97,7 @@
         this.$nextTick(async () => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight
-          await this.transition.done
+          await this.transition.promise
           child.nudge()
         })
       },

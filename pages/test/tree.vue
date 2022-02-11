@@ -1,8 +1,8 @@
 <template>
   <div v-if="mounted">
-    <TreeMeta v-bind="{tree}" v-on="{parsed}"/>
+    <TreeMeta v-bind="{tree}" @parsed="parsing.resolve()"/>
 
-    <b-container fluid v-if="parsed_root">
+    <b-container fluid v-if="parsing.resolved">
       <b-row>
         <b-col cols="12" sm="5" md="3" class="bg-light vh" style="overflow-x: auto">
           <TreeNode v-bind="{ tree, node: tree.root }"/>
@@ -27,15 +27,11 @@
 <script>
 
   import { find, repeat } from 'lodash'
+  import { Awaitable, ms } from '~/plugins/helpers.js'
 
   export default {
 
     data() {
-
-      // let parsed = {
-      //   resolve: () => {}
-      // }
-      // parsed.promise = new Promise(resolve => Object.assign(parsed, { resolve }))
 
       return {
         items: [1,2,3,4,5,6,7,8,9],
@@ -48,9 +44,7 @@
               created: new Date()
             }
         },
-        parsed_root: null,
-        parsed_tree: null
-        // parsed
+        parsing: new Awaitable(true)
       }
 
     },
@@ -67,15 +61,31 @@
 
     methods: {
 
-      parsed(parsed_root) {
-        Object.assign(this, { parsed_root })
-        // let id = this.hashRoute
-        // if ( id ) {
-        //   id = parseInt(id)
-        //   find(this.tree.nodes, { id }).nudge()
-        // }
-      }
 
+    },
+
+    watch: {
+
+      hashRoute: { immediate: true, async handler(slug) {
+
+        ms('routing', true)
+        await this.parsing.promise
+        
+        ms('parsed')
+
+        let node = find( this.tree.nodes,
+          slug.match(/^\d+$/)
+            ? { id: parseInt(slug) }
+            : (({ text }) => text?.includes(slug))
+        )
+
+        ms('node found')
+
+        console.log({node})
+
+        node?.nudge()
+
+      }}
 
     }
 

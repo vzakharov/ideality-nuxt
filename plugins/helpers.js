@@ -126,18 +126,30 @@ function assignMethods(object, methods) {
   })))
 }
 
-function Awaitable() {
+function Awaitable(immediate) {
+
+  console.log(this)
 
   assign(this, {
-    pending: false,
-    done: Promise.resolve(),
-    end: () => {},
+    idle: true,
+    pending: undefined,
+    resolved: undefined,
+    promise: Promise.resolve(),
+    resolve: () => {},
 
     start() {
-      this.pending = true
-      this.done = new Promise(resolve => 
-        this.end = result => {
-          this.pending = false
+      assign(this, {
+        idle: false,
+        pending: true,
+        resolved: false
+      })
+      this.promise = new Promise(resolve => 
+        this.resolve = result => {
+          assign(this, {
+            idle: false,
+            pending: false,
+            resolved: true
+          })
           resolve(result)
         }
       )
@@ -145,14 +157,17 @@ function Awaitable() {
 
     async waitAndStart() {
       while ( this.pending ) {
-        await this.done
+        await this.promise
       } 
       this.start()
     }
 
   })
 
+  immediate && this.start()
+
 }
+
 
 function Meta( name, { computed, methods, defaults } = {} ) {
 
@@ -175,7 +190,7 @@ function Meta( name, { computed, methods, defaults } = {} ) {
         methods
       )
 
-      object.meta?.end()
+      object.meta?.resolve()
 
     },
 
