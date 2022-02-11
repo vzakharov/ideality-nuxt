@@ -4,7 +4,7 @@ import { assignMethods, assignProperties, Meta, objectify, Awaitable } from '~/p
 const computed = {
 
   ancestors() { 
-    return this.parent ? [ ...this.parent.ancestors, this.parent ] : []
+    return this.parent?.isNotRoot ? [ ...this.parent.ancestors, this.parent ] : []
   },
 
   descendants() {
@@ -21,7 +21,11 @@ const computed = {
 
   isHeir() { return this.parent.children[0] == this.node },
 
+  isNotRoot() { return !!this.parent },
+
   isRoot() { return !this.parent },
+
+  parsed() { return !this.leftToParse },
 
   siblings() { return without(this.parent?.children, this.node) },
 

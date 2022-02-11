@@ -14,7 +14,7 @@
 <script>
 
   import { NodeMixin } from '~/plugins/tree.js'
-  import { Meta, objectify } from '~/plugins/helpers.js'
+  import { assignProperties, Meta, objectify } from '~/plugins/helpers.js'
 
   export default {
 

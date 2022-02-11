@@ -5,10 +5,17 @@
     <b-container fluid v-if="parsed_root">
       <b-row>
         <b-col cols="12" sm="5" md="3" class="bg-light vh" style="overflow-x: auto">
-          <TreeNode v-bind="{ tree, node: parsed_root }"/>
+          <TreeNode v-bind="{ tree, node: tree.root }"/>
         </b-col>
         <b-col>
-
+          <template v-if="node">
+            <span v-for="node in node.ancestors" :key="node.id" v-text="node.text"/>
+            <MyInput
+              v-model="node.text"
+            />
+            <span v-for="node in node.heirs" :key="node.id" v-text="node.text"/>
+          </template>
+          <Loading v-else message="Processing, please wait"/>
         </b-col>
       </b-row>
     </b-container>
@@ -49,6 +56,12 @@
 
     mounted() {
       this.syncLocal('studio', { select: ['tree'], inline: true })
+    },
+
+    computed: {
+
+      node() { return this.tree.node }
+
     },
 
     methods: {
