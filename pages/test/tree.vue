@@ -1,6 +1,6 @@
 <template>
   <div v-if="mounted">
-    <TreeParse v-bind="{tree}" v-on="{parsed}"/>
+    <TreeMeta v-bind="{tree}" v-on="{parsed}"/>
 
     <b-container fluid v-if="parsed_root">
       <b-row>

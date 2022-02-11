@@ -1,6 +1,6 @@
 <template>
   <component :is="'template'">
-    <TreeParseNode v-for="child in node.children" :key="child.id" 
+    <TreeMetaNode v-for="child in node.children" :key="child.id" 
       v-bind="{
         node: child,
         parent: node,
