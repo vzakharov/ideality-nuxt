@@ -154,28 +154,24 @@ function Awaitable() {
 
 }
 
-function Internalize(propName, subKeys = keys(propName), { computed, methods } = {}) {
+function Meta( name, { computed, methods, defaults } = {} ) {
 
   return {
 
     created() {
 
-      let prop = this[propName]
+      const object = this[name]
 
-      for ( let key of subKeys ) {
-        if ( typeof prop[key] === 'undefined' ) {
-          this.$set(prop, key, undefined)
-        }
-      }
+      defaults && this.setDefaults(object, defaults)
 
-      computed && assignProperties(this[propName], {
+      computed && assignProperties(object, {
         ...mapValues( computed, 
           ( value, key ) => () =>  this[key],
         ),
-        ...omit(this.$props, propName)
+        ...omit(this.$props, name)
       })
 
-      methods && assignMethods(this[propName], 
+      methods && assignMethods(object, 
         methods
       )
 
@@ -183,15 +179,17 @@ function Internalize(propName, subKeys = keys(propName), { computed, methods } =
 
     computed: {
 
-      ...objectify(subKeys, key => ({
+      ...mapValues(defaults, ( value, key ) => ({
 
         get() { 
-          return this[propName][key] 
+          console.log('getting', key, this[name][key])
+          return this[name][key] 
         },
 
-        set(value) {
-          this.$set(this[propName], key, value)
-        }
+        // set(value) {
+        //   console.log('setting', key, value)
+        //   this.$set(this[name], key, value)
+        // }
 
       })),
       
@@ -203,6 +201,11 @@ function Internalize(propName, subKeys = keys(propName), { computed, methods } =
 
 }
 
+function debug(what) {
+  debugger
+  return what
+}
+
 export {
 
   appendedTarget,
@@ -210,11 +213,12 @@ export {
   assignMethods,
   assignProperties,
   Awaitable,
+  debug,
   filteredParameters,
   getUser,
-  Internalize,
   keyedPromises,
   loggedInMiddleware,
+  Meta,
   ms,
   objectify,
   sleep,

@@ -1,5 +1,5 @@
 import { assign, find, map, mapValues, max, without, uniqueId } from 'lodash'
-import { assignMethods, assignProperties, Internalize, objectify } from '~/plugins/helpers.js'
+import { assignMethods, assignProperties, Meta, objectify } from '~/plugins/helpers.js'
 
 const computed = {
 
@@ -35,22 +35,20 @@ const methods = {
 
   addChild() {
 
-    let { node } = this
+    let { tree } = this
 
-    let child = new TreeNode({ 
-      vm, parent: node, tree 
-    }, {
+    let child = {
       id: max([
         tree.max_id,
         max(map(tree.nodes, 'id'))
       ]) + 1,
       created: new Date()
-    })
+    }
 
-    vm.$set(tree, 'max_id', child.id)
+    tree.max_id = child.id
 
-    vm.assignReactive(node, {
-      children: [ child, ...node.children || [] ],
+    assign(this, {
+      children: [ child, ...this.children || [] ],
       collapsed: undefined
     })
 
@@ -74,15 +72,16 @@ const methods = {
 
   remove() {
 
-    let { node, parent, tree } = this
+    let { parent, siblings, tree: { node }, descendants } = this
 
-    parent.children = vm.log(without(parent.children, node))
-    if ( node == tree.node )
-      ( node.siblings?.[0] || parent ).nudge()
+    parent.children = without(parent.children, this)
+
+    if ( this == node || descendants.includes(node) )
+      ( siblings?.[0] || parent ).nudge()
   },
 
   toggle() {
-    this.collapsed = this.collapsed ? undefined : true
+    this.collapsed = !this.collapsed || undefined
   }    
 
 }
@@ -90,11 +89,13 @@ const methods = {
 const NodeMixin = {
 
   mixins: [
-    Internalize(
-      'node', 
-      'children collapsed created id text'.split(' '),
-      { computed, methods }
-    ),
+    Meta('node', { computed, methods, defaults: {
+      children: undefined,
+      collapsed: undefined,
+      created: undefined,
+      id: undefined,
+      text: undefined
+    } }),
   ]
 
 }

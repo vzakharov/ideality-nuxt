@@ -1,46 +1,38 @@
 <template>
-  <TreeParseNode v-bind="{ node: root, tree }" v-on="$listeners"/>
+  <TreeParseNode v-bind="{ node: tree.root, tree }" v-on="$listeners"/>
 </template>
 
 <script>
 
   import { find, without, uniqueId } from 'lodash'
   import { encode } from 'dahnencode'
-  import { assignMethods, assignProperties, Internalize } from '~/plugins/helpers.js'
+  import { assignMethods, assignProperties, Meta } from '~/plugins/helpers.js'
 
   export default {
-
-    mixins: [
-      Internalize(
-        'tree', 
-        'root current_node_id max_id'.split(' '), {
-          computed: {
-
-            nodes({ root } = this) { return [ root, ...root.descendants ]},
-
-            node({ nodes, current_node_id: id, root } = this ) { 
-              return find(nodes, { id }) || root 
-            }
-
-          }
-        }
-      )
-    ],
-
+    
     props: [ 'tree' ],
+    
+    mixins: [
+      Meta('tree', { 
+        
+        computed: {
 
-    // created() {
+          nodes() { return [ this.root, ...this.root.descendants ]},
 
-    //   let { tree, tree: { root }} = this
+          node({ nodes, current_node_id: id, root } = this ) { 
+            return find(nodes, { id }) || root 
+          }
 
+        },
 
-    //   assignProperties(tree, {
+        defaults: {
+          root: { id: 0, created: new Date() },
+          current_node_id: 0,
+          max_id: 0
+        }
 
-    //     nodes: () => [ root, ...root.descendants ]
-
-    //   })   
-    // },
-
+      })
+    ],
 
 
 }

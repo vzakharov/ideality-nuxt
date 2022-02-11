@@ -14,7 +14,7 @@
 <script>
 
   import { NodeMixin } from '~/plugins/tree.js'
-  import { Internalize, objectify } from '~/plugins/helpers.js'
+  import { Meta, objectify } from '~/plugins/helpers.js'
 
   export default {
 
@@ -29,14 +29,6 @@
       return {
         leftToParse: this.node.children?.length || 0
       }
-
-    },
-
-    created() {
-
-      // let { node } = this 
-      // if ( node.constructor.name != 'TreeNode' )
-      //   TreeNode.call(node, this)
 
     },
 
