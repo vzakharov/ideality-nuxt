@@ -94,7 +94,7 @@
 
       async addChild() {
         await this.transition.waitAndStart()
-        let child = this.node.addChild()
+        let child = await this.node.addChild()
         this.$nextTick(async () => {
           // Todo: find a way to calculate individually
           this.store.nodeHeight = this.store.singleNodeHeight

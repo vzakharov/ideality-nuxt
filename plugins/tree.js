@@ -1,5 +1,5 @@
 import { assign, find, map, mapValues, max, without, uniqueId } from 'lodash'
-import { assignMethods, assignProperties, Meta, objectify } from '~/plugins/helpers.js'
+import { assignMethods, assignProperties, Meta, objectify, Awaitable } from '~/plugins/helpers.js'
 
 const computed = {
 
@@ -33,7 +33,7 @@ const computed = {
 
 const methods = {
 
-  addChild() {
+  async addChild() {
 
     let { tree } = this
 
@@ -45,12 +45,20 @@ const methods = {
       created: new Date()
     }
 
+    const meta = new Awaitable()
+
+    assignProperties(child, { 
+      meta
+    })
+
     tree.max_id = child.id
 
     assign(this, {
       children: [ child, ...this.children || [] ],
       collapsed: undefined
     })
+
+    await meta.done
 
     return child
 

@@ -175,6 +175,8 @@ function Meta( name, { computed, methods, defaults } = {} ) {
         methods
       )
 
+      object.meta?.end()
+
     },
 
     computed: {
