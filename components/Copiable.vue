@@ -1,6 +1,6 @@
 <template>
   <div style="cursor:pointer" @click.prevent="copy">
-    <em v-if="copied" v-text="'copied' + ( fetch ? `: ${value}` : '!' )"/>
+    <em v-if="copied" v-text="'copied!'"/>
     <Loading v-else-if="copying" message="copying..."/>
     <slot v-else-if="$slots.default"/>
     <template v-else>
@@ -25,11 +25,12 @@
     methods: {
       async copy() {
         // console.log(this.value)
+        let { value } = this
         if ( this.fetch ) {
           this.copying = true
-          this.value = await this.fetch()
+          value = await this.fetch()
         }
-        await this.$copyText(this.log(this.value))
+        await this.$copyText(this.log(value))
         this.copied = true
         this.copying = false
         setTimeout(() => this.copied=false, 1000)
