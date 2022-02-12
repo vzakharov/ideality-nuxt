@@ -15,10 +15,12 @@
       :ref="'span-'+node.id"
     />
     <template v-if="node.heir && node.heir.hasSiblings">
-      <nuxt-link class="gray cursor-pointer" tag="sub"
-        :to="{ hash: '#'+node.heir.nextSibling.id }"
-        v-text="node.heir.placeAmongSiblings"
-      />
+      <sub>
+        <nuxt-link class="gray"
+          :to="{ hash: '#'+node.heir.nextSibling.id }"
+          v-text="node.heir.placeAmongSiblings"
+        />
+      </sub>
     </template>
     <transition-group name="node-span" tag="div" class="d-inline">
       <StudioThread v-if="node.hasChildren" :key="node.heir.id" v-bind="{
