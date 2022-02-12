@@ -46,6 +46,7 @@
   text-overflow: ellipsis;
   max-width: 100px;
   position: absolute;
+  height: 30px;
   opacity: 0;
   transform: translateY(-100%);
 }
