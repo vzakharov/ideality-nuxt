@@ -23,7 +23,7 @@
           <Loading v-else message="Processing, please wait"/>
           <b-button class="mt-2" variant="outline-secondary"
             :to="{ query: { code: JSONCrush.crush(dump(tree)) }}"
-            
+            target="_blank"
           >
             Share as link
           </b-button>
