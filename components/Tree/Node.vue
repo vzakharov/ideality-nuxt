@@ -52,7 +52,7 @@
           @descendantMounted="
             descendants = [...descendants, ...log($event)]
           "
-          v-for="child in node.children" :key="child.id"
+          v-for="child in orderBy(node.children, 'created', 'desc')" :key="child.id"
           v-bind="{ tree, node: child }"
         />
       </transition-group>
@@ -63,7 +63,7 @@
 
 <script>
 
-  import { last, map, sum, sumBy } from 'lodash'
+  import { last, map, sum, sumBy, orderBy } from 'lodash'
   import { Awaitable, ms } from '~/plugins/helpers.js'
 
   export default {
@@ -95,6 +95,8 @@
     },
 
     methods: {
+
+      orderBy,
 
       async addChild() {
         await this.transition.waitAndStart()
