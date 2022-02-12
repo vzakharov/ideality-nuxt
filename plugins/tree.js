@@ -83,6 +83,7 @@ const methods = {
 
     if ( parent ) {
       parent.children = [ this, ...this.siblings ]
+      parent.collapsed = undefined
       parent.nudge(true)
       if ( !secondary ) {
         this.focus()
