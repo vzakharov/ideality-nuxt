@@ -22,7 +22,7 @@
           </div>
           <Loading v-else message="Processing, please wait"/>
           <Copiable class="mt-2"
-            :value="$axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
+            :fetch="() => $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
           >
             Copy link
           </Copiable>
