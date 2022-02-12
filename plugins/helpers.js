@@ -197,7 +197,7 @@ function Meta( name, { computed, methods, defaults } = {} ) {
       ...mapValues(defaults, ( value, key ) => ({
 
         get() { 
-          console.log('getting', key, this[name][key])
+          // console.log('getting', key, this[name][key])
           return this[name][key] 
         },
 
