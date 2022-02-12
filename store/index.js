@@ -8,6 +8,8 @@ export const state = () => ({
 
   nodeHeight: 0,
   singleNodeHeight: 0,
+
+  editorOffsetRight: null,
   
   imagePromises: {},
   path: '',

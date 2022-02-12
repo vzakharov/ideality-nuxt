@@ -4,38 +4,22 @@
 
     <b-container fluid v-if="parsing.resolved">
       <b-row>
-        <b-col cols="12" sm="5" md="3" class="bg-light vh" style="overflow-x: auto">
+        <b-col cols="12" sm="5" md="3" class="bg-light vh" >
           <TreeNode v-bind="{ tree, node: tree.root }"/>
         </b-col>
         <b-col>
-          <template v-if="node">
+          <MyInput v-model="tree.focused" caption="Edit"/>
+          <!-- <style>
+            :root {
+              --editor-offset-right: {{ store.editorOffsetRight }}
+            }
+          </style> -->
+          <div v-if="node" class="border p-2" id="editor" ref="editor">
             <StudioThread v-bind="{
               node: tree.root,
               tree
             }"/>
-            <!-- <transition-group name="node-span" tag="div">
-              <Editable v-for="node in node.thread" :key="node.id"
-                tag="div"
-                :class="{
-                  'd-inline': true,
-                  'fw-bold': node == tree.node && tree.focused
-                }"
-                v-model="node.text"
-                @focus.native="$router.push({ hash: '#'+node.id }); tree.focused = true"
-                @blur.native="tree.focused = false"
-                :id="'span-'+node.id"
-                :ref="'span-'+node.id"
-              />
-            </transition-group> -->
-
-            <!-- <template v-for="node in node.thread">
-              <StudioSpan v-if="node != tree.node" :key="node.id" v-bind="{node}"/>
-              <MyInput ref="input" id="input" v-else :key="node.id"
-                v-model="node.text"
-                multiline=true
-              />
-            </template> -->
-          </template>
+          </div>
           <Loading v-else message="Processing, please wait"/>
         </b-col>
       </b-row>

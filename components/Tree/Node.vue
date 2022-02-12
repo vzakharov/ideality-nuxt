@@ -9,15 +9,20 @@
         @click="goToggle"
       />
 
-      <span :class="tree.node && tree.node.thread && { 
-        'gray': !tree.node.thread.includes(node),
-        'fw-bold': tree.node == node && tree.focused
-      }">
-        <nuxt-link class="nocolor"
-          v-text="node.text || node.id"
+      <div 
+        style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width:200px"
+        :class="tree.node && tree.node.thread && { 
+          'gray': !tree.node.thread.includes(node),
+          'fw-bold': tree.node == node && tree.focused,
+          'fst-italic': !node.text,
+          'd-inline-block': true
+        }"
+      >
+        <nuxt-link class="nocolor" 
+          v-text="node.text || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
         />
-      </span>
+      </div>
 
       <a class="ms-3 nocolor" href="#"
         @click="remove"
@@ -103,7 +108,7 @@
       },
 
       remove() {
-        this.log(this.store.nodeHeight = this.$el.offsetHeight)
+        this.store.nodeHeight = this.$el.offsetHeight
         this.node.remove()
       },
 

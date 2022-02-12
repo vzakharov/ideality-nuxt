@@ -1,18 +1,19 @@
 <template>
   <div class="d-inline">
     <Editable v-if="!node.isRoot"
+      :editable="tree.focused"
       tag="div"
       :class="{
-        'node-span': true,
-        'fw-bold': node == tree.node && tree.focused
+        'gray': node != tree.node && tree.focused
       }"
       v-model="node.text"
-      @focus.native="$router.push({ hash: '#'+node.id }); tree.focused = true"
-      @blur.native="tree.focused = false"
+      @click.native="tree.focused = true; $router.push({ hash: '#'+node.id })"
+      @focus.native="tree.focused = true; $router.push({ hash: '#'+node.id })"
+      @keydown.native.esc="tree.focused = false"
       :id="'span-'+node.id"
       :ref="'span-'+node.id"
     />
-    <transition-group name="node-span">
+    <transition-group name="node-span" tag="div" class="d-inline">
       <StudioThread v-if="node.hasChildren" :key="node.children[0].id" v-bind="{
         node: node.children[0],
         tree
@@ -33,18 +34,19 @@
 
 <style>
 
-.node-span {
-  display: inline;
-  outline: none;
-}
-
 .node-span-enter-active, .node-span-leave-active {
-  transition: var(--animation-speed);
+  /* transition: var(--animation-speed); */
+  transition: .5s;
 }
 
 .node-span-leave-to {
-  opacity: 0;
   position: absolute;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100px;
+  position: absolute;
+  opacity: 0;
   transform: translateY(-100%);
 }
 
