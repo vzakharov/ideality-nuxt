@@ -1,4 +1,4 @@
-import { assign, find, map, mapValues, max, without, uniqueId } from 'lodash'
+import { assign, find, findIndex, map, mapValues, max, without, orderBy, uniqueId } from 'lodash'
 import { assignMethods, assignProperties, Meta, objectify, Awaitable } from '~/plugins/helpers.js'
 
 const computed = {
@@ -17,6 +17,8 @@ const computed = {
 
   hasSiblings() { return this.siblings?.length },
 
+  heir() { return this.heirs[0] },
+
   heirs() { return this.hasChildren ? [ this.children[0], ...this.children[0].heirs || [] ] : [] },
 
   isHeir() { return this.parent.children[0] == this.node },
@@ -25,9 +27,17 @@ const computed = {
 
   isRoot() { return !this.parent },
 
+  nextSibling() { return find(this.sortedSiblings, sibling => sibling.created < this.created ) || this.sortedSiblings[0] },
+
   parsed() { return !this.leftToParse },
 
+  placeAmongSiblings() { return findIndex(this.parent.sortedChildren, this.node) + 1 },
+
   siblings() { return without(this.parent?.children, this.node) },
+
+  sortedChildren() { return orderBy(this.node.children, 'created', 'desc') },
+
+  sortedSiblings() { return orderBy(this.siblings, 'created', 'desc') },
 
   root() { return this.isRoot ? this.node : this.tree.root },
 

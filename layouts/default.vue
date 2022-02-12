@@ -103,6 +103,10 @@ a.nocolor {
   filter: grayscale(100%);
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .small {
   font-size: 0.75em;
 }

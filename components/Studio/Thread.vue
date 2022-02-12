@@ -1,5 +1,6 @@
 <template>
   <div class="d-inline">
+
     <Editable v-if="!node.isRoot"
       :editable="tree.focused"
       tag="div"
@@ -13,9 +14,15 @@
       :id="'span-'+node.id"
       :ref="'span-'+node.id"
     />
+    <template v-if="node.heir && node.heir.hasSiblings">
+      <nuxt-link class="gray cursor-pointer" tag="sub"
+        :to="{ hash: '#'+node.heir.nextSibling.id }"
+        v-text="node.heir.placeAmongSiblings"
+      />
+    </template>
     <transition-group name="node-span" tag="div" class="d-inline">
-      <StudioThread v-if="node.hasChildren" :key="node.children[0].id" v-bind="{
-        node: node.children[0],
+      <StudioThread v-if="node.hasChildren" :key="node.heir.id" v-bind="{
+        node: node.heir,
         tree
       }"/>
     </transition-group>
