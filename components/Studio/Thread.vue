@@ -14,7 +14,7 @@
       :id="'span-'+node.id"
       :ref="'span-'+node.id"
     />
-    <template v-if="node.heir && node.heir.hasSiblings">
+    <template v-if="maybe(node.heir).hasSiblings">
       <sub>
         <nuxt-link class="gray"
           tabindex="-1"

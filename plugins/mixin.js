@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { find, findIndex, findKey, forEach, get, isArray, last, set, keys, mapValues, pickBy } from 'lodash'
-import { always, appendedTarget, Awaitable, getUser, slugify } from '@/plugins/helpers'
+import { always, appendedTarget, Awaitable, getUser, ms, slugify } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
@@ -237,6 +237,8 @@ Vue.mixin({
   
     element: () => process.client && window.document.getElementById,
 
+    maybe: what => what || {},
+
     hasProp(prop) {
       return typeof this.$props[prop] !== 'undefined'
     },
@@ -290,7 +292,9 @@ Vue.mixin({
           if ( !as )
             set(getData(), key, value)
 
+          // ms('saving to localstorage', true)
           localStorage.setItem(localKey, dump(local))
+          // ms('saved')
 
           if ( key == 'slug' ) {
             this.$router.push(this.appendedTarget({ params: { [name]: this.slug }}))
