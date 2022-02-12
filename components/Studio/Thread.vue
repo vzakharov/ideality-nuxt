@@ -17,6 +17,7 @@
     <template v-if="node.heir && node.heir.hasSiblings">
       <sub>
         <nuxt-link class="gray"
+          tabindex="-1"
           :to="{ hash: '#'+node.heir.nextSibling.id }"
           v-text="node.heir.placeAmongSiblings"
         />

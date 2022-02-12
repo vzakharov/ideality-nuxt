@@ -21,6 +21,12 @@
             }"/>
           </div>
           <Loading v-else message="Processing, please wait"/>
+          <b-button class="mt-2" variant="outline-secondary"
+            :to="{ query: { code: JSONCrush.crush(dump(tree)) }}"
+            
+          >
+            Share as link
+          </b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -30,6 +36,8 @@
 
 <script>
 
+  import JSONCrush from '~/plugins/jsoncrush'
+  import { load, dump } from 'js-yaml'
   import { find, repeat } from 'lodash'
   import { Awaitable, ms } from '~/plugins/helpers.js'
 
@@ -39,6 +47,7 @@
 
       return {
         items: [1,2,3,4,5,6,7,8,9],
+        JSONCrush,
         nextNum: 10,
         tree: {
           max_id: 0,
@@ -54,7 +63,12 @@
     },
 
     mounted() {
-      this.syncLocal('studio', { select: ['tree'], inline: true })
+      let { code } = this.$route.query
+      debugger
+      if ( code ) {
+        this.tree = load(JSONCrush.uncrush(code))
+      } else
+        this.syncLocal('studio', { select: ['tree'], inline: true })
     },
 
     computed: {
@@ -65,6 +79,7 @@
 
     methods: {
 
+      dump
 
     },
 
