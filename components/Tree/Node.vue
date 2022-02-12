@@ -18,7 +18,7 @@
           'd-inline-block': true
         }"
       >
-        <nuxt-link class="nocolor" 
+        <nuxt-link class="nocolor small" 
           v-text="node.text || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
         />
@@ -32,9 +32,9 @@
 
 
     <div>
-      <a class="nocolor" href="#"
+      <a class="gray" href="#"
         @click.prevent="addChild()"
-        v-text="'…'"
+        v-text="'⌞'"
       />
     </div>
 
