@@ -21,12 +21,11 @@
             }"/>
           </div>
           <Loading v-else message="Processing, please wait"/>
-          <b-button class="mt-2" variant="outline-secondary"
-            :to="{ query: { code: JSONCrush.crush(dump(tree)) }}"
-            target="_blank"
+          <Copiable class="mt-2"
+            :value="$axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
           >
-            Share as link
-          </b-button>
+            Copy link
+          </Copiable>
         </b-col>
       </b-row>
     </b-container>
