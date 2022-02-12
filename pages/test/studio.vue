@@ -64,7 +64,6 @@
 
     mounted() {
       let { code } = this.$route.query
-      debugger
       if ( code ) {
         this.tree = load(JSONCrush.uncrush(code))
       } else
