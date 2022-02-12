@@ -3,14 +3,14 @@
 
     <template v-if="node.id">
 
-      <a class="me-1 nocolor" href="#"
+      <span class="me-1 nocolor cursor-pointer"
         v-if="node.hasChildren"
         v-text="node.collapsed ? '⊞' : '⊟'"
         @click="goToggle"
       />
 
       <div 
-        style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width:200px"
+        style="white-space: nowrap"
         :class="tree.node && tree.node.thread && { 
           'gray': !tree.node.thread.includes(node),
           'fw-bold': tree.node == node && tree.focused,
@@ -24,10 +24,6 @@
         />
       </div>
 
-      <a class="ms-3 nocolor" href="#"
-        @click="remove"
-        v-text="'×'"
-      />
     </template>
 
 
@@ -35,6 +31,10 @@
       <a class="gray" href="#"
         @click.prevent="addChild()"
         v-text="'⌞'"
+      />
+      <a class="ms-3 gray" href="#"
+        @click="remove"
+        v-text="'×'"
       />
     </div>
 
@@ -117,13 +117,14 @@
       goToggle() {
 
         let { store, node, $refs: { list: { $el: { offsetHeight } = {}} = {}} = {}} = this
-        ms('toggling', true)
+        console.time('toggling')
         if ( !node.collapsed ) {
           store.nodeHeight = offsetHeight
           node.toggle()
+          console.timeEnd('toggling')
         } else {
           node.toggle()
-          ms('toggled')
+          console.timeEnd('toggling')
           this.$nextTick(() => {
             ms('next tick')
             this.log(store.nodeHeight = sum(this.log(map(this.log(this.descendants), '$el.offsetHeight'))))
