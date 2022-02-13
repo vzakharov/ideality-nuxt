@@ -38,18 +38,17 @@
 
   export default {
 
-    props: ['value', 'toolbars'],
+    props: ['expanded', 'toolbars'],
 
     watch: {
       narrow: { immediate: true, handler(narrow) {
-        console.log({narrow})
-        this.$emit('input', !narrow )
+        // console.log({narrow})
+        this.$emit('setFields', { expanded: !narrow} )
       }}
     },
 
     computed: {
 
-      expanded() { return this.value }
 
     }
 

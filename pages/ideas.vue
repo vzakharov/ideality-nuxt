@@ -21,7 +21,8 @@
     </b-modal>
     <Loading v-if="!builds && !build" message="Loading, hold on a sec..."/>
     <template v-else>
-      <MySidebarred v-model="expanded" v-bind="{
+      <MySidebarred v-on="{ setFields }" v-bind="{
+        expanded,
         toolbars: {
           sidebar: {
             items: [
