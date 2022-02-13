@@ -1,84 +1,69 @@
 <template>
-  <div>
-    <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas' }">
-      <template #custom-nav>
-        <template v-if="build">
-          <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
-        </template>
-        <b-nav-form v-else>
-          <b-button :to="{name: 'i-new'}" variant="outline-primary">
-            Start building
-          </b-button>
-        </b-nav-form>
+  <MySidebarred v-on="{ setFields }" v-bind="{
+    expanded,
+    toolbars: {
+      sidebar: {
+        items: [
+          { if: build, icon: 'chevron-double-left', onclick() { expanded = false } },
+          { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
+        ]
+      },
+      content: {
+        close: { to: { name: 'ideas' } },
+        items: [
+          { if: !expanded, icon: 'chevron-double-right', onclick() { expanded = !expanded } },
+          { icon: 'link-45deg', to: { name: 'i-slug', params: build } },
+        ] 
+      }
+    }
+  }"
+  >
+    <template #nav>
+      <template v-if="build">
+        <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
       </template>
-    </NavPublic>
-  <b-container fluid>
-    <b-modal size="lg" hide-footer v-model="isRoute({ hash: '#about' }).state">
-      <h2 class="display-6">Turn your ideas into tangible assets</h2>
-      <template #modal-title>
-        Ideality&nbsp;<span class="fw-bold">Builder</span>
-      </template>
-    </b-modal>
-    <Loading v-if="!builds && !build" message="Loading, hold on a sec..."/>
-    <template v-else>
-      <MySidebarred v-on="{ setFields }" v-bind="{
-        expanded,
-        toolbars: {
-          sidebar: {
-            items: [
-              { if: build, icon: 'chevron-double-left', onclick() { expanded = false } },
-              { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
-            ]
-          },
-          content: {
-            close: { to: { name: 'ideas' } },
-            items: [
-              { if: !expanded, icon: 'chevron-double-right', onclick() { expanded = !expanded } },
-              { icon: 'link-45deg', to: { name: 'i-slug', params: build } },
-            ] 
-          }
-        }
-      }"
-      >
-        <template #sidebar>
-          <ul class="nav nav-tabs bg-white">
-            <li class="nav-item"
-              v-for="section in keys(tabs)" :key="section"
-            >
-              <nuxt-link :class="{
-                  'nav-link nocolor grayscale': true,
-                  active: section==tab
-                }"
-                :to="{ hash: '#' + section }" v-text="tabs[section]"
-                @click.native="if (section=='shuffled') shuffleBuilds()"
-              />
-            </li>
-          </ul>
-          <b-row v-bind="{
-            ...build ? { cols: 1 } : {
-              cols: 1,
-              'cols-sm': 2,
-              'cols-md': 3,
-              'cols-lg': 4,
-              'cols-xl': 5
-            }
-          }">
-            <template v-for="build in sortedBuilds">
-              <BuildCard :key="build.id" :id="'build-'+build.slug" 
-                v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
-                @remove="builds=without(builds, build)"
-                @routed="if (narrow) expanded = false"
-              />
-            </template> 
-          </b-row>
-        </template>
-        <template #content v-if="build">
-          <Build v-bind="{build}" hide-powered/>
-        </template>
-      </MySidebarred>
+      <b-nav-form v-else>
+        <b-button :to="{name: 'i-new'}" variant="outline-primary">
+          Start building
+        </b-button>
+      </b-nav-form>
     </template>
-  </b-container>
-  </div>
+    <template #sidebar v-if="builds">
+      <ul class="nav nav-tabs bg-white">
+        <li class="nav-item"
+          v-for="section in keys(tabs)" :key="section"
+        >
+          <nuxt-link :class="{
+              'nav-link nocolor grayscale': true,
+              active: section==tab
+            }"
+            :to="{ hash: '#' + section }" v-text="tabs[section]"
+            @click.native="if (section=='shuffled') shuffleBuilds()"
+          />
+        </li>
+      </ul>
+      <b-row v-bind="{
+        ...build ? { cols: 1 } : {
+          cols: 1,
+          'cols-sm': 2,
+          'cols-md': 3,
+          'cols-lg': 4,
+          'cols-xl': 5
+        }
+      }">
+        <template v-for="build in sortedBuilds">
+          <BuildCard :key="build.id" :id="'build-'+build.slug" 
+            v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
+            @remove="builds=without(builds, build)"
+            @routed="if (narrow) expanded = false"
+          />
+        </template> 
+      </b-row>
+    </template>
+    <template #content v-if="build">
+      <Build v-bind="{build}" hide-powered/>
+    </template>
+  </MySidebarred>
 </template>
 
 <script>
