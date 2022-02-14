@@ -1,25 +1,27 @@
-import { pick } from 'lodash'
-import { objectify } from '~/plugins/helpers.js'
-
-const keys = [
-  'offsetTop', 'offsetLeft', 'offsetHeight', 'offsetWidth'
-]
-
 export default {
 
     data() {
 
       return {
-        dimensions: objectify(keys, () => null)
+        dimensions: { 
+          top: null, left: null, height: null, witdth: null
+        }
       }
 
     },
 
     mounted() {
 
-      let observer = new ResizeObserver( ([{ target }]) => 
-        Object.assign(this.dimensions, pick(target, keys))
-      )
+      let observer = new ResizeObserver( ([{ target: { 
+        offsetParent: parent, offsetTop: top, offsetLeft: left, offsetHeight: height, offsetWidth: width 
+      } }]) => {
+        while ( parent ) {
+          top += parent.offsetTop
+          left += parent.offsetLeft
+          parent = parent.offsetParent
+        }
+        Object.assign(this.dimensions, { top, left, height, width })
+      })
 
       observer.observe(this.$el)
 

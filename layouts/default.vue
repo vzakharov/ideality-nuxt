@@ -115,8 +115,8 @@ a.nocolor {
   max-width: 800px;
 }
 
-.scrollable {
-  height: var(--vh-minus-navs);
+.filler {
+  height: var(--height);
   overflow: hidden;
   overflow-y: auto;
 }

@@ -32,7 +32,7 @@
               <MyToolbar v-if="toolbars && toolbars.sidebar"
                 v-bind="toolbars.sidebar"/>
               <b-row ref="sidebar" id="sidebar">
-                <MyDiv :filler="!!expanded">
+                <MyDiv :filler="expanded">
                   <slot name="sidebar" />
                 </MyDiv>
               </b-row>  
@@ -43,7 +43,7 @@
               v-bind="toolbars.content"
             />
             <b-row id="content">
-              <MyDiv :filler="!narrow">
+              <MyDiv :filler="!narrow || expanded">
                 <slot name="content" />
               </MyDiv>
             </b-row>  
