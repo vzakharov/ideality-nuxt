@@ -1,11 +1,18 @@
-<template functional>
-  <b-button v-if="!('if' in props) || props.if"
+<template>
+  <b-button v-if="typeof _props.if === 'undefined' || _props.if"
     size="sm"
-    :variant="props.variant || 'outline-secondary'"
-    :to="props.to"
-    @click.prevent="props.onclick && props.onclick()"
+    :variant="variant || 'outline-secondary'"
+    :to="to"
+    @click.prevent="onclick && onclick()"
     onclick="this.blur()"
   >
-    <b-icon :icon="props.icon"/>
+    <b-icon :icon="icon"/>
   </b-button>
 </template>
+
+<script>
+export default {
+  props: ['if', 'variant', 'to', 'onclick', 'icon']
+  
+}
+</script>

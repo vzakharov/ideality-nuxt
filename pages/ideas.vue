@@ -12,7 +12,7 @@
         close: { to: { name: 'ideas' } },
         items: [
           { if: !expanded, icon: 'chevron-double-right', onclick() { expanded = !expanded } },
-          { icon: 'link-45deg', to: { name: 'i-slug', params: build } },
+          { icon: 'arrow-up-right', to: { name: 'i-slug', params: build }, target: '_blank' },
         ] 
       }
     }

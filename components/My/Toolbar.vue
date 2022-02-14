@@ -3,7 +3,7 @@
     <b-col>
       <MyNavButton v-for="item in items" 
         :key="item.icon"
-        v-bind="item"
+        v-bind="log(item)"
       />
       <MyCloseButton v-if="close" v-bind="close"/>
     </b-col>
@@ -12,8 +12,12 @@
 
 <script>
 
+  import header from '~/plugins/mixins/header'
+
   export default {
 
+    mixins: [header],
+    
     props: ['close', 'items']
 
   }

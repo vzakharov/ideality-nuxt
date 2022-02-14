@@ -2,7 +2,7 @@
   <div>
     <style>
       :root {
-        --vh-minus-navs: calc(100vh - {{ store.navHeight }}px);
+        --vh-minus-navs: calc(100vh - 97px);
         --node-height: {{ store.nodeHeight }}px;
         --animation-speed: .3s;
       }

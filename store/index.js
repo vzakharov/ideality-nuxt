@@ -5,6 +5,7 @@ export const state = () => ({
   builds: null,
   data: {},
   navHeight: 0,
+  navHeights: {},
 
   nodeHeight: 0,
   singleNodeHeight: 0,

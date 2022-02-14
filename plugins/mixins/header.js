@@ -9,16 +9,24 @@ export default {
   },
 
   mounted() { 
-    this.height = this.$el.offsetHeight
-    this.recountNavHeight(+1) 
+    let { $el } = this
+    this.height = $el.offsetHeight
+    this.recountNavHeight()
+
+    const observer = new ResizeObserver(this.recountNavHeight)
+
+    observer.observe($el)
   },
 
-  beforeDestroy() { this.recountNavHeight(-1) },
+  beforeDestroy() { this.recountNavHeight() },
 
   methods: {
 
-    recountNavHeight(direction) {
-      this.log(this.store.navHeight += direction * this.height)
+    recountNavHeight() {
+      // console.log(...arguments)
+      this.$store.commit('setFields', ['navHeights', {
+        [this._uid]: this.$el.offsetHeight
+      }])
     }
 
   }
