@@ -1,10 +1,19 @@
 <template>
   <MyLayout v-on="{ setFields }" v-bind="{
     expanded,
+    nav: {
+      section: 'Tools',
+      subsection: 'Builder',
+      target: { name: 'ideas' }
+    },
+    about: {
+      title: 'Builder',
+      tagline: 'Turn your ideas into tangible assets'
+    },
     toolbars: {
       sidebar: {
         items: [
-          { if: build, icon: 'chevron-double-left', onclick() { expanded = false } },
+          { if: !!build, icon: 'chevron-double-left', onclick() { expanded = false } },
           { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
         ]
       },
@@ -27,6 +36,8 @@
           Start building
         </b-button>
       </b-nav-form>
+    </template>
+    <template #about>
     </template>
     <template #sidebar v-if="builds">
       <ul class="nav nav-tabs bg-white">

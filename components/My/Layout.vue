@@ -1,16 +1,17 @@
 <template>
   <div>
-    <NavPublic ref="nav" section="Tools" subsection="Builder" :target="{ name: 'ideas' }">
+    <NavPublic ref="nav" v-bind="nav">
       <template #custom-nav>
         <slot name="nav"/>
       </template>
     </NavPublic>
     <b-container fluid>
       <b-modal size="lg" hide-footer v-model="isRoute({ hash: '#about' }).state">
-        <h2 class="display-6">Turn your ideas into tangible assets</h2>
+        <h2 class="display-6" v-text="about.tagline"/>
         <template #modal-title>
-          Ideality&nbsp;<span class="fw-bold">Builder</span>
+          Ideality&nbsp;<span class="fw-bold" v-text="about.title"/>
         </template>
+        <p v-text="about.description || loremIpsum"/>
       </b-modal>
       <Loading v-if="!$slots.content && !$slots.sidebar" message="Loading, hold on a sec..."/>
       <template v-else>
@@ -58,7 +59,7 @@
 
   export default {
 
-    props: ['expanded', 'toolbars'],
+    props: ['expanded', 'toolbars', 'nav', 'about'],
 
     watch: {
       narrow: { immediate: true, handler(narrow) {
