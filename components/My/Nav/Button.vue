@@ -3,7 +3,7 @@
     size="sm"
     :variant="variant || 'outline-secondary'"
     :to="to"
-    @click.prevent="onclick && onclick()"
+    @click="onclick && onclick()"
     onclick="this.blur()"
   >
     <b-icon :icon="icon"/>
