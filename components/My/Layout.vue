@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavPublic ref="nav" v-bind="nav">
+    <NavPublic ref="nav" v-bind="{ ...nav, subsection: about.title }">
       <template #custom-nav>
         <slot name="nav"/>
       </template>
@@ -30,12 +30,12 @@
               }"
               :style="narrow && { position: 'absolute' }"
             >
-              <MyToolbar v-if="toolbars && toolbars.sidebar"
+              <MyToolbar
                 v-bind="deepMerge(
                   { items:  [
                     { if: !!$slots.content, icon: 'chevron-double-left', onclick() { sidebar.expanded = false } },
                   ] },
-                  toolbars.sidebar
+                  toolbars.sidebar || {}
                 )
               "/>
               <b-row ref="sidebar" id="sidebar">
@@ -46,7 +46,7 @@
             </b-col>
           </transition>
           <b-col v-if="$slots.content">
-            <MyToolbar v-if="toolbars && toolbars.content"
+            <MyToolbar
               v-bind="deepMerge(
                 {         
                   close: { to: nav.target },
@@ -54,7 +54,7 @@
                     { if: !sidebar.expanded, icon: 'chevron-double-right', onclick() { sidebar.expanded = true } },
                   ]
                 },
-                toolbars.content
+                toolbars.content || {}
               )"
             />
             <b-row id="content">
@@ -71,11 +71,15 @@
 
 <script>
 
-  import { deepMerge } from '~/plugins/helpers.js'
+  import { deepMerge, objectify } from '~/plugins/helpers.js'
 
   export default {
 
-    props: ['toolbars', 'nav', 'about', 'sidebar'],
+    props: { ...objectify(['nav', 'about', 'sidebar']),
+      toolbars: {
+        default: {}
+      }
+    },
 
     watch: {
       narrow: { immediate: true, handler(narrow) {

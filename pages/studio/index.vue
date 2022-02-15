@@ -1,35 +1,36 @@
 <template>
   <div v-if="mounted">
     <TreeMeta v-bind="{tree}" @parsed="parsing.resolve()"/>
-
-    <b-container fluid v-if="parsing.resolved">
-      <b-row>
-        <b-col cols="12" sm="5" md="3" class="bg-light vh" style="overflow-x:auto">
-          <TreeNode v-bind="{ tree, node: tree.root }"/>
-        </b-col>
-        <b-col>
-          <MyInput v-model="tree.focused" caption="Edit"/>
-          <!-- <style>
-            :root {
-              --editor-offset-right: {{ store.editorOffsetRight }}
-            }
-          </style> -->
-          <div v-if="node" class="border p-2" id="editor" ref="editor">
-            <StudioThread v-bind="{
-              node: tree.root,
-              tree
-            }"/>
-          </div>
-          <Loading v-else message="Processing, please wait"/>
-          <Copiable class="mt-2"
-            :fetch="() => $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
-          >
-            Copy link
-          </Copiable>
-        </b-col>
-      </b-row>
-    </b-container>
-   
+    <MyLayout v-if="parsing.resolved" v-bind="{
+      sidebar,
+      nav: {
+        section: 'Tools',
+        target: { name: 'studio' }
+      },
+      about: {
+        title: 'Studio',
+        tagline: 'Tree-based brainstorming editor'
+      }
+    }">
+      <template #sidebar>
+        <TreeNode v-bind="{ tree, node: tree.root }"/>
+      </template>
+      <template #content>
+        <MyInput v-model="tree.focused" caption="Edit"/>
+        <div v-if="node" class="border p-2" id="editor" ref="editor">
+          <StudioThread v-bind="{
+            node: tree.root,
+            tree
+          }"/>
+        </div>
+        <Loading v-else message="Processing, please wait"/>
+        <Copiable class="mt-2"
+          :fetch="() => $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
+        >
+          Copy link
+        </Copiable>
+      </template>
+    </MyLayout>
   </div>
 </template>
 
@@ -56,7 +57,10 @@
               created: new Date()
             }
         },
-        parsing: new Awaitable(true)
+        parsing: new Awaitable(true),
+        sidebar: {
+          expanded: true
+        }
       }
 
     },
@@ -90,21 +94,26 @@
         
         ms('parsed')
 
-        let node = find( this.tree.nodes,
-          slug.match(/^\d+$/)
-            ? { id: parseInt(slug) }
-            : (({ text }) => text?.includes(slug))
-        )
+        if (slug.match(/^\d+$/)) {
 
-        ms('node found')
+          let node = find( this.tree.nodes,
+            slug.match(/^\d+$/)
+              ? { id: parseInt(slug) }
+              : (({ text }) => text?.includes(slug))
+          )
 
-        console.log({node})
+          ms('node found')
 
-        node?.nudge()
+          console.log({node})
 
-        await this.$refs['span-'+node.id]?.mounting?.promise
+          node?.nudge()
 
-        document.getElementById('span-'+node.id)?.focus()
+          await this.$refs['span-'+node.id]?.mounting?.promise
+
+          document.getElementById('span-'+node.id)?.focus()
+
+          if ( this.narrow ) this.sidebar.expanded = false
+        }
 
       }}
 

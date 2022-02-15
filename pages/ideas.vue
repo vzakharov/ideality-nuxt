@@ -3,7 +3,6 @@
     sidebar,
     nav: {
       section: 'Tools',
-      subsection: 'Builder',
       target: { name: 'ideas' }
     },
     about: {
@@ -34,8 +33,6 @@
           Start building
         </b-button>
       </b-nav-form>
-    </template>
-    <template #about>
     </template>
     <template #sidebar v-if="builds">
       <ul class="nav nav-tabs bg-white">
