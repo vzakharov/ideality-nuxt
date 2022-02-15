@@ -23,17 +23,15 @@
 </template>
 
 <script>
+
 export default {
+
   data() {
     return {
       email: '',
       password: '',
       loggingIn: false
     }
-  },
-
-  computed: {
-    user() { return this.$auth.user }
   },
 
   methods: {

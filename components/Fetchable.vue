@@ -1,6 +1,6 @@
 <template>
   <span>
-    <template v-if="$fetchState.pending" class="m-2">
+    <template v-if="mounting.pending" class="m-2">
       Loading... <b-spinner small/> 
     </template>
     <template v-else>

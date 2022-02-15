@@ -47,7 +47,11 @@ function widgetHeader() {
 }
 
 function isAdmin() {
-  return this.$auth.user && this.$auth.user.isAdmin
+  return this.$auth?.user?.isAdmin
+}
+
+function user () {
+  return this.$auth?.user
 }
 
 function loremIpsum() {
@@ -158,6 +162,7 @@ Vue.mixin({
     queryFlags,
     route,
     store,
+    user,
     widgetHeader,
     width
 
