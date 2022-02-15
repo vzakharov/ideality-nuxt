@@ -15,7 +15,7 @@
 
     props: ['promise', 'value'],
 
-    async fetch() {
+    async mounted() {
       this.$emit('input', await this.promise)
     }
 

@@ -122,7 +122,7 @@
       }
     },
 
-    async fetch() {
+    async mounted() {
       let { widgets } = (
         await Bubble.anon.go('getWidgetLandingWidgets')
       )

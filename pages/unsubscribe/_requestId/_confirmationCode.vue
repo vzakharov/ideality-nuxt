@@ -5,7 +5,7 @@
       ok: 'Thank you, you have been unsubscribed.',
       error: 'Oops, the confirmation code seems incorrect. Please check your mailbox and try again.',
     },
-    fetch
+    mounted
   }"/>
 </template>
 
@@ -23,7 +23,7 @@
 
     methods: {
 
-      async fetch() {
+      async mounted() {
         this.syncLocal('builds')
 
         let { route: { params }} = this

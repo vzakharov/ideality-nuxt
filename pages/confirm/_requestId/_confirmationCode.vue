@@ -5,7 +5,7 @@
       ok: 'Thank you, your email is confirmed! You can safely close the tab.',
       error: 'Oops, something went wrong. Please follow the link in your mailbox to unsubscribe.'
     },
-    fetch
+    mounted
   }"/>
 </template>
 
@@ -23,7 +23,7 @@
 
     methods: {
 
-      async fetch() {
+      async mounted() {
         this.syncLocal('builds')
 
         let { route: { params }} = this

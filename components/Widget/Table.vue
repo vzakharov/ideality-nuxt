@@ -51,7 +51,7 @@
       }
     },
 
-    async fetch() {
+    async mounted() {
 
       this.widgets = await new Bubble(this).get('widgets', { owner: this.$auth.user.id })
         

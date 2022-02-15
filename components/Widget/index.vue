@@ -182,7 +182,7 @@
       return data
     },
 
-    async fetch() {
+    async mounted() {
       if ( this.queryFlags.admin ) {
         if ( !await getUser(this) ) {
           this.$router.push({name: 'login', query: { then: this.route.fullPath }})

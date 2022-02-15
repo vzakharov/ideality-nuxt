@@ -62,7 +62,7 @@
 
     },
 
-    async fetch() {
+    async mounted() {
       let { widget } = this
       if ( widget ) {
         this.events = await this.bubble.get('widgetEvents', {

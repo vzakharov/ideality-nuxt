@@ -28,7 +28,7 @@
       }
     },
 
-    async fetch() {
+    async mounted() {
 
       // Object.assign(this, await Bubble.anon.go('getTemplateWidgets'))
       let widgets = await Bubble.anon.get('widgets', { isExample: true }, { sortBy: 'name' })

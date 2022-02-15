@@ -23,7 +23,7 @@
       items: null
     }},
 
-    async fetch() {
+    async mounted() {
       if (!this.$auth.loggedIn)
       return false
       let response = await (

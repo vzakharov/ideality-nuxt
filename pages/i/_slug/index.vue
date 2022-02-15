@@ -16,7 +16,7 @@
 
     },
 
-    async fetch() {
+    async mounted() {
       let build = this.route.params
 
       if ( !build.code )
