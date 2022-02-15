@@ -1,5 +1,5 @@
 <template>
-  <MySidebarred v-on="{ setFields }" v-bind="{
+  <MyLayout v-on="{ setFields }" v-bind="{
     expanded,
     toolbars: {
       sidebar: {
@@ -63,7 +63,7 @@
     <template #content v-if="build">
       <Build v-bind="{build}" hide-powered/>
     </template>
-  </MySidebarred>
+  </MyLayout>
 </template>
 
 <script>
