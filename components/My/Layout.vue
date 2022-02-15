@@ -23,7 +23,7 @@
                 sm: 7,
                 md: 3
               }}"
-              v-show="!$slots.content || expanded"
+              v-show="!$slots.content || sidebar.expanded"
               :class="{
                 shadow: narrow,
                 'bg-white': true
@@ -31,9 +31,15 @@
               :style="narrow && { position: 'absolute' }"
             >
               <MyToolbar v-if="toolbars && toolbars.sidebar"
-                v-bind="toolbars.sidebar"/>
+                v-bind="deepMerge(
+                  { items:  [
+                    { if: !!$slots.content, icon: 'chevron-double-left', onclick() { sidebar.expanded = false } },
+                  ] },
+                  toolbars.sidebar
+                )
+              "/>
               <b-row ref="sidebar" id="sidebar">
-                <MyDiv :filler="expanded">
+                <MyDiv :filler="sidebar.expanded">
                   <slot name="sidebar" />
                 </MyDiv>
               </b-row>  
@@ -41,10 +47,18 @@
           </transition>
           <b-col v-if="$slots.content">
             <MyToolbar v-if="toolbars && toolbars.content"
-              v-bind="toolbars.content"
+              v-bind="deepMerge(
+                {         
+                  close: { to: nav.target },
+                  items: [
+                    { if: !sidebar.expanded, icon: 'chevron-double-right', onclick() { sidebar.expanded = true } },
+                  ]
+                },
+                toolbars.content
+              )"
             />
             <b-row id="content">
-              <MyDiv :filler="!narrow || expanded">
+              <MyDiv :filler="!narrow || sidebar.expanded">
                 <slot name="content" />
               </MyDiv>
             </b-row>  
@@ -57,20 +71,20 @@
 
 <script>
 
+  import { deepMerge } from '~/plugins/helpers.js'
+
   export default {
 
-    props: ['expanded', 'toolbars', 'nav', 'about'],
+    props: ['toolbars', 'nav', 'about', 'sidebar'],
 
     watch: {
       narrow: { immediate: true, handler(narrow) {
-        // console.log({narrow})
-        this.$emit('setFields', { expanded: !narrow} )
+        this.sidebar.expanded = !narrow
       }}
     },
 
-    computed: {
-
-
+    methods: {
+      deepMerge
     }
 
   }

@@ -55,11 +55,15 @@
             fields[key] = this.promise = $axios.post('api/getImage', body)
             $store.commit('setFields', [ 'imagePromises', fields ])
           }
-          let { data: photo } = await this.promise
+          try {
+            let { data: photo } = await this.promise
+            this.$emit('loaded', !!photo )
 
-          this.$emit('loaded', !!photo )
+            Object.assign(this, { photo })
+          } catch {
+            
+          }
 
-          Object.assign(this, { photo })
 
         }
       }

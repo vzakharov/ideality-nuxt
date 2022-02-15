@@ -1,6 +1,6 @@
 <template>
   <MyLayout v-on="{ setFields }" v-bind="{
-    expanded,
+    sidebar,
     nav: {
       section: 'Tools',
       subsection: 'Builder',
@@ -13,14 +13,12 @@
     toolbars: {
       sidebar: {
         items: [
-          { if: !!build, icon: 'chevron-double-left', onclick() { expanded = false } },
           { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
         ]
       },
       content: {
         close: { to: { name: 'ideas' } },
         items: [
-          { if: !expanded, icon: 'chevron-double-right', onclick() { expanded = !expanded } },
           { icon: 'arrow-up-right', to: { name: 'i-slug', params: build }, target: '_blank' },
         ] 
       }
@@ -29,7 +27,7 @@
   >
     <template #nav>
       <template v-if="build">
-        <MyNavToggle size="sm" :text="build.name" v-model="expanded"/>
+        <MyNavToggle size="sm" :text="build.name" v-model="sidebar.expanded"/>
       </template>
       <b-nav-form v-else>
         <b-button :to="{name: 'i-new'}" variant="outline-primary">
@@ -66,7 +64,7 @@
           <BuildCard :key="build.id" :id="'build-'+build.slug" 
             v-bind="{ build, bookmarkedOnly: hashRoute=='bookmarked', active: vm.build && build.slug==vm.build.slug}"
             @remove="builds=without(builds, build)"
-            @routed="if (narrow) expanded = false"
+            @routed="if (narrow) sidebar.expanded = false"
           />
         </template> 
       </b-row>
@@ -106,7 +104,9 @@
       return {
         build,
         builds: null,
-        expanded: false,
+        sidebar: {
+          expanded: false
+        },
         localBuild: null,
         localBuilds: [],
         tabs,
@@ -170,13 +170,13 @@
       },
 
       mounted(mounted) {
-        let { _uid, $data, store } = this
-        console.log({ $data, mounted })
-        if ( mounted ) {
-          this.$store.commit('setFields', ['data', { ...store.data, [_uid]: {...$data} }])
-        } else {
-          Object.assign(this, store.data[_uid] )
-        }
+        // let { _uid, $data, store } = this
+        // console.log({ $data, mounted })
+        // if ( mounted ) {
+        //   this.$store.commit('setFields', ['data', { ...store.data, [_uid]: {...$data} }])
+        // } else {
+        //   Object.assign(this, store.data[_uid] )
+        // }
           // TODO: Find out why the fuck it keeps disappearing (vue/nuxt bug?)
       },
 
