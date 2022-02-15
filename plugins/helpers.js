@@ -1,4 +1,4 @@
-import { assign, filter, find, forEach, kebabCase, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { assign, filter, find, forEach, kebabCase, isArray, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
 import Bubble from '../plugins/bubble'
 
 function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
@@ -216,10 +216,22 @@ function Meta( name, { computed, methods, defaults } = {} ) {
 
 }
 
-function debug(what) {
-  debugger
-  return what
-}
+let deepMerge = (source, target, ...more) =>
+  more.length
+    ? deepMerge(
+      deepMerge(source, target),
+      ...more
+    ) : {
+      ...source, 
+      ...target, 
+      ...mapValues(source, ( value, key ) =>
+        target[key] && isObject(value)
+          ? isArray(value)
+            ? [ ...value, ...target[key] ]
+            : deepMerge( value, target[key] )
+          : ( target[key] || value )
+        )
+    }
 
 export {
 
@@ -228,7 +240,8 @@ export {
   assignMethods,
   assignProperties,
   Awaitable,
-  debug,
+  // debug,
+  deepMerge,
   filteredParameters,
   getUser,
   keyedPromises,
