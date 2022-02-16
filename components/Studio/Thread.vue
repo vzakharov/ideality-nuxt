@@ -1,19 +1,30 @@
 <template>
   <div class="d-inline">
 
-    <Editable v-if="!node.isRoot"
-      :editable="tree.editing"
-      tag="div"
-      :class="{
-        'gray': node != tree.node && tree.editing
-      }"
-      v-model="node.text"
-      @click.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
-      @focus.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
-      @keydown.native.esc="tree.editing = false"
-      :id="'span-'+node.id"
-      :ref="'span-'+node.id"
-    />
+    <template v-if="!node.isRoot">
+      <Editable v-if="!node.isRoot"
+        :editable="tree.editing"
+        tag="div"
+        :class="{
+          'gray': node != tree.node && tree.editing
+        }"
+        v-model="node.text"
+        @click.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
+        @focus.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
+        @keydown.native.esc="tree.editing = false"
+        :id="'span-'+node.id"
+        :ref="'span-'+node.id"
+      />
+      <div class="d-inline" :id="'anchor-'+node.id"/>
+      <b-popover delay=0 no-fade boundary="viewport" :target="'span-'+node.id" triggers="focus" placement="bottom">
+        Hello
+        <div v-if="node.hasSiblings" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 200px">
+          <TreeNode v-for="sibling in node.sortedSiblings" :key="sibling.id"
+            v-bind="{ tree, node: sibling }"
+          />
+        </div>
+      </b-popover>
+    </template>
     <template v-if="maybe(node.heir).hasSiblings">
       <sub>
         <nuxt-link class="gray"
@@ -34,9 +45,21 @@
 
 <script>
 
+  import { map } from 'lodash'
+
   export default {
 
-    props: ['tree', 'node']
+    props: ['tree', 'node'],
+
+    data() {
+      return {
+        popoverOpen: true
+      }
+    },
+
+    methods: {
+      map
+    }
 
   }
 
