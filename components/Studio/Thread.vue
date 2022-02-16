@@ -2,15 +2,15 @@
   <div class="d-inline">
 
     <Editable v-if="!node.isRoot"
-      :editable="tree.focused"
+      :editable="tree.editing"
       tag="div"
       :class="{
-        'gray': node != tree.node && tree.focused
+        'gray': node != tree.node && tree.editing
       }"
       v-model="node.text"
-      @click.native="tree.focused = true; $router.push({ hash: '#'+node.id })"
-      @focus.native="tree.focused = true; $router.push({ hash: '#'+node.id })"
-      @keydown.native.esc="tree.focused = false"
+      @click.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
+      @focus.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
+      @keydown.native.esc="tree.editing = false"
       :id="'span-'+node.id"
       :ref="'span-'+node.id"
     />

@@ -14,7 +14,7 @@
       toolbars: {
         content: {
           items: [
-            { icon: 'pencil', onclick() { tree.focused = !tree.focused }, active: tree.focused },
+            { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 

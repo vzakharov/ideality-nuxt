@@ -84,7 +84,7 @@ const methods = {
     let { id, tree } = this
     assign(tree, {
       current_node_id: id,
-      focused: true
+      editing: true
     })
     
   },

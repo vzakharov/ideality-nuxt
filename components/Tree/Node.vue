@@ -13,7 +13,7 @@
         style="white-space: nowrap"
         :class="tree.node && tree.node.thread && { 
           'gray': !tree.node.thread.includes(node),
-          'fw-bold': tree.node == node && tree.focused,
+          'fw-bold': tree.node == node && tree.editing,
           'fst-italic': !node.text,
           'd-inline-block': true
         }"

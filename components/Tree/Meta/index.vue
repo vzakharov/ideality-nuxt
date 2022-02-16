@@ -34,7 +34,7 @@
           root: { id: 0, created: new Date() },
           current_node_id: 0,
           max_id: 0,
-          focused: true
+          editing: true
         }
 
       })
