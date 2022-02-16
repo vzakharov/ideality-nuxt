@@ -4,13 +4,13 @@
     v-html="initialContent && initialContent.replace(/\n/g, '<br/>')"
     :data-ph="placeholder"
     :class="{'text-muted': !initialContent}"
-    @input="$emit('input', $event.target.innerText)"
+    @input="$emit('input', $event.target.innerText.replace('\xa0', ' '))"
     @blur="initialContent=value"
     :style="{
       display: 'inline',
       outline: 'none'
     }"
-/>
+  />
 </template>
 
 <script>
