@@ -1,0 +1,165 @@
+data:
+  tree:
+    max_id: 64
+    root:
+      id: 0
+      created: 2022-02-16T11:51:40.272Z
+      children:
+        - id: 1
+          created: 2022-02-16T11:51:40.272Z
+          children:
+            - id: 2
+              created: 2022-02-16T11:51:48.548Z
+              children:
+                - id: 31
+                  created: 2022-02-16T14:24:21.132Z
+                  children:
+                    - id: 35
+                      created: 2022-02-16T14:26:31.982Z
+                      children:
+                        - id: 36
+                          created: 2022-02-16T14:31:52.580Z
+                          children:
+                            - id: 46
+                              created: 2022-02-16T14:43:17.369Z
+                              children:
+                                - id: 51
+                                  created: 2022-02-16T15:33:41.361Z
+                                  children:
+                                    - id: 53
+                                      created: 2022-02-16T15:35:56.371Z
+                                      children:
+                                        - id: 54
+                                          created: 2022-02-16T15:36:15.347Z
+                                          children:
+                                            - id: 56
+                                              created: 2022-02-16T15:38:13.617Z
+                                              children:
+                                                - id: 59
+                                                  created: 2022-02-16T15:41:43.453Z
+                                                  children:
+                                                    - id: 62
+                                                      created: 2022-02-16T15:43:06.943Z
+                                                      children:
+                                                        - id: 64
+                                                          created: 2022-02-16T15:46:16.549Z
+                                                          text: ' see what happens!'
+                                                        - id: 63
+                                                          created: 2022-02-16T15:45:18.717Z
+                                                          children: []
+                                                          text: |2
+                                                            don't be afraid to start over. We all make mistakes.
+                                                      text: >-
+                                                        you can see all your options laid out
+                                                        before you.
+
+
+                                                        So go on, try it yourself, and
+                                                    - id: 61
+                                                      created: 2022-02-16T15:42:34.594Z
+                                                      text: >-
+                                                        you can add notes, tag them, and come
+                                                        back to them later.
+                                                    - id: 60
+                                                      created: 2022-02-16T15:42:32.164Z
+                                                      children: []
+                                                      text: >-
+                                                        you can keep an idea in "limbo" until
+                                                        you're ready to flesh it out.
+                                                  text: ' prune or keep. And you don’t have to decide right away—'
+                                                - id: 58
+                                                  created: 2022-02-16T15:41:42.083Z
+                                                  children: []
+                                                  text: |2
+                                                    prune, expand, or lop off entirely.
+                                              text: >-
+
+
+                                                Ideality Studio tries to address this
+                                                challenge by offering a simple,
+                                                tree-based editor, where every path your
+                                                thought takes is a branch you can
+                                          text: ' is a logistical nightmare.'
+                                        - id: 55
+                                          created: 2022-02-16T15:36:56.060Z
+                                          text: ' is one of the most crucial of writerly decisions'
+                                      text: ' best from this output'
+                                    - id: 52
+                                      created: 2022-02-16T15:34:45.153Z
+                                      children: []
+                                      text: ' right one to work on is a skill in itself.'
+                                  text: ' potential ideas a minute. Choosing the'
+                                - id: 50
+                                  created: 2022-02-16T15:33:25.024Z
+                                  text: ' variations on a theme'
+                                - id: 49
+                                  created: 2022-02-16T15:33:02.271Z
+                                  children: []
+                                  text: |2
+                                    ideas in a single sitting
+                              text: >-
+
+
+                                The problem has become even more acute with the
+                                advent of AI-powered writing assistants, which
+                                allow you to generate dozens of
+                            - id: 43
+                              created: 2022-02-16T14:41:43.094Z
+                              children:
+                                - id: 45
+                                  created: 2022-02-16T14:43:05.883Z
+                                  text: ' on that overabundance.'
+                                - id: 44
+                                  created: 2022-02-16T14:42:54.103Z
+                                  children: []
+                                  text: |2
+                                    on all of our rabbit holes
+                              text: |-
+
+
+                                Ideality Studio is an attempt to capitalize
+                          text: ' will be a rabbit hole of an entire new story.'
+                        - id: 39
+                          created: 2022-02-16T14:34:57.123Z
+                          text: ' might be complete left turns.'
+                        - id: 38
+                          created: 2022-02-16T14:33:32.079Z
+                          text: ' might be a new story entirely.'
+                          children: []
+                      text: ' a slightly more intricate metaphor, while others'
+                    - id: 34
+                      created: 2022-02-16T14:26:26.031Z
+                      children: []
+                      text: ' a change in wording'
+                  text: >-
+
+
+                    Some of those ideas will be just small deviations from the one
+                    you’re working on (say, a different pun or
+                - id: 26
+                  created: 2022-02-16T14:10:26.553Z
+                  children:
+                    - id: 5
+                      created: 2022-02-16T11:57:20.737Z
+                      text: ' to help writers keep those ideas in check by blablabla'
+                      children: []
+                    - id: 4
+                      created: 2022-02-16T11:56:09.523Z
+                      text: ' to address this problem by'
+                  text: |-
+
+
+                    Ideality Studio is an attempt
+              text: >-
+                . It's the other way around: Ideas are like rabbits, prolific and
+                overbreeding. (And while you're trying to catch one, two more
+                escape down the hole in your yard.)
+            - id: 3
+              created: 2022-02-16T11:52:23.272Z
+              text: ; it’s having too many
+              children: []
+          text: The main problem with writing—anything—is not running out of ideas
+    editing: false
+    current_node_id: 2
+  settings:
+    navigation: true

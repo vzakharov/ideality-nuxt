@@ -1,5 +1,5 @@
 <template>
-  <div v-if="mounted">
+  <div v-if="canParse">
     <TreeMeta v-bind="{tree}" @parsed="parsing.resolve()"/>
     <MyLayout v-if="parsing.resolved" v-bind="{
       sidebar,
@@ -65,6 +65,7 @@
     data() {
 
       return {
+        canParse: false,
         items: [1,2,3,4,5,6,7,8,9],
         JSONCrush,
         copied: false,
@@ -94,9 +95,13 @@
 
     },
 
-    mounted() {
+    async mounted() {
       let { code } = this.$route.query
-      if ( code ) {
+      if ( this.queryFlags.sample ) {
+        let [{ data }] = await this.$content('samples').where({slug:'studio'}).fetch()
+        Object.assign(this, data)
+        console.log(this)
+      } else if ( code ) {
         this.tree = load(JSONCrush.uncrush(code))
       } else
         this.syncLocal('studio', { select: ['tree', 'settings'], inline: true ,
@@ -104,6 +109,8 @@
             tree: () => this.copied = false
           }
         })
+
+      this.canParse = true
     },
 
     computed: {
