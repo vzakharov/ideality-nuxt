@@ -2,6 +2,25 @@
   <div class="d-inline">
 
     <template v-if="!node.isRoot">
+      <sub v-if="node.hasSiblings">
+        <b-icon :id="'popover-'+node.id" size="sm" class="cursor-pointer mx-2"
+          icon="list-nested"
+          @click="showPopover = !showPopover"
+          :variant="showPopover && 'primary'"
+        />
+      </sub>
+      <b-popover :show="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
+        triggers="manual" 
+        placement="bottom"
+        :fallback-placement="['rightbottom', 'leftbottom']"
+      >
+        <b-button-close @click="showPopover=false"/>
+        <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px">
+          <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
+            v-bind="{ tree, node: sibling }"
+          />
+        </div>
+      </b-popover>
       <Editable v-if="!node.isRoot"
         :editable="tree.editing"
         tag="div"
@@ -15,15 +34,6 @@
         :id="'span-'+node.id"
         :ref="'span-'+node.id"
       />
-      <div class="d-inline" :id="'anchor-'+node.id"/>
-      <b-popover delay=0 no-fade boundary="viewport" :target="'span-'+node.id" triggers="focus" placement="bottom">
-        Hello
-        <div v-if="node.hasSiblings" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; width: 200px">
-          <TreeNode v-for="sibling in node.sortedSiblings" :key="sibling.id"
-            v-bind="{ tree, node: sibling }"
-          />
-        </div>
-      </b-popover>
     </template>
     <template v-if="maybe(node.heir).hasSiblings">
       <sub>
@@ -49,13 +59,13 @@
 
   export default {
 
-    props: ['tree', 'node'],
-
     data() {
       return {
-        popoverOpen: true
+        showPopover: false
       }
     },
+
+    props: ['tree', 'node'],
 
     methods: {
       map

@@ -28,15 +28,15 @@
         <TreeNode v-bind="{ tree, node: tree.root }"/>
       </template>
       <template #content>
-        <div class="p-2">
-          <div v-if="node" class="border p-2" id="editor" ref="editor">
+        <div v-if="node" class="p-2">
+          <div class="border p-2" id="editor" ref="editor">
             <StudioThread v-bind="{
               node: tree.root,
               tree
             }"/>
           </div>
-          <Loading v-else message="Processing, please wait"/>
         </div>
+        <Loading v-else message="Processing, please wait"/>
       </template>
     </MyLayout>
     <Meta>
