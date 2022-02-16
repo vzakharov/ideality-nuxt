@@ -30,7 +30,7 @@
       }
     }">
       <template #sidebar>
-        <div style="overflow-x: auto; height: 100%" class="bg-light">
+        <div style="height: 100%" class="bg-light">
           <TreeNode v-bind="{ tree, node: tree.root }"/>
         </div>
       </template>
@@ -147,8 +147,9 @@
       },
 
       setNode(node) {
-        this.tree.setNode(node)
-        document.getElementById('span-'+node.id)?.focus?.()
+        this.$router.push({ hash: '#'+node.id })
+        // this.tree.setNode(node)
+        // document.getElementById('span-'+node.id)?.focus?.()
       },
 
       dump
@@ -181,6 +182,7 @@
           await this.$refs['span-'+node.id]?.mounting?.promise
 
           document.getElementById('span-'+node.id)?.focus()
+          document.getElementById(node.id)?.scrollIntoView()
 
           if ( this.narrow ) this.sidebar.expanded = false
         }
