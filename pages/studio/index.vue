@@ -30,7 +30,7 @@
       }
     }">
       <template #sidebar>
-        <div style="overflow: hidden; overflow-x: auto; height: 100%" class="bg-light">
+        <div style="overflow-x: auto; height: 100%" class="bg-light">
           <TreeNode v-bind="{ tree, node: tree.root }"/>
         </div>
       </template>
