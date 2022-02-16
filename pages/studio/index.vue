@@ -15,11 +15,12 @@
         content: {
           items: [
             { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
+            { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
               onclick() { link.copy() } 
-            }
+            },
           ]
         }
       }
@@ -32,7 +33,8 @@
           <div class="border p-2" id="editor" ref="editor">
             <StudioThread v-bind="{
               node: tree.root,
-              tree
+              tree,
+              settings
             }"/>
           </div>
         </div>
@@ -72,6 +74,9 @@
         parsing: new Awaitable(true),
         sidebar: {
           expanded: true
+        },
+        settings: {
+          navigation: false
         }
       }
 

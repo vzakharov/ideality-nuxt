@@ -1,26 +1,27 @@
 <template>
   <div class="d-inline">
-
     <template v-if="!node.isRoot">
-      <sub v-if="node.hasSiblings">
-        <b-icon :id="'popover-'+node.id" size="sm" class="cursor-pointer mx-2"
-          icon="list-nested"
-          @click="showPopover = !showPopover"
-          :variant="showPopover && 'primary'"
-        />
-      </sub>
-      <b-popover :show="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
-        triggers="manual" 
-        placement="bottom"
-        :fallback-placement="['rightbottom', 'leftbottom']"
-      >
-        <b-button-close @click="showPopover=false"/>
-        <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px">
-          <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
-            v-bind="{ tree, node: sibling }"
+      <template v-if="settings.navigation">
+        <sub v-if="node.hasSiblings">
+          <b-icon :id="'popover-'+node.id" size="sm" class="cursor-pointer mx-2"
+            icon="list-nested"
+            @click="showPopover = !showPopover"
+            :variant="showPopover ? 'primary' : 'muted'"
           />
-        </div>
-      </b-popover>
+        </sub>
+        <b-popover :show.sync="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
+          triggers="hover" 
+          placement="bottom"
+          :fallback-placement="['rightbottom', 'leftbottom']"
+        >
+          <b-button-close @click="showPopover=false"/>
+          <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px">
+            <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
+              v-bind="{ tree, node: sibling }"
+            />
+          </div>
+        </b-popover>
+      </template>
       <Editable v-if="!node.isRoot"
         :editable="tree.editing"
         tag="div"
@@ -35,19 +36,11 @@
         :ref="'span-'+node.id"
       />
     </template>
-    <template v-if="maybe(node.heir).hasSiblings">
-      <sub>
-        <nuxt-link class="gray"
-          tabindex="-1"
-          :to="{ hash: '#'+node.heir.nextSibling.id }"
-          v-text="node.heir.placeAmongSiblings"
-        />
-      </sub>
-    </template>
     <transition-group name="node-span" tag="div" class="d-inline">
       <StudioThread v-if="node.hasChildren" :key="node.heir.id" v-bind="{
         node: node.heir,
-        tree
+        tree,
+        settings
       }"/>
     </transition-group>
   </div>
@@ -65,7 +58,7 @@
       }
     },
 
-    props: ['tree', 'node'],
+    props: ['tree', 'node', 'settings'],
 
     methods: {
       map
