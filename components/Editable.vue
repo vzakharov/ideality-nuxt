@@ -1,11 +1,11 @@
 <template>
   <component :is="tag"
     :contenteditable="editable"
-    v-html="initialContent && initialContent.replace(/\n/g, '<br/>')"
+    v-html="value && value.replace(/\n/g, '<br/>')"
     :data-ph="placeholder"
-    :class="{'text-muted': !initialContent}"
-    @input="$emit('input', $event.target.innerText)"
-    @blur="initialContent=''"
+    :class="{'text-muted': !currentContent}"
+    @input="currentContent=$event.target.innerText"
+    @blur="$emit('input', currentContent)"
     :style="{
       display: 'inline',
       outline: 'none'
@@ -34,7 +34,7 @@
 
     data() {
       return {
-        initialContent: this.value
+        currentContent: this.value
       }
     },
 
