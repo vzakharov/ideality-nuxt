@@ -1,18 +1,29 @@
 <template>
   <b-button v-if="typeof _props.if === 'undefined' || _props.if"
     size="sm"
-    :variant="variant || 'outline-secondary'"
+    :variant="( active ? '' : 'outline-' ) + variant"
     :to="to"
     @click="onclick && onclick()"
     onclick="this.blur()"
   >
     <b-icon :icon="icon"/>
+    {{ text }}
   </b-button>
 </template>
 
 <script>
-export default {
-  props: ['if', 'variant', 'to', 'onclick', 'icon']
-  
-}
+
+  import { objectify } from '~/plugins/helpers.js'
+
+  export default {
+    props: {...objectify(
+      ['if', 'active', 'variant', 'to', 'onclick', 'icon', 'text']
+    ), 
+      variant: {
+        default: 'secondary'
+      }
+    }
+    
+  }
+
 </script>
