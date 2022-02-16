@@ -253,7 +253,7 @@ Vue.mixin({
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, inline } = {}) {
+    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, inline, beforeWrite } = {}) {
 
       let local, data, items, collection
       let isList = isPlural(localKey)
@@ -293,7 +293,8 @@ Vue.mixin({
         
         this.$watch(key, { deep: true, handler(value) {
           
-          
+          beforeWrite?.[key]()
+
           if ( slugifyName && key == 'name' ) {
             Object.assign(this, { slug: slugify(value, items) })
             return
