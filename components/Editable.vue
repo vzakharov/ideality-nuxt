@@ -1,5 +1,6 @@
 <template>
   <component :is="tag"
+    ref="me"
     :contenteditable="editable"
     v-text="initialContent"
     :data-ph="placeholder"
@@ -41,6 +42,13 @@
 
     methods: {
       escape
+    },
+
+    watch: {
+      value(value) {
+        if ( value != this.$refs.me.innerText )
+          this.initialContent = value
+      }
     }
 
   }
