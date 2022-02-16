@@ -1,5 +1,5 @@
 <template>
-    <b-dropdown :variant="value ? 'outline-dark' : 'outline-secondary'" :text="upperFirst(value) || 'Please choose'">
+    <b-dropdown :variant="value ? 'outline-dark' : 'outline-secondary'" :text="upperFirst(value) || placeholder || 'Please choose'">
       <b-dropdown-item
         :active="!value"
         @click="$emit('input')"
@@ -20,7 +20,7 @@ import { upperFirst } from 'lodash'
 
 export default {
 
-  props: ['value', 'choices'],
+  props: ['value', 'choices', 'placeholder'],
 
   methods: { upperFirst }
 
