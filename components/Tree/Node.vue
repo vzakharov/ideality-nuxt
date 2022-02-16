@@ -41,12 +41,13 @@
       @before-enter="log('enter (node)')"
       @before-leave="log('leave (node)')"
     >
-      <transition-group ref="list" name="node-group" tag="div"
+      <div v-show="!node.collapsed">
+      <!-- <transition-group ref="list" name="node-group" tag="div"
         v-show="!node.collapsed"
         @before-enter="log('enter (group)')"
         @before-leave="log('leave (group)')"
         @after-enter="transition.resolve()"
-      >
+      > -->
         <TreeNode
           @descendantMounted="
             descendants = [...descendants, ...log($event)]
@@ -54,7 +55,8 @@
           v-for="child in orderBy(node.children, 'created', 'desc')" :key="child.id"
           v-bind="{ tree, node: child }"
         />
-      </transition-group>
+      <!-- </transition-group> -->
+      </div>
     </transition>
 
   </div>
