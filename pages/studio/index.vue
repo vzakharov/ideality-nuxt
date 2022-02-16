@@ -16,9 +16,9 @@
           items: [
             { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
             { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
-            { if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { tree.setNode(node.mergeUp()) } },
-            { icon: 'scissors', onclick() { tree.setNode(node.split(log(getCaretPosition('span-'+node.id)))) }},
-            { icon: 'trash', onclick() { tree.setNode(node.remove()) }},
+            { if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
+            { icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
+            { icon: 'trash', onclick() { setNode(node.remove()) }},
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
@@ -143,6 +143,11 @@
           }
         }
         return caretPos
+      },
+
+      setNode(node) {
+        this.tree.setNode(node)
+        document.getElementById('span-'+node.id)?.focus?.()
       },
 
       dump
