@@ -15,7 +15,7 @@
             v-for="item in [
               { caption: 'Builder', to: { name: 'ideas', hash: '#about' } },
               { caption: 'Widget', to: {name: 'widget' }},
-              { caption: 'Studio', to: { name:'index', hash: '#studio' } }
+              { caption: 'Studio', to: { name:'studio', query: { sample: null }, hash: '#about' } }
             ]"
             :key="item.caption"
             :to="item.to"
