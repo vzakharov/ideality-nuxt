@@ -76,7 +76,7 @@
           expanded: true
         },
         settings: {
-          navigation: false
+          navigation: true
         }
       }
 
@@ -87,7 +87,7 @@
       if ( code ) {
         this.tree = load(JSONCrush.uncrush(code))
       } else
-        this.syncLocal('studio', { select: ['tree'], inline: true ,
+        this.syncLocal('studio', { select: ['tree', 'settings'], inline: true ,
           beforeWrite: {
             tree: () => this.copied = false
           }

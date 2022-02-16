@@ -293,7 +293,7 @@ Vue.mixin({
         
         this.$watch(key, { deep: true, handler(value) {
           
-          beforeWrite?.[key]()
+          beforeWrite?.[key]?.()
 
           if ( slugifyName && key == 'name' ) {
             Object.assign(this, { slug: slugify(value, items) })
