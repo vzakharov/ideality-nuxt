@@ -16,6 +16,9 @@
           items: [
             { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
             { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
+            { if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { tree.setNode(node.mergeUp()) } },
+            { icon: 'scissors', onclick() { tree.setNode(node.split(log(getCaretPosition('span-'+node.id)))) }},
+            { icon: 'trash', onclick() { tree.setNode(node.remove()) }},
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
@@ -114,6 +117,32 @@
       async getLink() {
         let { $axios, tree, $router } = this
         return $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1) 
+      },
+
+      getCaretPosition(id) {
+        let editableDiv = document.getElementById(id)
+        let caretPos = 0,
+          sel, range
+        if (window.getSelection) {
+          sel = window.getSelection()
+          if (sel.rangeCount) {
+            range = sel.getRangeAt(0)
+            if (range.commonAncestorContainer.parentNode == editableDiv) {
+              caretPos = range.endOffset
+            }
+          }
+        } else if (document.selection && document.selection.createRange) {
+          range = document.selection.createRange()
+          if (range.parentElement() == editableDiv) {
+            let tempEl = document.createElement("span")
+            editableDiv.insertBefore(tempEl, editableDiv.firstChild)
+            let tempRange = range.duplicate()
+            tempRange.moveToElementText(tempEl)
+            tempRange.setEndPoint("EndToEnd", range)
+            caretPos = tempRange.text.length
+          }
+        }
+        return caretPos
       },
 
       dump

@@ -27,6 +27,9 @@
 
         methods: {
           
+          setNode(node) {
+            this.current_node_id = node.id
+          }
 
         },
 

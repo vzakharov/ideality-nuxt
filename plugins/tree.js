@@ -83,9 +83,19 @@ const methods = {
   focus() {
     let { id, tree } = this
     assign(tree, {
-      current_node_id: id,
-      editing: true
+      current_node_id: id
     })
+    
+  },
+
+  mergeUp() {
+
+    let { parent, children, text } = this
+
+    parent.children = children
+    parent.text += text
+
+    return parent
     
   },
 
@@ -101,6 +111,8 @@ const methods = {
         this.focus()
       }
     }
+    
+    return this
 
   },
 
@@ -110,8 +122,23 @@ const methods = {
 
     parent.children = without(parent.children, this)
 
+    let newNodeToFocus = ( siblings?.[0] || parent )
     if ( this == node || descendants.includes(node) )
-      ( siblings?.[0] || parent ).nudge()
+      newNodeToFocus.nudge()
+
+    return newNodeToFocus
+    
+  },
+
+  async split(position) {
+    let { text, children: [...children] = [] } = this
+    
+    let child = await this.addChild()
+    assign(child, { children })
+    this.children = [child]
+    child.text = text.slice(position)
+    this.text = text.slice(0, position)
+    return child
   },
 
   toggle() {
