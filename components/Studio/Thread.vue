@@ -29,8 +29,8 @@
           'gray': node != tree.node && tree.editing
         }"
         v-model="node.text"
-        @click.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
-        @focus.native="tree.editing = true; $router.push({ hash: '#'+node.id })"
+        @click.native="$router.push({ hash: '#'+node.id })"
+        @focus.native="$router.push({ hash: '#'+node.id })"
         @keydown.native.esc="tree.editing = false"
         :id="'span-'+node.id"
         :ref="'span-'+node.id"

@@ -18,7 +18,7 @@
         }"
       >
         <nuxt-link class="nocolor small" 
-          v-text="node.text || '#'+ node.id"
+          v-text="node.text && node.text.trim() || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
         />
       </div>

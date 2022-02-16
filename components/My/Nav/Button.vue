@@ -5,6 +5,10 @@
     :to="to"
     @click="onclick && onclick()"
     onclick="this.blur()"
+    v-bind="tooltip && {
+      'v-b-tooltip.hover': true,
+      title: tooltip
+    }"
   >
     <b-icon :icon="icon"/>
     {{ text }}
@@ -17,7 +21,7 @@
 
   export default {
     props: {...objectify(
-      ['if', 'active', 'variant', 'to', 'onclick', 'icon', 'text']
+      ['if', 'active', 'variant', 'to', 'onclick', 'icon', 'text', 'tooltip']
     ), 
       variant: {
         default: 'secondary'

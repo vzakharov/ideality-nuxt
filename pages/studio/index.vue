@@ -14,12 +14,12 @@
       toolbars: {
         content: {
           items: [
-            { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
-            { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
-            { icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
-            { if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
-            { icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
-            { icon: 'trash', onclick() { setNode(node.remove()) }},
+            { tooltip: 'Toggle navigation using branches', icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
+            { tooltip: 'Toggle edit mode', icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
+            { tooltip: 'Create another variation of this part', icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
+            { tooltip: 'Merge with previous part', if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
+            { tooltip: 'Split this part', icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
+            { tooltip: 'Delete part', icon: 'trash', onclick() { setNode(node.remove()) }},
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
