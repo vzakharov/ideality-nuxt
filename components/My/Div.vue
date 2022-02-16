@@ -1,5 +1,5 @@
 <template>
-  <div :style="filler && {'--height': `calc(100vh - ${dimensions.top}px)`}" :class="{filler}">
+  <div :style="filler && {'--height': `calc(100vh - ${dimensions.top}px)`}" :class="{filler, 'p-0': true}">
     <slot/>
   </div>
 </template>

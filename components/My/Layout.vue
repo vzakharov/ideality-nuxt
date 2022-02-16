@@ -26,7 +26,7 @@
               v-show="!$slots.content || sidebar.expanded"
               :class="{
                 shadow: narrow,
-                'bg-white': true
+                'border-end bg-white': true
               }"
               :style="narrow && { position: 'absolute' }"
             >

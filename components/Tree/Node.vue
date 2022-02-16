@@ -1,7 +1,7 @@
 <template>
   <div :id="node.id" class="ms-1 ps-1 border-start border-top">
 
-    <template v-if="node.id">
+    <template v-if="!node.isRoot">
 
       <span class="me-1 nocolor cursor-pointer"
         v-if="node.hasChildren"
@@ -10,7 +10,6 @@
       />
 
       <div 
-        style="white-space: nowrap"
         :class="tree.node && tree.node.thread && { 
           'gray': !tree.node.thread.includes(node),
           'fw-bold': tree.node == node && tree.editing,

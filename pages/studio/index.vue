@@ -14,8 +14,8 @@
       toolbars: {
         content: {
           items: [
-            { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
             { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
+            { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
@@ -26,7 +26,9 @@
       }
     }">
       <template #sidebar>
-        <TreeNode v-bind="{ tree, node: tree.root }"/>
+        <div style="overflow: hidden; overflow-x: auto; height: 100%" class="bg-light">
+          <TreeNode v-bind="{ tree, node: tree.root }"/>
+        </div>
       </template>
       <template #content>
         <div v-if="node" class="p-2">
@@ -68,7 +70,13 @@
           root:
             { 
               id: 0,
-              created: new Date()
+              created: new Date(),
+              children: [
+                {
+                  id: 1,
+                  created: new Date()
+                }
+              ]
             }
         },
         parsing: new Awaitable(true),
