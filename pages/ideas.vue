@@ -12,13 +12,13 @@
     toolbars: {
       sidebar: {
         items: [
-          { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'outline-primary' }
+          { icon: 'file-earmark', to: { name: 'i-new' }, variant: 'primary' }
         ]
       },
       content: {
         close: { to: { name: 'ideas' } },
         items: [
-          { icon: 'arrow-up-right', to: { name: 'i-slug', params: build }, target: '_blank' },
+          { icon: 'box-arrow-up-right', to: { name: 'i-slug', params: build }, target: '_blank' },
         ] 
       }
     }
