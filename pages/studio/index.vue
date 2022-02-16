@@ -16,6 +16,7 @@
           items: [
             { icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
             { icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
+            { icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
             { if: !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
             { icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
             { icon: 'trash', onclick() { setNode(node.remove()) }},

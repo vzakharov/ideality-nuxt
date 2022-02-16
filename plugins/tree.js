@@ -21,6 +21,8 @@ const computed = {
 
   heirs() { return this.hasChildren ? [ this.children[0], ...this.children[0].heirs || [] ] : [] },
 
+  isCurrent() { return this.tree.node == this.node },
+
   isHeir() { return this.parent.children[0] == this.node },
 
   isNotRoot() { return !!this.parent },
@@ -78,6 +80,10 @@ const methods = {
 
     return child
 
+  },
+
+  async addSibling() {
+    return await this.parent.addChild()
   },
 
   focus() {

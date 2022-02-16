@@ -1,7 +1,7 @@
 <template>
   <div class="d-inline">
     <template v-if="!node.isRoot">
-      <template v-if="settings.navigation">
+      <template v-if="settings.navigation || ( node.isCurrent && tree.editing )">
         <sub v-if="node.hasSiblings">
           <b-icon :id="'popover-'+node.id" size="sm" class="cursor-pointer mx-2"
             icon="list-nested"
