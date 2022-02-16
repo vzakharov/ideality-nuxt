@@ -10,27 +10,38 @@
       about: {
         title: 'Studio',
         tagline: 'Tree-based brainstorming editor'
+      },
+      toolbars: {
+        content: {
+          items: [
+            { icon: 'pencil', onclick() { tree.focused = !tree.focused }, active: tree.focused },
+            { 
+              text: link.copied ? 'link copied!' : '', 
+              icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
+              onclick() { link.copy() } 
+            }
+          ]
+        }
       }
     }">
       <template #sidebar>
         <TreeNode v-bind="{ tree, node: tree.root }"/>
       </template>
       <template #content>
-        <MyInput v-model="tree.focused" caption="Edit"/>
-        <div v-if="node" class="border p-2" id="editor" ref="editor">
-          <StudioThread v-bind="{
-            node: tree.root,
-            tree
-          }"/>
+        <div class="p-2">
+          <div v-if="node" class="border p-2" id="editor" ref="editor">
+            <StudioThread v-bind="{
+              node: tree.root,
+              tree
+            }"/>
+          </div>
+          <Loading v-else message="Processing, please wait"/>
         </div>
-        <Loading v-else message="Processing, please wait"/>
-        <Copiable class="mt-2"
-          :fetch="() => $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1)"
-        >
-          Copy link
-        </Copiable>
       </template>
     </MyLayout>
+    <Meta>
+      <Copiable ref="link" :fetch="getLink"/>
+    </Meta>
   </div>
 </template>
 
@@ -48,6 +59,7 @@
       return {
         items: [1,2,3,4,5,6,7,8,9],
         JSONCrush,
+        copied: false,
         nextNum: 10,
         tree: {
           max_id: 0,
@@ -70,16 +82,26 @@
       if ( code ) {
         this.tree = load(JSONCrush.uncrush(code))
       } else
-        this.syncLocal('studio', { select: ['tree'], inline: true })
+        this.syncLocal('studio', { select: ['tree'], inline: true ,
+          beforeWrite: {
+            tree: () => this.copied = false
+          }
+        })
     },
 
     computed: {
 
-      node() { return this.tree.node }
+      node() { return this.tree.node },
+      link() { return this.$refs.link }
 
     },
 
     methods: {
+
+      async getLink() {
+        let { $axios, tree, $router } = this
+        return $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1) 
+      },
 
       dump
 
