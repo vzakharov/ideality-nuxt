@@ -1,14 +1,13 @@
 <template>
-  <div :id="node.id" class="ms-1 ps-1 border-start border-top">
+  <div :id="node.id" class="pt-1 ps-1 border-start">
 
     <template v-if="!node.isRoot">
 
-      <span class="me-1 nocolor cursor-pointer"
+      <span class="me-1 nocolor gray cursor-pointer"
         v-if="node.hasChildren"
         v-text="node.collapsed ? '⊞' : '⊟'"
         @click="goToggle"
       />
-
       <div 
         :class="tree.node && tree.node.thread && { 
           gray: grayOutNonCurrent && !tree.node.thread.includes(node),
