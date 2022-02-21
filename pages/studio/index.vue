@@ -1,9 +1,6 @@
 <template>
   <div v-if="canParse">
     <TreeMeta v-bind="{tree}" @parsed="parsing.resolve()"/>
-    <b-modal v-model="isRoute({ hash: '#ai' }).state">
-      <AISettings/>
-    </b-modal>
     <MyLayout v-if="parsing.resolved" v-bind="{
       sidebar,
       nav: {
@@ -15,15 +12,19 @@
         tagline: 'Tree-based brainstorming editor'
       },
       toolbars: {
+        sidebar: {
+          items: [
+            { tooltip: 'Navigation tree', icon: 'list-nested', to: '#tree', active: sidebar.section=='tree' },
+            { tooltip: 'AI generation settings', icon: 'brain', to: '#ai', active: sidebar.section=='ai' },
+          ]
+        },
         content: {
           items: [
-            { tooltip: 'Toggle navigation using branches', icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
-            { tooltip: 'Toggle edit mode', icon: 'pencil', onclick() { tree.editing = !tree.editing }, active: tree.editing },
-            { tooltip: 'Create another variation of this part', if: !!tree.editing, icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
-            { tooltip: 'Merge with previous part', if: !!tree.editing && !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
-            { tooltip: 'Split this part', if: !!tree.editing, icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
-            { tooltip: 'Delete part', if: !!tree.editing, icon: 'trash', onclick() { setNode(node.remove()) }},
-            { tooltip: 'AI generation settings', icon: 'brain', to: '#ai' },
+            { tooltip: 'Toggle edit mode', icon: 'pencil', onclick() { settings.editing = !settings.editing }, active: settings.editing },
+            { tooltip: 'Create another variation of this part', if: !!settings.editing, icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
+            { tooltip: 'Merge with previous part', if: !!settings.editing && !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
+            { tooltip: 'Split this part', if: !!settings.editing, icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
+            { tooltip: 'Delete part', if: !!settings.editing, icon: 'trash', onclick() { setNode(node.remove()) }},
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
@@ -34,8 +35,9 @@
       }
     }">
       <template #sidebar>
-        <div style="height: 100%" class="bg-light">
-          <TreeNode v-bind="{ tree, node: tree.root, grayOutNonCurrent: true }"/>
+        <AISettings class="small" v-if="$route.hash=='#ai'"/>
+        <div v-else style="height: 100%" class="bg-light">
+          <TreeNode v-bind="{ settings, tree, node: tree.root, grayOutNonCurrent: true }"/>
         </div>
       </template>
       <template #content>
@@ -90,10 +92,11 @@
         },
         parsing: new Awaitable(true),
         sidebar: {
-          expanded: true
+          expanded: true,
+          section: null
         },
         settings: {
-          navigation: true
+          editing: true
         }
       }
 
@@ -108,7 +111,7 @@
       } else if ( code ) {
         this.tree = load(JSONCrush.uncrush(code))
       } else
-        this.syncLocal('studio', { select: ['tree', 'settings'], inline: true ,
+        this.syncLocal('studio', { select: ['tree', 'settings'], append: ['settings'], inline: true ,
           beforeWrite: {
             tree: () => this.copied = false
           }
@@ -171,11 +174,8 @@
 
       hashRoute: { immediate: true, async handler(slug) {
 
-        ms('routing', true)
         await this.parsing.promise
         
-        ms('parsed')
-
         if (slug.match(/^\d+$/)) {
 
           let node = find( this.tree.nodes,
@@ -183,8 +183,6 @@
               ? { id: parseInt(slug) }
               : (({ text }) => text?.includes(slug))
           )
-
-          ms('node found')
 
           console.log({node})
 
@@ -196,6 +194,8 @@
           document.getElementById(node.id)?.scrollIntoView()
 
           if ( this.narrow ) this.sidebar.expanded = false
+        } else if ( ['ai', 'tree'].includes(slug) ) {
+          sidebar.section == slug
         }
 
       }}

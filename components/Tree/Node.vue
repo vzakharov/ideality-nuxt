@@ -11,7 +11,7 @@
       <div 
         :class="tree.node && tree.node.thread && { 
           gray: grayOutNonCurrent && !tree.node.thread.includes(node),
-          'fw-bold': tree.node == node && tree.editing,
+          'fw-bold': tree.node == node && settings.editing,
           'fst-italic': !node.text,
           'd-inline-block small lh-sm': true
         }"
@@ -52,7 +52,7 @@
             descendants = [...descendants, ...log($event)]
           "
           v-for="child in orderBy(node.children, 'created', 'desc')" :key="child.id"
-          v-bind="{ tree, node: child, grayOutNonCurrent }"
+          v-bind="{ tree, node: child, grayOutNonCurrent, settings }"
         />
       <!-- </transition-group> -->
       </div>
@@ -71,6 +71,7 @@
     props: {
       node: {},
       tree: {},
+      settings: {},
       grayOutNonCurrent: {
         default: false
       }

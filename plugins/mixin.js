@@ -259,7 +259,7 @@ Vue.mixin({
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, inline, beforeWrite } = {}) {
+    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, append, inline, beforeWrite } = {}) {
 
       let local, data, items, collection
       let isList = isPlural(localKey)
@@ -289,14 +289,16 @@ Vue.mixin({
         for ( let item of list ) {
           this.assignReactive(item, find( data, { [mergeBy]: item[mergeBy]} ) || {})
         }
-      } else
+      } else 
         Object.assign(this, {
-          ...as ? { [as]: data} : data,
+          ...as ? { [as]: data} : mapValues(data, ( value, key) =>
+            append.includes(key) ? { ...this[key], ...value } : value
+          ),
           localLoaded: true
         })
       
       forEach(select ? isArray(select) ? select : [select] : as ? [as] : keys(this.$data), key => {
-        
+
         this.$watch(key, { deep: true, handler(value) {
           
           beforeWrite?.[key]?.()

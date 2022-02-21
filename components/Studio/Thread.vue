@@ -1,7 +1,7 @@
 <template>
   <div class="d-inline">
     <template v-if="!node.isRoot">
-      <template v-if="settings.navigation || ( node.isCurrent && tree.editing )">
+      <template v-if="node.isCurrent && settings.editing">
         <sub v-if="node.hasSiblings">
           <MyIcon :id="'popover-target-'+node.id" size="sm" class="cursor-pointer ms-1 gray"
             :icon="!!showPopover == !!parent.pinBranches ? parent.pinBranches ? 'pin' : 'list-nested' : 'pin-fill'"
@@ -33,15 +33,15 @@
         </template>
       </template>
       <Editable v-if="!node.isRoot"
-        :editable="tree.editing"
+        :editable="settings.editing"
         tag="div"
         :class="{
-          'gray': node != tree.node && tree.editing
+          'gray': node != tree.node && settings.editing
         }"
         v-model="node.text"
         @click.native="$router.push({ hash: '#'+node.id })"
         @focus.native="$router.push({ hash: '#'+node.id })"
-        @keydown.native.esc="tree.editing = false"
+        @keydown.native.esc="settings.editing = false"
         :id="'span-'+node.id"
         :ref="'span-'+node.id"
       />
