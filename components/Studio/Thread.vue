@@ -14,7 +14,6 @@
           placement="bottom"
           :fallback-placement="['rightbottom', 'leftbottom']"
         >
-          <b-button-close @click="showPopover=false"/>
           <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px">
             <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
               v-bind="{ tree, node: sibling }"

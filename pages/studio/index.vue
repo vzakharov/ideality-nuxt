@@ -31,7 +31,7 @@
     }">
       <template #sidebar>
         <div style="height: 100%" class="bg-light">
-          <TreeNode v-bind="{ tree, node: tree.root }"/>
+          <TreeNode v-bind="{ tree, node: tree.root, grayOutNonCurrent: true }"/>
         </div>
       </template>
       <template #content>
