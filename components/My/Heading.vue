@@ -1,12 +1,12 @@
 <template>
   <div>
-    <a class="anchor" :id="_id"/>
-    <h2 class="mt-4 mb-3">
+    <a v-if="id" class="anchor" :id="_id"/>
+    <component :is="tag" class="mt-4 mb-3">
       <slot/>
-      <nuxt-link :to="{hash: _id}">
+      <nuxt-link v-if="id" :to="{hash: _id}">
         <small>#</small>
       </nuxt-link>
-    </h2>
+    </component>
   </div>
 </template>
 
@@ -14,7 +14,12 @@
 
 export default {
   
-  props: ["id"],
+  props: {
+    id: {},
+    tag: {
+      default: 'h2'
+    }
+  },
 
   computed: {
     _id() {

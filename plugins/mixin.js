@@ -97,6 +97,12 @@ function width() {
   return this.$store.state.width
 }
 
+async function loadSample(slug) {
+  return this.log(
+    await this.$content('samples').where({ slug }).fetch()
+  )?.[0]?.data
+}
+
 
 Vue.mixin({
 
@@ -375,6 +381,8 @@ Vue.mixin({
     hasQueryFlag(tag) {
       return this.queryTags[tag]
     },
+
+    loadSample,
 
     please(doWhat) {
       return doWhat.apply(this)

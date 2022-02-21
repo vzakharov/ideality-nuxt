@@ -1,0 +1,79 @@
+data:
+  providers:
+  - name: GPT-3
+    config:
+      url: https://api.openai.com/v1/engines/<OpenAI engine>/completions
+      axios:
+        body: '{ "prompt": "<Prompt>", "temperature": <Temperature>, "max_tokens": <Max
+          tokens>, "frequency_penalty": <Frequency penalty>, "presence_penalty": <Presence
+          penalty>, "n": <Number of outputs> }'
+        headers:
+          Authorization: Bearer %apiKey%
+    parameters:
+    - name: OpenAI engine
+      choices:
+      - davinci
+      - curie
+      - babbage
+      - ada
+      - text-davinci-001
+      - text-curie-001
+    - name: Temperature
+      type: decimal
+      min: 0
+      max: 1
+      number: 0
+    - name: Max tokens
+      type: integer
+      min: 1
+      number: 50
+    - name: Frequency penalty
+      type: decimal
+      min: 0
+      max: 1
+      number: 1
+    - name: Presence penalty
+      type: decimal
+      min: 0
+      max: 1
+      number: 1
+    - name: Number of outputs
+      type: integer
+      min: 1
+      number: 1
+  - name: AI21
+    config:
+      url: https://api.ai21.com/studio/v1/j1-<AI21 engine>/complete
+      axios:
+        body: '{ "prompt": "<Prompt>", "temperature": <Temperature>, "maxTokens": <Max
+          tokens>, "numResults": <Number of outputs> }'
+        headers:
+          Authorization: Bearer %apiKey%
+    parameters:
+    - name: Temperature
+      type: decimal
+      min: 0
+      max: 1
+      number: 0
+    - name: Max tokens
+      type: integer
+      min: 1
+      number: 50
+    - name: Number of outputs
+      type: integer
+      min: 1
+      number: 1
+  profiles:
+  - name: T=0
+    OpenAI engine: davinci
+    Temperature: 0
+    Max tokens: 50
+    Frequency penalty: 0
+    Presence penalty: 0
+    Number of outputs: 1
+  - name: T=0.5 × 3
+    Temperature: 0.5
+    Max tokens: 50
+    Frequency penalty: 0
+    Presence penalty: 0
+    Number of outputs: 3

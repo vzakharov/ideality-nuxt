@@ -10,7 +10,7 @@
       title: tooltip
     }"
   >
-    <b-icon :icon="icon"/>
+    <MyIcon :icon="icon"/>
     {{ text }}
   </b-button>
 </template>

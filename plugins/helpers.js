@@ -1,4 +1,5 @@
-import { assign, filter, find, forEach, kebabCase, isArray, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { assign, filter, find, findIndex, forEach, kebabCase, isArray, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { plural } from 'pluralize'
 import Bubble from '../plugins/bubble'
 
 function appendedTarget({ route, params, query, hash, reset, ...newRoute }) {
@@ -238,6 +239,29 @@ function toggle(key) {
   this[key] = !this[key] || undefined
 }
 
+function viaIndex(key) {
+
+  let pluralKey = plural(key)
+
+  return {
+
+    data() {
+      return {
+        [pluralKey]: null,
+        [key]: null
+      }
+    },
+
+    computed: {
+      [key + '_index']: {
+        get() { return findIndex(this[pluralKey], this[key]) },
+        set(index) { this[key] = this[pluralKey][index] }
+      }
+    }
+
+  }
+}
+
 export {
 
   appendedTarget,
@@ -256,6 +280,7 @@ export {
   objectify,
   sleep,
   slugify,
-  toggle
+  toggle,
+  viaIndex
 
 }

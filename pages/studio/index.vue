@@ -1,6 +1,9 @@
 <template>
   <div v-if="canParse">
     <TreeMeta v-bind="{tree}" @parsed="parsing.resolve()"/>
+    <b-modal v-model="isRoute({ hash: '#ai' }).state">
+      <AISettings/>
+    </b-modal>
     <MyLayout v-if="parsing.resolved" v-bind="{
       sidebar,
       nav: {
@@ -20,6 +23,7 @@
             { tooltip: 'Merge with previous part', if: !!tree.editing && !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
             { tooltip: 'Split this part', if: !!tree.editing, icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
             { tooltip: 'Delete part', if: !!tree.editing, icon: 'trash', onclick() { setNode(node.remove()) }},
+            { tooltip: 'AI generation settings', icon: 'brain', to: '#ai' },
             { 
               text: link.copied ? 'link copied!' : '', 
               icon: link.copied ? 'check' : link.copying ? 'three-dots' : 'link-45deg', 
