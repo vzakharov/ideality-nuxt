@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { find, findIndex, findKey, forEach, get, isArray, last, set, keys, mapValues, pickBy } from 'lodash'
-import { always, appendedTarget, Awaitable, getUser, ms, slugify } from '@/plugins/helpers'
+import { always, appendedTarget, Awaitable, getUser, ms, slugify, toggle } from '@/plugins/helpers'
 import axios from 'axios'
 import Bubble from '~/plugins/bubble'
 import { load, dump } from 'js-yaml'
@@ -415,6 +415,7 @@ Vue.mixin({
     },
 
     setDefaults,
+    toggle
 
   }
 

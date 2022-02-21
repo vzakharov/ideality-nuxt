@@ -3,10 +3,14 @@
     ref="me"
     :contenteditable="editable"
     v-text="initialContent"
-    :data-ph="placeholder"
-    :class="{'text-muted': !initialContent}"
+    :data-ph="!focused && placeholder"
+    :class="{
+      'text-muted': !initialContent,
+      'border-start border-dark': focused && !value && blink
+    }"
     @input="$emit('input', $event.target.innerText.replace('\xa0', ' '))"
-    @blur="initialContent=value"
+    @focus="focused=true"
+    @blur="focused=false; initialContent=value"
     :style="{
       display: 'inline',
       outline: 'none',
@@ -36,12 +40,23 @@
 
     data() {
       return {
-        initialContent: this.value
+        initialContent: this.value,
+        blink: null,
+        blinkInterval: null,
+        focused: null
       }
     },
 
-    methods: {
-      escape
+    mounted() {
+
+      this.$watch('value', { immediate: true, handler(value) {
+        !value 
+          ? this.blinkInterval = setInterval(() => this.toggle('blink'), 500)
+          : clearInterval(this.blinkInterval)
+      }})
+
+      this.$once('hook:beforeDestroy', () => clearInterval(this.blinkInterval))
+
     },
 
     watch: {
@@ -49,14 +64,19 @@
         if ( value != this.$refs.me.innerText )
           this.initialContent = value
       }
-    }
+    },
+
+    methods: {
+      escape
+    },
 
   }
 
 </script>
 
 <style scoped>
-  [contenteditable=true]:empty::before{
-    content:attr(data-ph)
+  [contenteditable=true]:empty::after{
+    content:attr(data-ph);
+    color:#bbb;
   }
 </style>
