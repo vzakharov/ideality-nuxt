@@ -4,7 +4,7 @@
       <template v-if="settings.navigation || ( node.isCurrent && tree.editing )">
         <sub v-if="node.hasSiblings">
           <MyIcon :id="'popover-'+node.id" size="sm" class="cursor-pointer ms-1 gray"
-            :icon="showPopover ? node.pinSiblings ? 'pin' : 'pin-fill' : node.pinSiblings ? 'pin-fill' : 'list-nested'"
+            :icon="!!showPopover == !!node.pinSiblings ? node.pinSiblings ? 'pin' : 'list-nested' : 'pin-fill'"
             @click="node.toggle('pinSiblings')"
           />
         </sub>
@@ -12,7 +12,7 @@
           triggers="hover"
           placement="auto"
         >
-          <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px" class="p-0">
+          <div v-if="!node.pinSiblings && node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px" class="p-0">
             <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
               v-bind="{ tree, node: sibling }"
             />
