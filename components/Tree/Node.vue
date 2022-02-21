@@ -14,10 +14,10 @@
           gray: grayOutNonCurrent && !tree.node.thread.includes(node),
           'fw-bold': tree.node == node && tree.editing,
           'fst-italic': !node.text,
-          'd-inline-block': true
+          'd-inline-block small lh-sm': true
         }"
       >
-        <nuxt-link class="nocolor small" 
+        <nuxt-link class="nocolor" 
           v-text="node.text && node.text.trim() || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
         />
@@ -26,7 +26,7 @@
     </template>
 
 
-    <div>
+    <!-- <div>
       <a class="gray" href="#"
         @click.prevent="addChild()"
         v-text="'⌞'"
@@ -35,7 +35,7 @@
         @click="remove"
         v-text="'×'"
       />
-    </div>
+    </div> -->
 
     <transition name="node"
       @before-enter="log('enter (node)')"
@@ -121,19 +121,14 @@
       goToggle() {
 
         let { store, node, $refs: { list: { $el: { offsetHeight } = {}} = {}} = {}} = this
-        console.time('toggling')
         if ( !node.collapsed ) {
           store.nodeHeight = offsetHeight
-          node.toggle()
-          console.timeEnd('toggling')
+          node.toggle('collapsed')
         } else {
-          node.toggle()
-          console.timeEnd('toggling')
-          this.$nextTick(() => {
-            ms('next tick')
-            this.log(store.nodeHeight = sum(this.log(map(this.log(this.descendants), '$el.offsetHeight'))))
-            ms('height calculated')
-          })
+          node.toggle('collapsed')
+          this.$nextTick(() => 
+            store.nodeHeight = sum(this.log(map(this.log(this.descendants), '$el.offsetHeight')))
+          )
         }
       },
 

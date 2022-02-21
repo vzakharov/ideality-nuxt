@@ -1,5 +1,5 @@
 import { assign, find, findIndex, last, map, mapValues, max, without, orderBy, uniqueId } from 'lodash'
-import { assignMethods, assignProperties, Meta, objectify, Awaitable } from '~/plugins/helpers.js'
+import { assignMethods, assignProperties, Meta, objectify, Awaitable, toggle } from '~/plugins/helpers.js'
 
 const computed = {
 
@@ -73,7 +73,8 @@ const methods = {
 
     assign(this, {
       children: [ child, ...this.children || [] ],
-      collapsed: undefined
+      collapsed: undefined,
+      pinned: undefined
     })
 
     await meta.promise
@@ -147,9 +148,7 @@ const methods = {
     return child
   },
 
-  toggle() {
-    this.collapsed = !this.collapsed || undefined
-  }    
+  toggle
 
 }
 

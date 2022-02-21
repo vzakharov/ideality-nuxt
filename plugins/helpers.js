@@ -234,6 +234,10 @@ let deepMerge = (source, target, ...more) =>
         )
     }
 
+function toggle(key) {
+  this[key] = !this[key] || undefined
+}
+
 export {
 
   appendedTarget,
@@ -252,5 +256,6 @@ export {
   objectify,
   sleep,
   slugify,
+  toggle
 
 }
