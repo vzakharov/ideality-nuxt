@@ -4,21 +4,27 @@
       <template v-if="settings.navigation || ( node.isCurrent && tree.editing )">
         <sub v-if="node.hasSiblings">
           <MyIcon :id="'popover-'+node.id" size="sm" class="cursor-pointer ms-1 gray"
-            :icon="!!showPopover == !!node.pinSiblings ? node.pinSiblings ? 'pin' : 'list-nested' : 'pin-fill'"
-            @click="node.toggle('pinSiblings')"
+            :icon="!!showPopover == !!parent.pinBranches ? parent.pinBranches ? 'pin' : 'list-nested' : 'pin-fill'"
+            @click="parent.toggle('pinBranches')"
+            v-on="{
+              ...parent.pinBranches && {
+                mouseover: () => showPopover = true,
+                mouseleave: () => showPopover = false
+              }
+            }"
           />
         </sub>
-        <b-popover :show.sync="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
-          triggers="hover"
+        <b-popover v-if="!parent.pinBranches" :show.sync="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
+          :triggers="parent.pinBranches ? 'manual' : 'hover'"
           placement="auto"
         >
-          <div v-if="!node.pinSiblings && node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px" class="p-0">
+          <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px" class="p-0">
             <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
               v-bind="{ tree, node: sibling }"
             />
           </div>
         </b-popover>
-        <template v-if="node.pinSiblings">
+        <template v-if="parent.pinBranches">
           <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
             v-bind="{ tree, node: sibling, grayOutNonCurrent: true }"
           />
@@ -61,6 +67,12 @@
     },
 
     props: ['tree', 'node', 'settings'],
+
+    computed: {
+
+      parent() { return this.node.parent }
+      
+    },
 
     methods: {
       map

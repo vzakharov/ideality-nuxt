@@ -158,7 +158,7 @@ const NodeMixin = {
       children: undefined,
       collapsed: undefined,
       created: undefined,
-      pinSiblings: undefined,
+      pinBranches: undefined,
       id: undefined,
       text: undefined
     } }),
