@@ -73,8 +73,7 @@ const methods = {
 
     assign(this, {
       children: [ child, ...this.children || [] ],
-      collapsed: undefined,
-      pinned: undefined
+      collapsed: undefined
     })
 
     await meta.promise
@@ -159,6 +158,7 @@ const NodeMixin = {
       children: undefined,
       collapsed: undefined,
       created: undefined,
+      pinSiblings: undefined,
       id: undefined,
       text: undefined
     } }),

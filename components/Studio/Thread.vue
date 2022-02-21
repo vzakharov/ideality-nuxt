@@ -3,23 +3,26 @@
     <template v-if="!node.isRoot">
       <template v-if="settings.navigation || ( node.isCurrent && tree.editing )">
         <sub v-if="node.hasSiblings">
-          <b-icon :id="'popover-'+node.id" size="sm" class="cursor-pointer mx-2"
-            icon="list-nested"
-            @click="showPopover = !showPopover"
-            :variant="showPopover ? 'primary' : 'muted'"
+          <MyIcon :id="'popover-'+node.id" size="sm" class="cursor-pointer ms-1 gray"
+            :icon="showPopover ? node.pinSiblings ? 'pin' : 'pin-fill' : node.pinSiblings ? 'pin-fill' : 'list-nested'"
+            @click="node.toggle('pinSiblings')"
           />
         </sub>
         <b-popover :show.sync="showPopover" ref="popover" delay=0 no-fade boundary="viewport" :target="'popover-'+node.id" 
-          triggers="hover" 
-          placement="bottom"
-          :fallback-placement="['rightbottom', 'leftbottom']"
+          triggers="hover"
+          placement="auto"
         >
-          <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px">
+          <div v-if="node.hasSiblings" style="overflow: hidden; overflow-x: auto; width: 200px" class="p-0">
             <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
               v-bind="{ tree, node: sibling }"
             />
           </div>
         </b-popover>
+        <template v-if="node.pinSiblings">
+          <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
+            v-bind="{ tree, node: sibling, grayOutNonCurrent: true }"
+          />
+        </template>
       </template>
       <Editable v-if="!node.isRoot"
         :editable="tree.editing"
