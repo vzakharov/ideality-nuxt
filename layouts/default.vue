@@ -129,8 +129,12 @@ a.nocolor {
   height: 100vh
 }
 
-.slide-right-enter-active, .slide-down-enter-active, .node-enter-active, .node-group-enter-active {
+.slide-right-enter-active, .slide-down-enter-active, .node-enter-active, .node-group-enter-active, .fade-enter-active, .fade-leave-active {
   transition: var(--animation-speed);
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0
 }
 
 .slide-right-enter, .slide-right-leave-to /* .fade-leave-active below version 2.1.8 */ {
@@ -160,7 +164,7 @@ a.nocolor {
   transition: all var(--animation-speed);
 }
 
-.slide-down-move, .node-group-move {
+.slide-down-move, .node-group-move, .fade-move {
   transition: transform var(--animation-speed);
 }
 

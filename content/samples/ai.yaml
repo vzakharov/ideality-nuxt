@@ -1,16 +1,38 @@
 data:
-  providers:
-  - name: GPT-3
-    config:
-      url: https://api.openai.com/v1/engines/<OpenAI engine>/completions
-      axios:
-        body: '{ "prompt": "<Prompt>", "temperature": <Temperature>, "max_tokens": <Max
-          tokens>, "frequency_penalty": <Frequency penalty>, "presence_penalty": <Presence
-          penalty>, "n": <Number of outputs> }'
-        headers:
-          Authorization: Bearer %apiKey%
-    parameters:
-    - name: OpenAI engine
+  parameters:
+    temperature:
+      caption: Temperature
+      type: decimal
+      min: 0
+      max: 1
+      number: 0
+    maxTokens:
+      caption: Max tokens
+      type: integer
+      min: 1
+      number: 50
+    presencePenalty:
+      caption: Presence penalty
+      type: decimal
+      min: 0
+      max: 1
+      number: 1
+    frequencyPenalty:
+      caption: Frequency penalty
+      type: decimal
+      min: 0
+      max: 1
+      number: 1
+    numOutputs:
+      caption: Number of outputs
+      type: integer
+      min: 1
+      number: 1
+    openAIKey:
+      caption: OpenAI API key
+      type: password
+    openAIEngine:
+      caption: OpenAI engine
       choices:
       - davinci
       - curie
@@ -18,62 +40,80 @@ data:
       - ada
       - text-davinci-001
       - text-curie-001
-    - name: Temperature
-      type: decimal
-      min: 0
-      max: 1
-      number: 0
-    - name: Max tokens
-      type: integer
-      min: 1
-      number: 50
-    - name: Frequency penalty
-      type: decimal
-      min: 0
-      max: 1
-      number: 1
-    - name: Presence penalty
-      type: decimal
-      min: 0
-      max: 1
-      number: 1
-    - name: Number of outputs
-      type: integer
-      min: 1
-      number: 1
+    ai21Engine:
+      caption: AI21 engine
+      choices:
+      - jumbo
+      - large
+    ai21Key:
+      caption: AI21 API key
+      type: password
+  providers:
+  - name: GPT-3
+    config:
+      url: https://api.openai.com/v1/engines/<openAIEngine>/completions
+      axios:
+        body: '{ "prompt": "<prompt>", "temperature": <temperature>, "max_tokens": <maxTokens>, 
+          "frequency_penalty": <frequencyPenalty>, "presence_penalty": <presencePenalty>, 
+          "n": <numOutputs> }'
+        headers:
+          Authorization: Bearer <openAIKey>
+    parameters:
+      - openAIKey
+      - openAIEngine
+      - temperature
+      - maxTokens
+      - presencePenalty
+      - frequencyPenalty
+      - numOutputs
   - name: AI21
     config:
-      url: https://api.ai21.com/studio/v1/j1-<AI21 engine>/complete
+      url: https://api.ai21.com/studio/v1/j1-<ai21Engine>/complete
       axios:
-        body: '{ "prompt": "<Prompt>", "temperature": <Temperature>, "maxTokens": <Max
-          tokens>, "numResults": <Number of outputs> }'
+        body: '{ "prompt": "<prompt>", "temperature": <temperature>, "maxTokens": <maxTokens>, 
+          "numResults": <numOutputs> }'
         headers:
-          Authorization: Bearer %apiKey%
+          Authorization: Bearer <ai21Key>
     parameters:
-    - name: Temperature
-      type: decimal
-      min: 0
-      max: 1
-      number: 0
-    - name: Max tokens
-      type: integer
-      min: 1
-      number: 50
-    - name: Number of outputs
-      type: integer
-      min: 1
-      number: 1
+    - ai21Key
+    - ai21Engine
+    - temperature
+    - maxTokens
+    - numOutputs
   profiles:
-  - name: T=0
-    OpenAI engine: davinci
-    Temperature: 0
-    Max tokens: 50
-    Frequency penalty: 0
-    Presence penalty: 0
-    Number of outputs: 1
-  - name: T=0.5 × 3
-    Temperature: 0.5
-    Max tokens: 50
-    Frequency penalty: 0
-    Presence penalty: 0
-    Number of outputs: 3
+  - name: Fixed MAX
+    values:
+      openAIEngine: davinci
+      ai21Engine: jumbo
+      temperature: 0
+      maxTokens: 50
+      frequencyPenalty: 0
+      presencePenalty: 0
+      numOutputs: 1
+  - name: Fixed MID
+    values:
+      openAIEngine: curie
+      ai21Engine: large
+      temperature: 0
+      maxTokens: 50
+      frequencyPenalty: 0
+      presencePenalty: 0
+      numOutputs: 1
+  - name: Variable MAX
+    values:
+      openAIEngine: davinci
+      ai21Engine: jumbo
+      temperature: 0.5
+      maxTokens: 50
+      frequencyPenalty: 0
+      presencePenalty: 0
+      numOutputs: 3
+  - name: Variable MID
+    values:
+      openAIEngine: curie
+      ai21Engine: large
+      temperature: 0.5
+      maxTokens: 50
+      frequencyPenalty: 0
+      presencePenalty: 0
+      numOutputs: 3

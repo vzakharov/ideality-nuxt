@@ -1,7 +1,7 @@
 <template>
   <b-button v-if="typeof _props.if === 'undefined' || _props.if"
     size="sm"
-    :variant="( active ? '' : 'outline-' ) + variant"
+    :variant="active ? 'primary' : 'outline-'+variant"
     :to="to"
     @click="onclick && onclick()"
     onclick="this.blur()"

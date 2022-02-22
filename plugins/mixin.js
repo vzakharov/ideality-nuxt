@@ -259,7 +259,7 @@ Vue.mixin({
       return typeof this.$props[prop] !== 'undefined'
     },
 
-    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, append, inline, beforeWrite } = {}) {
+    syncLocal(localKey, { from, mergeBy, select, where, slugifyName, as, append = [], inline, beforeWrite } = {}) {
 
       let local, data, items, collection
       let isList = isPlural(localKey)

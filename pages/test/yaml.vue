@@ -12,7 +12,7 @@
       object() {
         let a = { b:1 }
         return {
-          a,
+          parameters: [a,1],
           hello: 'world',
           array: [a,2,3]
         }
