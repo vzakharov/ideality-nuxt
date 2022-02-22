@@ -38,7 +38,7 @@
         :editable="settings.editing"
         tag="div"
         :class="{
-          'fw-bold': node == tree.node && settings.editing
+          'blue': node == tree.node && settings.editing
         }"
         v-model="node.text"
         @click.native="$router.push({ hash: '#'+node.id })"
@@ -109,6 +109,10 @@
   opacity: 0;
   position: absolute;
   transform: translateY(100%);
+}
+
+.blue {
+  color: blue;
 }
 
 </style>
