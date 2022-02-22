@@ -3,11 +3,6 @@
 
     <template v-if="!node.isRoot">
 
-      <span class="me-1 nocolor gray cursor-pointer"
-        v-if="node.hasChildren"
-        v-text="node.collapsed ? '⊞' : '⊟'"
-        @click="goToggle"
-      />
       <div 
         :class="tree.node && tree.node.thread && { 
           gray: grayOutNonCurrent && !tree.node.thread.includes(node),
@@ -19,8 +14,15 @@
         <nuxt-link class="nocolor" 
           v-text="node.text && node.text.trim() || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
+          tabindex=-1
+        />
+        <span class="me-1 nocolor gray cursor-pointer"
+          v-if="node.hasChildren"
+          v-text="node.collapsed ? '⊞' : '⊟'"
+          @click="goToggle"
         />
       </div>
+
 
     </template>
 

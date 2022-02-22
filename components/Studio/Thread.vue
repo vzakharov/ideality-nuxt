@@ -1,10 +1,10 @@
 <template>
   <div class="d-inline">
     <template v-if="!node.isRoot">
-      <template v-if="node.isCurrent && settings.editing">
+      <template v-if="settings.editing">
         <sub v-if="node.hasSiblings">
-          <MyIcon :id="'popover-target-'+node.id" size="sm" class="cursor-pointer ms-1 gray"
-            :icon="!!showPopover == !!parent.pinBranches ? parent.pinBranches ? 'pin' : 'list-nested' : 'pin-fill'"
+          <span :id="'popover-target-'+node.id" class="cursor-pointer ms-1 gray"
+            v-text="parent.pinBranches ? '⊟' : '⊞'"
             @click="parent.toggle('pinBranches')"
             v-on="{
               ...parent.pinBranches && {
@@ -26,17 +26,19 @@
             />
           </div>
         </b-popover>
-        <template v-if="parent.pinBranches">
-          <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
-            v-bind="{ tree, node: sibling, grayOutNonCurrent: true }"
-          />
-        </template>
+        <transition name="slide-down">
+          <div v-if="parent.pinBranches">
+            <TreeNode v-for="sibling in node.siblings" :key="sibling.id"
+              v-bind="{ tree, node: sibling, grayOutNonCurrent: true }"
+            />
+          </div>
+        </transition>
       </template>
       <Editable v-if="!node.isRoot"
         :editable="settings.editing"
         tag="div"
         :class="{
-          'gray': node != tree.node && settings.editing
+          'fw-bold': node == tree.node && settings.editing
         }"
         v-model="node.text"
         @click.native="$router.push({ hash: '#'+node.id })"
