@@ -1,4 +1,8 @@
-import { assign, filter, find, findIndex, forEach, kebabCase, isArray, isObject, omit, pick, get, keys, map, mapValues, multiply, reduce, values } from 'lodash'
+import { 
+  assign, filter, find, findIndex, forEach, kebabCase, indexOf, isArray, isObject, 
+  omit, pick, get, keys, map, mapValues, multiply, reduce, slice, values 
+} from 'lodash'
+
 import { plural } from 'pluralize'
 import Bubble from '../plugins/bubble'
 
@@ -264,6 +268,20 @@ function viaIndex(key) {
 
 const jsonClone = what => JSON.parse(JSON.stringify(what))
 
+function getCaretPosition(id) {
+  let element = document.getElementById(id)
+  let { children } = element
+  let { endContainer: { parentElement }, endOffset } = getSelection().getRangeAt(0)
+  let text = 
+    map(
+      slice(
+        children, 0, indexOf(children, parentElement)
+      ), 'innerText'
+    ).join('') 
+    + parentElement.innerText.slice(0, endOffset)
+  return text.length
+}
+
 export {
 
   appendedTarget,
@@ -272,6 +290,7 @@ export {
   assignProperties,
   Awaitable,
   // debug,
+  getCaretPosition,
   deepMerge,
   filteredParameters,
   getUser,
