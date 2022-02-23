@@ -44,11 +44,18 @@
       <template #content>
         <div v-if="node" class="p-2">
           <div class="border p-2" id="editor" ref="editor">
-            <StudioThread v-bind="{
-              node: tree.root,
-              tree,
-              settings
-            }"/>
+            <StudioThread 
+              v-if="settings.navigation" 
+              v-bind="{
+                node: tree.root,
+                tree,
+                settings
+              }"
+            />
+            <MultiEditable v-else
+              :key="node.threadId"
+              :items="node.thread"
+            />
           </div>
         </div>
         <Loading v-else message="Processing, please wait"/>

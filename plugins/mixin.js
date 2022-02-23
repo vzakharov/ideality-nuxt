@@ -149,7 +149,8 @@ Vue.mixin({
 
       this.mounted = true
       // this.$emit('mounted', this)
-      this.mounting.resolve()
+      if (this.mounting)
+        this.mounting.resolve()
     }
     
 

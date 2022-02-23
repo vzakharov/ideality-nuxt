@@ -47,6 +47,8 @@ const computed = {
 
   thread() { return [...this.ancestors, this.node, ...this.heirs] },
 
+  threadId() { return map(this.thread, 'id').join('-') }
+
 }
 
 const methods = {
