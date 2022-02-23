@@ -28,7 +28,7 @@
                 shadow: narrow,
                 'border-end bg-white': true
               }"
-              :style="narrow && { position: 'absolute' }"
+              :style="narrow && { position: 'absolute', 'z-index': 1 }"
             >
               <MyToolbar
                 v-bind="deepMerge(
