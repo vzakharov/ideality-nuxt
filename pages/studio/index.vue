@@ -55,6 +55,9 @@
             <MultiEditable v-else
               :key="node.threadId"
               :items="node.thread"
+              :readonly="!settings.editing"
+              :setId="node.id"
+              @pick="setNode"
             />
           </div>
         </div>
@@ -72,7 +75,7 @@
   import JSONCrush from '~/plugins/jsoncrush'
   import { load, dump } from 'js-yaml'
   import { find, repeat } from 'lodash'
-  import { Awaitable, ms } from '~/plugins/helpers.js'
+  import { Awaitable, getCaretPosition, ms } from '~/plugins/helpers.js'
 
   export default {
 
@@ -142,34 +145,11 @@
         return $axios.defaults.baseURL+$router.resolve({ query: { code: JSONCrush.crush(dump(tree)) }}).href.slice(1) 
       },
 
-      getCaretPosition(id) {
-        let editableDiv = document.getElementById(id)
-        let caretPos = 0,
-          sel, range
-        if (window.getSelection) {
-          sel = window.getSelection()
-          if (sel.rangeCount) {
-            range = sel.getRangeAt(0)
-            if (range.commonAncestorContainer.parentNode == editableDiv) {
-              caretPos = range.endOffset
-            }
-          }
-        } else if (document.selection && document.selection.createRange) {
-          range = document.selection.createRange()
-          if (range.parentElement() == editableDiv) {
-            let tempEl = document.createElement("span")
-            editableDiv.insertBefore(tempEl, editableDiv.firstChild)
-            let tempRange = range.duplicate()
-            tempRange.moveToElementText(tempEl)
-            tempRange.setEndPoint("EndToEnd", range)
-            caretPos = tempRange.text.length
-          }
-        }
-        return caretPos
-      },
+      getCaretPosition,
 
-      setNode(node) {
-        this.$router.push({ hash: '#'+node.id })
+      setNode(nodeOrId) {
+        let id = typeof nodeOrId == 'Object' ? nodeOrId.id : nodeOrId
+        this.$router.push({ hash: '#'+id })
         // this.tree.setNode(node)
         // document.getElementById('span-'+node.id)?.focus?.()
       },

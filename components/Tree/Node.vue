@@ -6,7 +6,7 @@
       <div 
         :class="tree.node && tree.node.thread && { 
           gray: grayOutNonCurrent && !tree.node.thread.includes(node),
-          'fw-bold': tree.node == node && settings.editing,
+          'fw-bold': node.isCurrent,
           'fst-italic': !node.text,
           'd-inline-block small lh-sm': true
         }"

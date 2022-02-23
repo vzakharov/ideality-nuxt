@@ -268,8 +268,8 @@ function viaIndex(key) {
 
 const jsonClone = what => JSON.parse(JSON.stringify(what))
 
-function getCaretPosition(id) {
-  let element = document.getElementById(id)
+function getCaretPosition(idOrElement) {
+  let element = typeof idOrElement === 'string' ? document.getElementById(idOrElement) : idOrElement
   let { children } = element
   let { endContainer: { parentElement }, endOffset } = getSelection().getRangeAt(0)
   let text = 

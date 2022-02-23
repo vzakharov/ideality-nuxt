@@ -103,6 +103,9 @@ async function loadSample(slug) {
   )?.[0]?.data
 }
 
+function idfy(id) {
+  return ['vue', this._uid, id].join('-')
+}
 
 Vue.mixin({
 
@@ -227,6 +230,8 @@ Vue.mixin({
     },
 
     getUser,
+
+    idfy,
 
     reactify(object) {
       let vm = this
