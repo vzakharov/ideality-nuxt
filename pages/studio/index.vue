@@ -178,7 +178,7 @@
 
           await this.$refs['span-'+node.id]?.mounting?.promise
 
-          document.getElementById('span-'+node.id)?.focus()
+          // document.getElementById('span-'+node.id)?.focus()
           document.getElementById(node.id)?.scrollIntoView()
 
           if ( this.narrow ) this.sidebar.expanded = false

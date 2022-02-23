@@ -28,14 +28,18 @@
     data() {
       return {
         clonedItems: jsonClone(this.items),
-        caretPosition: null
+        caretPosition: null,
+        currentId: null
       }
     },
 
     mounted() {
 
-      let callback = () =>
-        this.caretPosition = getCaretPosition(this.$refs.editor)
+      let callback = () => {
+        let { editor } = this.$refs
+        if ( document.activeElement == editor)
+          this.caretPosition = getCaretPosition(editor)
+      }
 
       document.addEventListener('selectionchange', callback)
 
@@ -52,18 +56,21 @@
 
     },
 
-    computed: {
 
-      currentId() {
-        let { caretPosition, items } = this
+    watch: {
+
+      caretPosition(caretPosition) {
+        let { items, setId } = this
         if ( caretPosition + 1 ) {
           let counter = 0
           let total = sumBy(items, 'text.length')
           for ( let { text: { length } = '', id } of items ) {
             counter += length
-            if ( counter > caretPosition || counter == total) {
-              this.$emit('pick', id)
-              return id
+            if ( counter > this.log(caretPosition) || counter == total) {
+              if ( setId != id )
+                this.$emit('pick', id)
+              this.currentId = id
+              break
             }
           }
         }
@@ -94,6 +101,7 @@
             selection.addRange(range)
           }
         }
+        this.currentId = id
       },
 
       getCaretPosition
