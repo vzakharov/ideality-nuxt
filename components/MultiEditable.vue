@@ -59,7 +59,7 @@
         if ( caretPosition + 1 ) {
           let counter = 0
           let total = sumBy(items, 'text.length')
-          for ( let { text: { length }, id } of items ) {
+          for ( let { text: { length } = '', id } of items ) {
             counter += length
             if ( counter > caretPosition || counter == total) {
               this.$emit('pick', id)
@@ -85,12 +85,14 @@
         let element = document.getElementById(this.idfy(id))
         if ( element ) {
           let { childNodes: [ node ] } = element
-          let range = document.createRange()
-          let selection = window.getSelection()
-          range.setStart(node, 0)
+          if ( node ) {
+            let range = document.createRange()
+            let selection = window.getSelection()
+            range.setStart(node, 0)
 
-          selection.removeAllRanges()
-          selection.addRange(range)
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
         }
       },
 
