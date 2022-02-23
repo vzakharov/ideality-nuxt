@@ -36,7 +36,7 @@
       }
     }">
       <template #sidebar>
-        <AISettings class="small p-2" v-if="$route.hash=='#ai'"/>
+        <AISettings class="small p-2" v-if="sidebar.section=='ai'"/>
         <div v-else style="height: 100%" class="bg-light">
           <TreeNode v-bind="{ settings, tree, node: tree.root, grayOutNonCurrent: true }"/>
         </div>
