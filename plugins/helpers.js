@@ -262,6 +262,8 @@ function viaIndex(key) {
   }
 }
 
+const jsonClone = what => JSON.parse(JSON.stringify(what))
+
 export {
 
   appendedTarget,
@@ -273,6 +275,7 @@ export {
   deepMerge,
   filteredParameters,
   getUser,
+  jsonClone,
   keyedPromises,
   loggedInMiddleware,
   Meta,
