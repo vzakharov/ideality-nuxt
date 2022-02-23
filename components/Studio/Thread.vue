@@ -1,7 +1,8 @@
 <template>
   <div class="d-inline">
     <template v-if="!node.isRoot">
-      <template v-if="settings.editing">
+
+      <template v-if="settings.navigation">
         <sub v-if="node.hasSiblings">
           <span :id="'popover-target-'+node.id" class="cursor-pointer ms-1 gray"
             v-text="parent.pinBranches ? '⊟' : '⊞'"
@@ -34,6 +35,7 @@
           </div>
         </transition>
       </template>
+
       <Editable v-if="!node.isRoot"
         :editable="settings.editing"
         tag="div"

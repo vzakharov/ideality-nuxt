@@ -21,6 +21,7 @@
         content: {
           items: [
             { tooltip: 'Toggle edit mode', icon: 'pencil', onclick() { settings.editing = !settings.editing }, active: settings.editing },
+            { tooltip: 'Toggle navigation', icon: 'list-nested', onclick() { settings.navigation = !settings.navigation }, active: settings.navigation },
             { tooltip: 'Create another variation of this part', if: !!settings.editing, icon: 'three-dots', onclick() { node.addSibling().then(setNode) } },
             { tooltip: 'Merge with previous part', if: !!settings.editing && !node.hasSiblings && !maybe(node.parent).isRoot, icon: 'intersect', onclick() { setNode(node.mergeUp()) } },
             { tooltip: 'Split this part', if: !!settings.editing, icon: 'scissors', onclick() { node.split(getCaretPosition('span-'+node.id)).then(setNode) }},
