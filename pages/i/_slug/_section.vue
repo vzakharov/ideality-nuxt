@@ -5,6 +5,11 @@
       <MyTab section="leads"/>
       <MyTab section="code"/>
       <MyTab section="unshare"/>
+      <b-nav-item 
+        :to="{ name: 'i-slug', params: { slug }}"
+      >
+        Preview
+      </b-nav-item>
     </b-nav>
     <b-row v-if="build">
       
