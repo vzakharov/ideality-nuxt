@@ -49,7 +49,7 @@
 
       this.$watch('setId', { immediate: true, handler(setId) {
         let { currentId } = this
-        this.log({ setId, currentId })
+
         if ( setId != currentId )
           this.setCurrent(setId)
       } })

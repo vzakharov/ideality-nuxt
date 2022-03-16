@@ -1,16 +1,16 @@
 <template>
   <div v-if="mounted">
-    <MyDropdown v-model="profile" :choices="profiles" caption-key="name"/>
-    <template v-if="profile">
+    <MyDropdown v-model="ai.profile" :choices="ai.profiles" caption-key="name"/>
+    <template v-if="ai.profile">
 
-      <MyDropdown v-model="provider" :choices="providers" caption-key="name"/>
-      <template v-if="provider">
+      <MyDropdown v-model="ai.provider" :choices="ai.providers" caption-key="name"/>
+      <template v-if="ai.provider">
 
-        <MyInput v-for="slug in provider.parameters" :key="slug"
-          v-model="profile.values[slug]"
-          :caption="parameters[slug].caption"
-          :choices="parameters[slug].choices"
-          :type="parameters[slug].type"
+        <MyInput v-for="slug in ai.provider.parameters" :key="slug"
+          v-model="ai.profile.values[slug]"
+          :caption="ai.parameters[slug].caption"
+          :choices="ai.parameters[slug].choices"
+          :type="ai.parameters[slug].type"
         />
 
       </template>
@@ -26,22 +26,9 @@
 
   export default {
 
-    data() {
-      return {
-        parameters: null,
-        providers: null,
-        provider: null,
-        profiles: null,
-        profile: null
-      }
-    },
+    props: ['ai'],
 
     async mounted() {
-      this.syncLocal('ai', { select: ['parameters', 'profiles', 'providers', 'profile', 'provider'], inline: true })
-
-      if (!this.profiles) {
-        Object.assign(this, await this.loadSample('ai'))
-      }
 
     },
 

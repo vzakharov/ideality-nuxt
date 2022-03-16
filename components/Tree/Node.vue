@@ -51,7 +51,7 @@
       > -->
         <TreeNode
           @descendantMounted="
-            descendants = [...descendants, ...log($event)]
+            descendants = [...descendants, ...$event]
           "
           v-for="child in orderBy(node.children, 'created', 'desc')" :key="child.id"
           v-bind="{ tree, node: child, grayOutNonCurrent, settings }"

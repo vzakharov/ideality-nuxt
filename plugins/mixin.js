@@ -302,11 +302,13 @@ Vue.mixin({
           ),
           localLoaded: true
         })
-      
+
       forEach(select ? isArray(select) ? select : [select] : as ? [as] : keys(this.$data), key => {
 
-        this.$watch(key, { deep: true, handler(value) {
-          
+        this.$watch(as ? [ as, key ].join('.') : key, { deep: true, handler(value) {
+
+          console.log({local, data})
+
           beforeWrite?.[key]?.()
 
           if ( slugifyName && key == 'name' ) {
@@ -317,9 +319,7 @@ Vue.mixin({
           if ( !as )
             set(getData(), key, value)
 
-          // ms('saving to localstorage', true)
           localStorage.setItem(localKey, dump(local))
-          // ms('saved')
 
           if ( key == 'slug' ) {
             this.$router.push(this.appendedTarget({ params: { [name]: this.slug }}))

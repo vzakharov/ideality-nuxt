@@ -36,7 +36,7 @@
       }
     }">
       <template #sidebar>
-        <AISettings class="small p-2" v-if="sidebar.section=='ai'"/>
+        <AISettings v-bind="{ai}" class="small p-2" v-if="sidebar.section=='ai'"/>
         <div v-else style="height: 100%" class="bg-light">
           <TreeNode v-bind="{ settings, tree, node: tree.root, grayOutNonCurrent: true }"/>
         </div>
@@ -82,6 +82,13 @@
     data() {
 
       return {
+        ai: {
+          parameters: null,
+          providers: null,
+          provider: null,
+          profiles: null,
+          profile: null
+        },
         canParse: false,
         items: [1,2,3,4,5,6,7,8,9],
         JSONCrush,
@@ -129,6 +136,13 @@
         })
 
       this.canParse = true
+
+      this.syncLocal('ai', { select: ['parameters', 'profiles', 'providers', 'profile', 'provider'] })
+
+      if (!this.ai.profiles) {
+        this.ai = await this.loadSample('ai')
+      }
+
     },
 
     computed: {
