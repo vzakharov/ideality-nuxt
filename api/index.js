@@ -3,6 +3,8 @@ const axios = require('axios')
 const Bubble = require('../plugins/bubble')
 const BubbleAdmin = new Bubble.default({ token: 'Bearer ' + process.env.BUBBLE_TOKEN})
 
+const cors = require('cors')
+
 const { buildPrompt, complete, parseResponse } = require('../plugins/whispering')
 
 const { keyedPromises } = require('../plugins/helpers')
@@ -14,6 +16,8 @@ app.use(express.urlencoded({ extended: false }))
 
 // To get ip
 app.set('trust proxy', true)
+
+app.use(cors())
 
 // Function to run completion (currently OpenAI only; todo: add AI21, Cohere & maybe any other)
 async function doComplete(
@@ -248,30 +252,50 @@ app.post('/terminal', async ({
   }
 })
 
-app.post('/proxy', async (req, res, next) => {
-  try {
-    // console.log(req.body)
-    let { body, query: { url, key }, headers } = req
-    let { PROXY_KEY } = process.env 
-    if ( key != PROXY_KEY )
-      return res.status(403).send("Invalid key")
-    // console.log({ url, body, headers })
-    
-    // Send the request while ignoring cors
-    let { data } = await axios.post(url, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        mode: 'no-cors',
-        ...headers
+app.post('/proxy',
+  async (req, res, next) => {
+    try {
+
+      // console.log(req.body)
+      let { body, query: { url, key, host }, headers: { authorization } } = req
+      let { PROXY_KEY } = process.env 
+      if ( key != PROXY_KEY )
+        return res.status(403).send("Invalid key")
+      
+      let request = [
+        url, body, {
+          headers: {
+            authorization,
+            accept: '*/*',
+            origin: `https://${host}`,
+            referer: `https://${host}/`,
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'
+          },
+          // httpsAgent: new https.Agent({
+          //   rejectUnauthorized: false
+          // })
+        }
+      ]
+
+      // console.log(request)
+      let { data } = await axios.post(...request)
+
+      // console.log({ data })
+      res.send(data)
+    } catch(error) {
+      // console.log({error})
+      // If it's a http error, forward it to the client
+      if ( error.response ) {
+        let { status, statusText, data } = error.response
+        console.log(error.response)
+        res.status(status).send({ status, statusText, data })
+      } else {
+        console.log({error})
+        next(error)
       }
-    })
-    console.log({ data })
-    res.send(data)
-  } catch(error) {
-    console.log({ error })
-    next(error)
+    }
   }
-})
+)
 
 export default {
   path: '/api',
