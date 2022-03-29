@@ -248,6 +248,19 @@ app.post('/terminal', async ({
   }
 })
 
+// Endpoint to proxy a POST request, including headers, to the url that is specified after the endpoint name
+// The headers also include a key that is compared to the one stored in env.PROXY_KEY
+app.post('/proxy/:url', async ({ body, headers: { key, ...headers }, params: { url } }, res, next) => {
+  try {
+    if ( key != process.env.PROXY_KEY )
+      return res.status(403).send("Invalid key")
+    let { data } = await axios.post(url, body, { headers })
+    res.send(data)
+  } catch(error) {
+    next(error)
+  }
+})
+
 export default {
   path: '/api',
   handler: app
