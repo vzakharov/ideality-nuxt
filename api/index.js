@@ -248,13 +248,27 @@ app.post('/terminal', async ({
   }
 })
 
-app.post('/proxy/:url', async ({ body, headers: { proxy_url, proxy_key, ...headers }, params: { url } }, res, next) => {
+app.post('/proxy', async (req, res, next) => {
   try {
-    if ( proxy_key != process.env.PROXY_KEY )
+    // console.log(req.body)
+    let { body, query: { url, key }, headers } = req
+    let { PROXY_KEY } = process.env 
+    if ( key != PROXY_KEY )
       return res.status(403).send("Invalid key")
-    let { data } = await axios.post(proxy_url, body, { headers })
+    // console.log({ url, body, headers })
+    
+    // Send the request while ignoring cors
+    let { data } = await axios.post(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        mode: 'no-cors',
+        ...headers
+      }
+    })
+    console.log({ data })
     res.send(data)
   } catch(error) {
+    console.log({ error })
     next(error)
   }
 })
