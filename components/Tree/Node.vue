@@ -12,7 +12,7 @@
         }"
       >
         <nuxt-link class="nocolor" 
-          v-text="node.text && node.text.trim() || '#'+ node.id"
+          v-text="node.text && ( node.text.trim().slice(0, 50) + '...' ) || '#'+ node.id"
           :to="{ hash: '#' + node.id }"
           tabindex=-1
         />
