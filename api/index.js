@@ -297,6 +297,53 @@ app.post('/proxy',
   }
 )
 
+// Notion API
+const Notion = require('@notionhq/client')
+const notion = new Notion.Client({ auth: process.env.NOTION_TOKEN })
+
+app.all('/notion/:endpoint(*)', async ({ 
+  params: { endpoint }, 
+  headers: { authorization },
+  query,
+  method,
+  body
+}, res ) => {
+  console.log({ method, endpoint })
+  try {
+    method = method.toLowerCase()
+    authorization = authorization || `Bearer ${query.token}`
+
+    // If authorization is not same as env, send 403
+    if ( authorization != process.env.NOTION_AUTH )
+      return res.status(403).send("Invalid token")
+
+    let headers = {
+      authorization,
+      'Notion-Version': '2022-02-22'
+    }
+    let url = 'https://api.notion.com/v1/' + endpoint
+
+    // send respective axios request depending on method
+    let { data } = method == 'get'
+      ? await axios.get(url, { headers })
+      : await axios[method](url, body, { headers })
+
+    console.log(data)
+    res.send(data)  
+  } catch(error) {
+    // If it's a http error, forward it to the client
+    if ( error.response ) {
+      let { status, statusText, data } = error.response
+      console.log(error.response)
+      res.status(status).send({ status, statusText, data })
+    } else {
+      console.log({error})
+      next(error)
+    }
+  }
+})
+
+
 export default {
   path: '/api',
   handler: app

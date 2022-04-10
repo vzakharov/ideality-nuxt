@@ -138,7 +138,8 @@ export default {
   },
   
   serverMiddleware: {
-    '/api/': '~/api/'
+    '/api/': '~/api/',
+    '/api/notion/': '~/api/notion/',
   },
 
   script: [
