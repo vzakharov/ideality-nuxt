@@ -58,8 +58,11 @@ app.post('/pages', async (req, res ) => {
   let id = page_id || database_id
 
   return sendRequest({
-    allowAnyway: idsExposedForPosting.includes(id),
-    ...req
+    ...req,
+    params: {
+      endpoint: `pages`
+    },
+    allowAnyway: idsExposedForPosting.includes(id)
   }, res)
 })
 
