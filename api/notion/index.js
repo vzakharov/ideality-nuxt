@@ -28,7 +28,7 @@ async function sendRequest({
 
     let url = 'https://api.notion.com/v1/' + endpoint
 
-    headers = defaultHeaders
+    let headers = defaultHeaders
 
     // send respective axios request depending on method
     let { data } = method == 'get'
@@ -50,7 +50,7 @@ async function sendRequest({
   }
 }
 
-const idsExposedForPosting = process.env.IDS_EXPOSED_FOR_POSTING?.split(',')
+const idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING?.split(',')
 
 // Endpoint to create a page in a database
 app.post('/pages', async (req, res ) => {
@@ -67,6 +67,6 @@ app.post('/pages', async (req, res ) => {
 app.all('/:endpoint(*)', sendRequest)
 
 export default {
-  path: '/notion',
+  path: 'api/notion',
   handler: app
 }
