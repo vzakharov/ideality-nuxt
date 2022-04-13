@@ -14,17 +14,28 @@ async function sendRequest({
   headers: { authorization },
   query,
   method,
-  body,
-  allowAnyway
-}, res ) {
+  body
+}, res, next ) {
   console.log({ method, endpoint })
   try {
     method = method.toLowerCase()
-    authorization = authorization || `Bearer ${query.token}`
 
-    // If authorization is not same as env and allowAnyway is not set, return 403
-    if ( authorization != process.env.NOTION_AUTH && !allowAnyway )
-      return res.status(403).send("Invalid token")
+    if ( method != 'get' ) {
+      let { page_id, database_id } = body.parent || {}
+      let id = page_id || database_id
+      authorization = authorization || `Bearer ${query.token}`
+
+      let idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING
+
+      console.log({ id, idsExposedForPosting })
+
+      if ( 
+        !idsExposedForPosting.includes(id) &&
+        authorization != process.env.NOTION_AUTH
+      ) {
+        return res.status(403).send("Invalid token or parent not exposed for posting")
+      }
+    }
 
     let url = 'https://api.notion.com/v1/' + endpoint
 
@@ -49,22 +60,6 @@ async function sendRequest({
     }
   }
 }
-
-const idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING?.split(',')
-
-// Endpoint to create a page in a database
-app.post('/pages', async (req, res ) => {
-  let { page_id, database_id } = req.body.parent
-  let id = page_id || database_id
-
-  return sendRequest({
-    ...req,
-    params: {
-      endpoint: `pages`
-    },
-    allowAnyway: idsExposedForPosting.includes(id)
-  }, res)
-})
 
 // Generic notion proxy
 app.all('/:endpoint(*)', sendRequest)
