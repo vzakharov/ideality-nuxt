@@ -20,7 +20,8 @@ async function sendRequest({
   try {
     method = method.toLowerCase()
 
-    if ( method != 'get' ) {
+    // Non-authenticated requests are only allowed for 'get pages'
+    if ( method != 'get' || endpoint != 'pages' ) {
       let { page_id, database_id } = body.parent || {}
       let id = page_id || database_id
       authorization = authorization || `Bearer ${query.token}`
@@ -33,7 +34,7 @@ async function sendRequest({
         !idsExposedForPosting.includes(id) &&
         authorization != process.env.NOTION_AUTH
       ) {
-        return res.status(403).send("Invalid token or parent not exposed for posting")
+        return res.status(403).send("Invalid token or page not exposed for posting")
       }
     }
 
