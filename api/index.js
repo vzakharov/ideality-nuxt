@@ -10,6 +10,7 @@ const { buildPrompt, complete, parseResponse } = require('../plugins/whispering'
 const { keyedPromises } = require('../plugins/helpers')
 
 const express = require('express')
+const { response } = require('express')
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -297,6 +298,109 @@ app.post('/proxy',
   }
 )
 
+// Endpoint that returns a top-up link from Smartcat using amount and currency index as input
+app.get('/topup-link', async ({ query: { amount, currency } }, res ) => {
+
+  let link
+
+  async function getAndSendLink(link) {
+
+    console.log('Getting top-up link')
+    link = (
+      await axios.post(
+        'https://smartcat.com/api/balance/topupRequest',
+        { amount, currency },
+        // Use SMARTCAT_COOKIE
+        {
+          headers: {
+            cookie: SMARTCAT_COOKIE
+          }
+        }
+      )
+    ).data.iframeUrl
+    console.log('Got top-up link:', link)
+
+    res.send({ link })
+    return link
+
+  }
+
+  try {
+
+    await getAndSendLink()
+  
+  } catch(error) {
+    console.log({error})
+    
+    // If it's a 403, try signing in and getting the link again
+    if ( error.response && error.response.status == 403 ) {
+
+      try {
+
+        await signInToSmartcat()
+        await setSmartcatAccount()
+        await getAndSendLink()
+
+      } catch(error) {
+
+        console.log({error})
+        res.status(500).send({error})
+
+      }
+
+    } else {
+      res.status(500).send({error})
+    }
+
+  }
+
+
+
+})
+
+let { SMARTCAT_COOKIE } = process.env
+
+// function to sign in to Smartcat
+async function signInToSmartcat() {
+
+  let { SMARTCAT_EMAIL: email, SMARTCAT_PASSWORD: password } = process.env
+  console.log('Signing in to Smartcat', { email, password })
+
+  let response = await axios.post(
+    'https://smartcat.com/api/auth/signInUser',
+    { 
+      email, password,
+      userPersonalAccount: false,
+      backURL: '/workspace',
+      rememberMe: true
+    }
+  )
+
+  // Take set-cookie header and save it to SMARTCAT_COOKIE
+  let { headers: { 'set-cookie': cookies }} = response
+  // Extract everything before the first semicolon
+  console.log({ cookie: cookies })
+  SMARTCAT_COOKIE = cookies[1].split(';')[0]
+  console.log('Set SMARTCAT_COOKIE', { SMARTCAT_COOKIE })
+
+  return SMARTCAT_COOKIE
+
+}
+
+// function to set Smartcat account
+async function setSmartcatAccount() {
+
+  let { SMARTCAT_ACCOUNT_ID } = process.env
+  console.log('Setting Smartcat account', { SMARTCAT_ACCOUNT_ID })
+  let response = await axios.post(
+    `https://smartcat.com/api/Account/Change?accountId=${SMARTCAT_ACCOUNT_ID}`,
+    null,
+    // cookie
+    { headers: { cookie: SMARTCAT_COOKIE } }
+  )
+  return response.data
+
+}
 
 export default {
   path: '/api',
