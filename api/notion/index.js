@@ -9,7 +9,7 @@ const defaultHeaders = {
 }
 
 // Generic function to send a request to Notion
-async function sendRequest({ 
+async function proxy({ 
   params: { endpoint }, 
   headers: { authorization },
   query,
@@ -23,6 +23,11 @@ async function sendRequest({
     // Non-authenticated requests are only allowed for 'get pages'
     if ( method != 'get' || endpoint != 'pages' ) {
       let { page_id, database_id } = body.parent || {}
+
+      // if endpoint is like databases/[database_id]/query, take the database_id from it
+      if ( endpoint.match(/^databases\/\w+\/query$/) )
+        database_id = endpoint.split('/')[1]
+
       let id = page_id || database_id
       authorization = authorization || `Bearer ${query.token}`
 
@@ -63,7 +68,7 @@ async function sendRequest({
 }
 
 // Generic notion proxy
-app.all('/:endpoint(*)', sendRequest)
+app.all('/:endpoint(*)', proxy)
 
 export default {
   path: 'api/notion',

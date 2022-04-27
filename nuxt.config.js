@@ -140,6 +140,7 @@ export default {
   serverMiddleware: {
     '/api/': '~/api/',
     '/api/notion/': '~/api/notion/',
+    '/api/eli5': '~/api/eli5/',
   },
 
   script: [
