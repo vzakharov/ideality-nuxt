@@ -56,7 +56,7 @@ app.post('/', async ({ body: { query }}, res) => {
         'https://api.openai.com/v1/engines/text-curie-001/completions',
         {
           prompt,
-          max_tokens: 100,
+          max_tokens: 150,
           temperature: 0,
           n: 1,
           frequency_penalty: 1.5,
