@@ -53,7 +53,7 @@ app.post('/', async ({ body: { query }}, res) => {
       toxicity
     ] = await Promise.all([
       axios.post(
-        'https://api.openai.com/v1/engines/text-curie-001/completions',
+        'https://api.openai.com/v1/engines/text-davinci-002/completions',
         {
           prompt,
           max_tokens: 150,
