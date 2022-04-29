@@ -43,24 +43,27 @@ async function getToxicity(query) {
 
 }
 
-let requestsWithinLastHour = []
+let requestsWithinLastHour = process.env.ELI5_INITIAL_NUM_REQUESTS || 0
+
+// Remove one request every 36 seconds
+setInterval(() => {
+  if (requestsWithinLastHour > 0) {
+    requestsWithinLastHour--
+    console.log('Requests within last hour DOWN to ' + requestsWithinLastHour)
+  }
+}, 36000)
 
 // POST endpoint: take query, send to openai, return response
 app.post('/', async ({ body: { query }}, res) => {
 
-  // Push current time to requestsWithinLastHour
-  let timeObject = { time: Date.now() }
-  requestsWithinLastHour.push(timeObject)
-  console.log('New request, total requests:', requestsWithinLastHour.length)
-  // Set a timeout to remove the time object from requestsWithinLastHour
-  setTimeout(() => {
-    requestsWithinLastHour.splice(requestsWithinLastHour.indexOf(timeObject), 1)
-    console.log('Request removed, total requests:', requestsWithinLastHour.length)
-  }, 3600000)
   // If there were more than 100 requests within the last hour, return a 503 error with a message
-  if ( requestsWithinLastHour.length > 100 ) {
+  if ( requestsWithinLastHour > 100 ) {
     return res.status(503).send('Too many requests within the last hour, please come back later.')
   }
+
+  // Push current time to requestsWithinLastHour
+  requestsWithinLastHour++
+  console.log('Requests within last hour UP to ' + requestsWithinLastHour)
 
   let prompt = `Query: "${query}"\n\nExplain to a five-year-old:`
 
