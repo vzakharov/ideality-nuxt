@@ -58,7 +58,9 @@ app.post('/', async ({ body: { query }}, res) => {
 
   // If there were more than 100 requests within the last hour, return a 503 error with a message
   if ( requestsWithinLastHour > 100 ) {
-    return res.status(503).send('Too many requests within the last hour, please come back later.')
+    return res.status(503).send({
+      error: 'Too many requests within the last hour, please come back later.'
+    })
   }
 
   // Push current time to requestsWithinLastHour
