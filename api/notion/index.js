@@ -33,7 +33,7 @@ async function proxy({
 
       let idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING
 
-      console.log({ id, idsExposedForPosting })
+      // console.log({ id, idsExposedForPosting })
 
       if ( 
         !idsExposedForPosting.includes(id) &&
@@ -52,7 +52,7 @@ async function proxy({
       ? await axios.get(url, { headers })
       : await axios[method](url, body, { headers })
 
-    console.log(data)
+    // console.log(data)
     res.send(data)  
   } catch(error) {
     // If it's a http error, forward it to the client

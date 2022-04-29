@@ -144,6 +144,8 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
       ip: BubbleAdmin.get('ip', `ip-${ip.replace(/\./g, '-')}`),
       widget: BubbleAdmin.get('widget', id)
     })
+
+    console.log({ip, id, info})
     
     if ( !apiKey ) {
 
