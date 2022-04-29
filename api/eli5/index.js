@@ -3,6 +3,9 @@ const axios = require('axios')
 const express = require('express')
 const app = express()
 
+// To get ip
+app.set('trust proxy', true)
+
 const headers = {
   Authorization: `Bearer ${process.env.OPENAI_KEY}`,
 }
@@ -40,8 +43,24 @@ async function getToxicity(query) {
 
 }
 
+let requestsWithinLastHour = []
+
 // POST endpoint: take query, send to openai, return response
 app.post('/', async ({ body: { query }}, res) => {
+
+  // Push current time to requestsWithinLastHour
+  let timeObject = { time: Date.now() }
+  requestsWithinLastHour.push(timeObject)
+  console.log('New request, total requests:', requestsWithinLastHour.length)
+  // Set a timeout to remove the time object from requestsWithinLastHour
+  setTimeout(() => {
+    requestsWithinLastHour.splice(requestsWithinLastHour.indexOf(timeObject), 1)
+    console.log('Request removed, total requests:', requestsWithinLastHour.length)
+  }, 3600000)
+  // If there were more than 100 requests within the last hour, return a 503 error with a message
+  if ( requestsWithinLastHour.length > 100 ) {
+    return res.status(503).send('Too many requests within the last hour, please come back later.')
+  }
 
   let prompt = `Query: "${query}"\n\nExplain to a five-year-old:`
 
