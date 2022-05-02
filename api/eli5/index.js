@@ -73,23 +73,10 @@ app.post('/', async ({ body: { query }}, res) => {
 
     // Run the request and check toxicity at the same time
     let [
-      { data: { choices: [{ text }]}},
+      { choices: [{ text, finish_reason }]},
       toxicity
     ] = await Promise.all([
-      axios.post(
-        'https://api.openai.com/v1/engines/text-davinci-002/completions',
-        {
-          prompt,
-          max_tokens: 150,
-          temperature: 0,
-          n: 1,
-          frequency_penalty: 1.5,
-          presence_penalty: 1.5,
-        },
-        {
-          headers
-        }
-      ),
+      complete(prompt),
       getToxicity(query)
     ])
 
@@ -98,7 +85,18 @@ app.post('/', async ({ body: { query }}, res) => {
       return res.status(400).send({
         error: 'Sorry, your request was deemed inappropriate.'
       })
-    }      
+    }
+
+    // If finish_reason is other than 'stop', complete again, using prompt+text as the prompt, and append the response text to the original text. Use text-curie-001 engine.
+    if ( finish_reason != 'stop' ) {
+      // console.log({ text, finish_reason })
+      let { 
+        choices: [{ text: appendix }]
+      } = await complete(prompt + text, 'text-curie-001')
+      // console.log({ appendix })
+      text += appendix
+    }
+
 
     let response = text.trim()
 
@@ -113,6 +111,26 @@ app.post('/', async ({ body: { query }}, res) => {
         error: 'Sorry, there was an error processing your request.'
       })
 
+  }
+
+
+  async function complete(prompt, engine='text-davinci-002') {
+    let { data } = await axios.post(
+      `https://api.openai.com/v1/engines/${engine}/completions`,
+      {
+        prompt,
+        max_tokens: 150,
+        temperature: 0,
+        n: 1,
+        frequency_penalty: 1.5,
+        presence_penalty: 1.5
+      },
+      {
+        headers
+      }
+    )
+    console.log(prompt, engine, data )
+    return data
   }
 
 })
