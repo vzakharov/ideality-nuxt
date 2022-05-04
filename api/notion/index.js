@@ -48,8 +48,8 @@ async function proxy({
     let headers = defaultHeaders
 
     // send respective axios request depending on method
-    let { data } = method == 'get'
-      ? await axios.get(url, { headers })
+    let { data } = ['get', 'delete'].includes(method)
+      ? await axios[method](url, { headers })
       : await axios[method](url, body, { headers })
 
     // console.log(data)
