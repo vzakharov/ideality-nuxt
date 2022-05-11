@@ -151,7 +151,7 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
       for( let key in info ) {
 
-        let { runsLeft } = info[key]
+        let { runsLeft } = info[key] || {}
 
         if ( runsLeft < 0)
           return res.status(403).send({
