@@ -151,7 +151,6 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
 
       for( let key in info ) {
 
-        console.log({ key, info: info[key] })
         let { runsLeft } = info[key] || {}
 
         if ( runsLeft < 0)
@@ -174,7 +173,7 @@ app.post('/widget/generate', async ({ body, ip}, res, next) =>
     )
 
     let { setup, slate, tie } = widget
-    let { runsLeft } = info.ip
+    let { runsLeft } = info.ip || {}
 
     let allowUnsafe = !!apiKey || slate.allowUnsafe
 
