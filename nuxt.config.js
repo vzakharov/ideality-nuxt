@@ -136,11 +136,16 @@ export default {
     //   }
     // }
   },
+
+  server: {
+    port: process.env.PORT || 3700,
+  },
   
   serverMiddleware: {
     '/api/': '~/api/',
     '/api/notion/': '~/api/notion/',
     '/api/eli5': '~/api/eli5/',
+    '/api/mindy': '~/api/mindy'
   },
 
   script: [
