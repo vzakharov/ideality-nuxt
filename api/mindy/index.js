@@ -4,6 +4,8 @@ const botName = "mindy"
 
 const axios = require('axios')
 
+const crypto = require('crypto')
+
 const express = require('express')
 const app = express()
 
@@ -179,7 +181,7 @@ async function generateReply(messages) {
     // Remove the input from the reply text
     text = text.substring(input.length).trim()
 
-    console.log('text after removing input:', text)
+    // console.log('text after removing input:', text)
 
     // Make sure that the text starts with the bot name and a colon
     if ( !text.startsWith(`${botName}:`) )
@@ -193,16 +195,18 @@ async function generateReply(messages) {
     // Remove all lines but the first one
     text = lines[0]
 
-    console.log('text after removing multiline:', text)
+    // console.log('text after removing multiline:', text)
 
     // Remove the bot name and colon from the reply text
     text = text.substring(botName.length + 1).trim()
 
-    console.log('text after removing bot name:', text)
+    // console.log('text after removing bot name:', text)
 
     // Make sure that the reply isn't longer than a tweet
     if ( text.length > 280 )
       continue
+    
+    console.log('Bot reply:', text)
 
     // Send the reply to the database
     await postMessage( botName, text )
@@ -216,16 +220,7 @@ async function generateReply(messages) {
 async function postMessage( userName, content ) {
 
   let time = Date.now().toString()
-  let [ user ] = await notion.queryDatabase(
-    process.env.MINDY_USERS_DB_ID, {
-      filter: {
-        property: 'Name',
-        title: {
-          equals: userName
-        }
-      }
-    }
-  )
+  let user = await getUserByName(userName)
 
   await notion.createPage( {
     parent: {
@@ -245,6 +240,87 @@ async function postMessage( userName, content ) {
 
 }
 
+async function getUserByName(userName, { includeRaw } = {}) {
+
+  let [ user ] = await notion.queryDatabase(
+    process.env.MINDY_USERS_DB_ID, {
+      filter: {
+        property: 'Name',
+        title: {
+          equals: userName
+        }
+      }
+    }
+  ) || []
+
+  if ( user && !includeRaw )
+    user = _.omit(user, 'raw')  
+
+  return user
+  
+}
+
+// Endpoint to get user by name (no authorization needed)
+app.get('/u/:name/:action', async ( { params: { name, action } }, res ) => {
+
+  let user = await getUserByName(name)
+  if ( !user ) {
+    if ( action == 'check' ) {
+      res.send({ available: true })
+    } else {
+      res.status(404).send("User not found")
+    }
+  } else
+    res.send(user)
+
+})
+
+// Create or login a user
+app.post('/u/:name/', async ( { params: { name }, body: { password } }, res ) => {
+
+  let user = await getUserByName(name)
+  console.log('user:', user)
+
+  const reject = () => res.status(403).send("Invalid password or username")
+  const createHash = password => crypto.createHmac('sha256', process.env.MINDY_SALT).update(password).digest('hex')
+
+  if ( user ) {
+
+    // Create a hash of the password
+    let hash = createHash(password)
+
+    // Check if the hash matches the stored hash
+    if ( user.hash != hash ) {
+      return reject()
+    }
+
+    return res.send(user)
+
+  } else {
+
+    // Generate a random password
+    
+    password = crypto.randomBytes(32).toString('hex')
+    console.log('Generated password:', password)
+
+    user = await notion.createPage( {
+      parent: {
+        database_id: process.env.MINDY_USERS_DB_ID
+      },
+      properties: {
+        name,
+        hash: createHash(password)
+      }
+    } )
+
+    res.send({
+      user,
+      password
+    })
+
+  }
+
+})
 
 export default {
   path: 'api/mindy',
