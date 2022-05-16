@@ -1,6 +1,7 @@
 // API server for Mindy, an AI-powered group chat bot
 
-const botName = "mindy"
+const botName = process.env.MINDY_BOT_NAME
+const botId = process.env.MINDY_BOT_ID
 
 const axios = require('axios')
 
@@ -82,7 +83,7 @@ app.get('/start', async ( { headers: { authorization } }, res ) => {
       try {
 
         if ( messageCheckStopped ) {
-          console.log('message check stopped')
+          console.log('Message check stopped')
           return
         }
 
@@ -127,6 +128,7 @@ app.get('/stop', async ( { headers: { authorization } }, res ) => {
   // }
   // TODO: change to post and check token
 
+  console.log('Stopping message check...')
   let alreadyDone = messageCheckStopped
 
   if ( !messageCheckStopped ) {
@@ -141,6 +143,7 @@ app.get('/stop', async ( { headers: { authorization } }, res ) => {
 async function generateReply(messages) {
 
   console.log('Generating reply, messages:', messages)
+
   let input = messages.map(
     ({
       user: { name }, content, special
@@ -148,79 +151,85 @@ async function generateReply(messages) {
       special ? 
         `${name} ${special}` 
         : `${name}: ${content}`
-  ).join('\n')
+  ).join('\n') + `\n${botName}:`
 
-  console.log('input:', input)
+  console.log('input:\n', input)
 
-  let instruction = 'Reply as mindy (the bot), trying to be as h  elpful as possible'
+  let instruction = 'Reply as mindy (the bot), trying to be as helpful as possible'
   let engine = 'text-davinci-edit-001'
 
-  while ( true ) {
+  while ( !messageCheckStopped ) {
 
-    let { data } = await axios.post(
-      `https://api.openai.com/v1/engines/${engine}/edits`, {
-        input,
-        instruction,
-        temperature: 0.5
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_KEY}`
+    try {
+
+      let { data } = await axios.post(
+        `https://api.openai.com/v1/engines/${engine}/edits`, {
+          input,
+          instruction,
+          temperature: 0.5
+        }, {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENAI_KEY}`
+          },
+          timeout: 5000
         }
-      }
-    )
-    console.log('data:', data)
+      )
+      console.log('data:', data)
 
-    let { choices: [{ text }] } = data
+      let { choices: [{ text }] } = data
 
-    console.log('text:', text)
-  
-    // First, check that the reply text fully contains the input in the beginning. If not, try again
-    if ( !text.startsWith(input) )
-      continue
-
-    // Remove the input from the reply text
-    text = text.substring(input.length).trim()
-
-    // console.log('text after removing input:', text)
-
-    // Make sure that the text starts with the bot name and a colon
-    if ( !text.startsWith(`${botName}:`) )
-      continue
-
-    // Make sure that the second line doesn't start with the bot name (to avoid multiline replies)
-    let lines = text.split('\n')
-    if ( lines.length > 1 && lines[1].startsWith(botName) )
-      continue
+      console.log('text:', text)
     
-    // Remove all lines but the first one
-    text = lines[0]
+      // First, check that the reply text fully contains the input in the beginning. If not, try again
+      if ( !text.startsWith(input) )
+        continue
 
-    // console.log('text after removing multiline:', text)
+      // Remove the input from the reply text
+      text = text.substring(input.length).trim()
 
-    // Remove the bot name and colon from the reply text
-    text = text.substring(botName.length + 1).trim()
+      console.log('text after removing input:', text)
 
-    // console.log('text after removing bot name:', text)
+      // Make sure that the second line doesn't start with the bot name (to avoid multiline replies)
+      let lines = text.split('\n')
+      if ( lines.length > 1 && lines[1].startsWith(botName) )
+        continue
+      
+      // Remove all lines but the first one
+      text = lines[0]
 
-    // Make sure that the reply isn't longer than a tweet
-    if ( text.length > 280 )
-      continue
-    
-    console.log('Bot reply:', text)
+      console.log('text after removing multiline:', text)
 
-    // Send the reply to the database
-    await postMessage( botName, text )
+      // Make sure that the reply isn't longer than a tweet
+      if ( text.length > 280 )
+        continue
+      
+      console.log('Bot reply:', text)
 
-    break
+      // Send the reply to the database
+      await postMessage( botId, text )
+
+      break
+
+    } catch (e) {
+
+      console.error('Error while generating reply:', e)
+
+      // If it's ECONNABORTED or ETIMEDOUT, try again
+      let { code } = e
+      if ( [ 'ECONNABORTED', 'ETIMEDOUT' ].includes(code) )
+        continue
+
+      throw e
+
+    }
 
   }
 
 }
 
-async function postMessage( userName, content ) {
+async function postMessage( id, content ) {
 
   let time = Date.now().toString()
-  let user = await getUserByName(userName)
 
   await notion.createPage( {
     parent: {
@@ -230,7 +239,7 @@ async function postMessage( userName, content ) {
       time,
       user: {
         relation: [{
-          id: user.raw.id
+          id
         }]
       },
       content
@@ -275,50 +284,100 @@ app.get('/u/:name/:action', async ( { params: { name, action } }, res ) => {
 
 })
 
-// Create or login a user
-app.post('/u/:name/', async ( { params: { name }, body: { password } }, res ) => {
+const createHash = password => crypto.createHmac('sha256', process.env.MINDY_SALT).update(password).digest('hex')
 
-  let user = await getUserByName(name)
-  console.log('user:', user)
+async function getUserByToken(token) {
 
-  const reject = () => res.status(403).send("Invalid password or username")
-  const createHash = password => crypto.createHmac('sha256', process.env.MINDY_SALT).update(password).digest('hex')
+  let [ user ] = await notion.queryDatabase(
+    process.env.MINDY_USERS_DB_ID, {
+      filter: {
+        property: 'Hash',
+        title: {
+          equals: createHash(token)
+        }
+      }
+    }
+  )
 
-  if ( user ) {
+  return user
 
-    // Create a hash of the password
-    let hash = createHash(password)
+}
 
-    // Check if the hash matches the stored hash
-    if ( user.hash != hash ) {
-      return reject()
+// Authentication middleware
+async function auth({ headers: { authorization } }, res, next) {
+
+  try {
+
+    if ( !authorization ) {
+
+      return res.status(401).send("No authorization header")
+
+    } else {
+
+      let [ prefix, token ] = authorization.split(' ')
+
+      if ( prefix != 'Bearer' ) 
+        return res.status(401).send("Authorization header must start with 'Bearer'")
+
+      if ( !token )
+        return res.status(401).send("No token in authorization header")
+
+      let user = await getUserByToken(token, { includeRaw: true })
+
+      if ( !user || user.hash != createHash(token) )
+        return res.status(401).send("Invalid token or no user found")
+
+      console.log('User authenticated:', user)
+    
+      _.assign(res.locals, { user })
+      next()
+
     }
 
-    return res.send(user)
+  } catch (err) {
 
-  } else {
-
-    // Generate a random password
-    
-    password = crypto.randomBytes(32).toString('hex')
-    console.log('Generated password:', password)
-
-    user = await notion.createPage( {
-      parent: {
-        database_id: process.env.MINDY_USERS_DB_ID
-      },
-      properties: {
-        name,
-        hash: createHash(password)
-      }
-    } )
-
-    res.send({
-      user,
-      password
-    })
+    console.error(err)
+    res.status(500).send(err)
 
   }
+
+}
+
+// Endpoint to send message
+app.post('/messages', auth, async ( { body: { content }}, res ) => {
+
+  let { user: { raw: { id } } } = res.locals
+  let message = await postMessage( id, content )
+  res.send(message)
+
+})
+
+
+
+// Endpoint to create a user
+app.post('/users', async ( {  body: { name } }, res ) => {
+
+  let user = await getUserByName(name)
+
+  if ( user )     
+    return res.status(409).send("User already exists")
+
+  let token = crypto.randomBytes(32).toString('hex')
+  console.log('token:', token)
+
+  user = await notion.createPage( {
+    parent: {
+      database_id: process.env.MINDY_USERS_DB_ID
+    },
+    properties: {
+      name,
+      hash: createHash(token)
+    }
+  } )
+
+  console.log('Created user:', user)
+
+  return res.send(token)
 
 })
 
