@@ -304,9 +304,11 @@ async function getUserByToken(token) {
 }
 
 // Authentication middleware
-async function auth({ headers: { authorization } }, res, next) {
+async function auth(req, res, next) {
 
   try {
+    
+    let { headers: { authorization } } = req
 
     if ( !authorization ) {
 
@@ -329,7 +331,7 @@ async function auth({ headers: { authorization } }, res, next) {
 
       console.log('User authenticated:', user)
     
-      _.assign(res.locals, { user })
+      _.assign(req, { user })
       next()
 
     }
@@ -344,14 +346,19 @@ async function auth({ headers: { authorization } }, res, next) {
 }
 
 // Endpoint to send message
-app.post('/messages', auth, async ( { body: { content }}, res ) => {
+app.post('/messages', auth, async ( { user, body: { content }}, res ) => {
 
-  let { user: { raw: { id } } } = res.locals
-  let message = await postMessage( id, content )
+  let message = await postMessage( user.raw.id, content )
   res.send(message)
 
 })
 
+// Endpoint to get current user
+app.get('/me', auth, ( { user }, res ) => {
+
+  res.send(user)
+
+})
 
 
 // Endpoint to create a user
@@ -362,7 +369,7 @@ app.post('/users', async ( {  body: { name } }, res ) => {
   if ( user )     
     return res.status(409).send("User already exists")
 
-  let token = crypto.randomBytes(32).toString('hex')
+  let token = 'mindy-'+crypto.randomBytes(32).toString('hex')
   console.log('token:', token)
 
   user = await notion.createPage( {
