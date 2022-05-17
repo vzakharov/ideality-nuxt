@@ -82,6 +82,8 @@ app.get('/start', async ( { headers: { authorization } }, res ) => {
 
       try {
 
+        console.log({ messageCheckStarted, messageCheckStopped })
+
         if ( messageCheckStopped ) {
           console.log('Message check stopped')
           return
@@ -99,7 +101,9 @@ app.get('/start', async ( { headers: { authorization } }, res ) => {
         await generateReply(messages)
 
       } catch (e) {
-        console.log('error', e)
+
+        console.error('Error while checking messages:', e.response ? e.response.data : e)
+        
       } finally {
         
         if ( !messageCheckStopped )
@@ -133,6 +137,7 @@ app.get('/stop', async ( { headers: { authorization } }, res ) => {
 
   if ( !messageCheckStopped ) {
     messageCheckStopped = new Date()
+    console.log('Message check stopped at', messageCheckStopped)
     messageCheckStarted = null
   }
 
@@ -144,7 +149,7 @@ async function generateReply(messages) {
 
   console.log('Generating reply, messages:', messages)
 
-  let input = messages.map(
+  let prompt = messages.map(
     ({
       user: { name }, content, special
     }) => 
@@ -153,20 +158,19 @@ async function generateReply(messages) {
         : `${name}: ${content}`
   ).join('\n') + `\n${botName}:`
 
-  console.log('input:\n', input)
+  console.log('input:\n', prompt)
 
-  let instruction = 'Reply as mindy (the bot), trying to be as helpful as possible'
-  let engine = 'text-davinci-edit-001'
+  let engine = 'text-davinci-002'
 
   while ( !messageCheckStopped ) {
 
     try {
 
       let { data } = await axios.post(
-        `https://api.openai.com/v1/engines/${engine}/edits`, {
-          input,
-          instruction,
-          temperature: 0.5
+        `https://api.openai.com/v1/engines/${engine}/completions`, {
+          prompt,
+          temperature: 0.5,
+          max_tokens: 100
         }, {
           headers: {
             'Authorization': `Bearer ${process.env.OPENAI_KEY}`
@@ -174,20 +178,10 @@ async function generateReply(messages) {
           timeout: 5000
         }
       )
-      console.log('data:', data)
 
       let { choices: [{ text }] } = data
 
       console.log('text:', text)
-    
-      // First, check that the reply text fully contains the input in the beginning. If not, try again
-      if ( !text.startsWith(input) )
-        continue
-
-      // Remove the input from the reply text
-      text = text.substring(input.length).trim()
-
-      console.log('text after removing input:', text)
 
       // Make sure that the second line doesn't start with the bot name (to avoid multiline replies)
       let lines = text.split('\n')
