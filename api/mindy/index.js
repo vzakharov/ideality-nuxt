@@ -19,14 +19,54 @@ const notion = new Notion.default()
 
 const _ = require('lodash')
 
+const onlineUsers = []
+
+// Endpoint to get users online
+app.get('/onlineUsers', async (req, res) => 
+  res.send(onlineUsers)
+)
+
+// Function to nudge a user's last-seen value (i.e. when they make any request)
+function nudgeUser({ name, raw: { id } }) {
+
+  console.log('Nudging user:', name)
+  console.log('Online users:', onlineUsers)
+  let onlineUser = _.find(onlineUsers, { name })
+  console.log('User online?', !!onlineUser)
+
+  if ( !onlineUser ) {
+
+    console.log('User not online, adding to onlineUsers')
+    postMessage(id, 'joined', { special: true })
+    onlineUser = { name, raw: { id } }
+    onlineUsers.push(onlineUser)
+
+  }
+
+  onlineUser.lastSeen = new Date()
+
+  console.log('User nudged:', name)
+  console.log('Online users:', onlineUsers)
+
+}
+
+// Log every request
+app.use((req, res, next) => {
+  console.log(req.ip, req.method, req.url)
+  next()
+})
+
 // Endpoint to get chat messages
-app.get('/messages', async ( req, res ) => {
+app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
 
   try {
 
     let messages = await getMessages()
 
-    console.log('messages:', messages)
+    // console.log('messages:', messages)
+    if ( req.user ) {
+      nudgeUser(req.user)
+    }
 
     res.send(messages)
 
@@ -60,8 +100,60 @@ async function getMessages() {
 }
 
 let oldLastMessageTime = null
-let messageCheckStarted = null
-let messageCheckStopped = null
+let routineStarted = null
+let routineStopped = null
+
+const routine = async () => {
+
+  try {
+
+    console.log({ routineStarted, routineStopped })
+
+    if ( routineStopped ) {
+      console.log('Routine stopped')
+      return
+    }
+
+    // Purge online users older than 1 minute
+    console.log('Purging users online')
+    for ( let user of onlineUsers ) {
+
+      if ( Date.now() - user.lastSeen > 60000 ) {
+        console.log('Purging user:', user.name)
+        onlineUsers.splice(onlineUsers.indexOf(user), 1)
+      }
+    
+    }
+    console.log('Online users:', onlineUsers)
+
+    // Check messages
+    console.log('Checking messages...')
+    let messages = await getMessages()
+    let lastMessage = _.last(messages)
+    // If there are new messages and the last one isn't from the bot
+    if ( lastMessage.time != oldLastMessageTime && lastMessage.user.name != botName ) {
+
+      console.log('New messages:', messages)
+      await generateReply(messages)
+
+    }
+
+  } catch (e) {
+
+    console.error('Error during routine:', e.response ? e.response.data : e)
+    
+  } finally {
+    
+    if ( !routineStopped )
+
+      process.nextTick(() => {
+        console.log('Will check again in 5 seconds...')
+        setTimeout(routine, 5000)
+      })
+
+  }
+
+}
 
 // Endpoint to start an interval to get messages every 5 seconds
 app.get('/start', async ( { headers: { authorization } }, res ) => {
@@ -71,56 +163,17 @@ app.get('/start', async ( { headers: { authorization } }, res ) => {
   // }
   // TODO: change to post and check token
 
-  let alreadyDone = messageCheckStarted
+  let alreadyDone = routineStarted
 
-  if ( !messageCheckStarted ) {
+  if ( !routineStarted ) {
 
-    messageCheckStarted = new Date()
-    messageCheckStopped = null
-
-    const checkMessages = async () => {
-
-      try {
-
-        console.log({ messageCheckStarted, messageCheckStopped })
-
-        if ( messageCheckStopped ) {
-          console.log('Message check stopped')
-          return
-        }
-
-        console.log('Checking messages...')
-        let messages = await getMessages()
-        let lastMessage = _.last(messages)
-        // If no new messages or if the last one is from the bot, return
-        if (lastMessage.time == oldLastMessageTime || lastMessage.user.name == botName)
-          return
-
-        console.log('New messages:', messages)
-
-        await generateReply(messages)
-
-      } catch (e) {
-
-        console.error('Error while checking messages:', e.response ? e.response.data : e)
-        
-      } finally {
-        
-        if ( !messageCheckStopped )
-          process.nextTick(() => {
-            console.log('Will check again in 5 seconds...')
-            setTimeout(checkMessages, 5000)
-          })
-
-      }
-
-    }
-
-    checkMessages()
+    routineStarted = new Date()
+    routineStopped = null
+    routine()
 
   }
 
-  res.send({ messageCheckStarted, alreadyDone })
+  res.send({ routineStarted, alreadyDone })
 
 })
 
@@ -132,16 +185,16 @@ app.get('/stop', async ( { headers: { authorization } }, res ) => {
   // }
   // TODO: change to post and check token
 
-  console.log('Stopping message check...')
-  let alreadyDone = messageCheckStopped
+  console.log('Stopping routine...')
+  let alreadyDone = routineStopped
 
-  if ( !messageCheckStopped ) {
-    messageCheckStopped = new Date()
-    console.log('Message check stopped at', messageCheckStopped)
-    messageCheckStarted = null
+  if ( !routineStopped ) {
+    routineStopped = new Date()
+    console.log('Routine stopped at', routineStopped)
+    routineStarted = null
   }
 
-  res.send({ messageCheckStopped, alreadyDone })
+  res.send({ routineStopped, alreadyDone })
 
 })
 
@@ -154,7 +207,7 @@ async function generateReply(messages) {
       user: { name }, content, special
     }) => 
       special ? 
-        `${name} ${special}` 
+        `${name} ${content}` 
         : `${name}: ${content}`
   ).join('\n') + `\n${botName}:`
 
@@ -162,7 +215,7 @@ async function generateReply(messages) {
 
   let engine = 'text-davinci-002'
 
-  while ( !messageCheckStopped ) {
+  while ( !routineStopped ) {
 
     try {
 
@@ -221,7 +274,7 @@ async function generateReply(messages) {
 
 }
 
-async function postMessage( id, content ) {
+async function postMessage( id, content, { special } = {} ) {
 
   let time = Date.now().toString()
 
@@ -236,7 +289,8 @@ async function postMessage( id, content ) {
           id
         }]
       },
-      content
+      content,
+      special
     },
     titleProp: 'time'
   } )
@@ -297,33 +351,45 @@ async function getUserByToken(token) {
 
 }
 
+// Allow unauthorized middleware
+async function allowUnauthorized(req, res, next) {
+  req.allowUnauthorized = true
+  next()
+}
+
 // Authentication middleware
 async function auth(req, res, next) {
 
   try {
     
-    let { headers: { authorization } } = req
+    let { headers: { authorization }, allowUnauthorized } = req
 
-    if ( !authorization ) {
+    if ( !authorization && !allowUnauthorized ) {
 
       return res.status(401).send("No authorization header")
 
     } else {
 
-      let [ prefix, token ] = authorization.split(' ')
+      let user
 
-      if ( prefix != 'Bearer' ) 
-        return res.status(401).send("Authorization header must start with 'Bearer'")
+      if ( authorization ) {
 
-      if ( !token )
-        return res.status(401).send("No token in authorization header")
+        let [ prefix, token ] = authorization.split(' ')
 
-      let user = await getUserByToken(token, { includeRaw: true })
+        if ( prefix != 'Bearer' )
+          return res.status(401).send("Authorization header must start with 'Bearer'")
 
-      if ( !user || user.hash != createHash(token) )
-        return res.status(401).send("Invalid token or no user found")
+        if ( !token )
+          return res.status(401).send("No token in authorization header")
 
-      console.log('User authenticated:', user)
+        user = await getUserByToken(token, { includeRaw: true })
+
+        if ( !user || user.hash != createHash(token) )
+          return res.status(401).send("Invalid token or no user found")
+
+        console.log('User authenticated:', user.name)
+
+      }
     
       _.assign(req, { user })
       next()
@@ -343,6 +409,7 @@ async function auth(req, res, next) {
 app.post('/messages', auth, async ( { user, body: { content }}, res ) => {
 
   let message = await postMessage( user.raw.id, content )
+  console.log('Message sent:', message)
   res.send(message)
 
 })
