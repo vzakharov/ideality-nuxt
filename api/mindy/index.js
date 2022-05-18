@@ -66,6 +66,7 @@ function nudgeUser({ name, raw: { id } }) {
 
     console.log('User timed out:', name)
     onlineUsers.splice(onlineUsers.indexOf(onlineUser), 1)
+    postMessage(id, 'left', { special: true })
     
   }, 60000)
 
@@ -199,7 +200,7 @@ async function generateReply(messages) {
       console.log('text:', text)
 
       // Make sure that the second line doesn't start with the bot name (to avoid multiline replies)
-      let lines = text.split('\n')
+      let lines = text.trim().split('\n')
       if ( lines.length > 1 && lines[1].startsWith(botName) )
         continue
       
