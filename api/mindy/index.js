@@ -184,7 +184,9 @@ async function generateReply(messages) {
         `https://api.openai.com/v1/engines/${engine}/completions`, {
           prompt,
           temperature: 0.5,
-          max_tokens: 100
+          max_tokens: 100,
+          frequency_penalty: 1.5,
+          presence_penalty: 1.5,
         }, {
           headers: {
             'Authorization': `Bearer ${process.env.OPENAI_KEY}`
