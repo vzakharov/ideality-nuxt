@@ -19,7 +19,16 @@ const notion = new Notion.default()
 
 const _ = require('lodash')
 
+const serverStarted = new Date()
+console.log({ serverStarted })
+
+let oldLastMessageTime = null
+
+let routineStarted = null
+let routineStopped = null
+
 const onlineUsers = []
+
 
 // Endpoint to get users online
 app.get('/onlineUsers', async (req, res) => 
@@ -47,6 +56,10 @@ function nudgeUser({ name, raw: { id } }) {
 
   console.log('User nudged:', name)
   console.log('Online users:', onlineUsers)
+
+  // If routine is not running, start it
+  if ( !routineStarted )
+    startRoutine()
 
 }
 
@@ -99,20 +112,21 @@ async function getMessages() {
   return messages
 }
 
-let oldLastMessageTime = null
-let routineStarted = null
-let routineStopped = null
+async function routine() {
 
-const routine = async () => {
+  let shouldStop = routineStopped || ( serverStarted > routineStarted )
+  // ^^ If routine has been stopped, or if the server has been restarted since the routine started
+  console.log({ routineStarted, routineStopped, serverStarted })
 
   try {
 
-    console.log({ routineStarted, routineStopped })
 
-    if ( routineStopped ) {
+    if ( shouldStop ) {
       console.log('Routine stopped')
       return
     }
+
+    console.log('Running routine...')
 
     // Purge online users older than 1 minute
     console.log('Purging users online')
@@ -126,10 +140,18 @@ const routine = async () => {
     }
     console.log('Online users:', onlineUsers)
 
+    // If no online users, stop routine
+    if ( !onlineUsers.length ) {
+      shouldStop = true
+      stopRoutine()
+      return
+    }
+
     // Check messages
     console.log('Checking messages...')
     let messages = await getMessages()
     let lastMessage = _.last(messages)
+
     // If there are new messages and the last one isn't from the bot
     if ( lastMessage.time != oldLastMessageTime && lastMessage.user.name != botName ) {
 
@@ -144,59 +166,36 @@ const routine = async () => {
     
   } finally {
     
-    if ( !routineStopped )
-
-      process.nextTick(() => {
-        console.log('Will check again in 5 seconds...')
-        setTimeout(routine, 5000)
-      })
+    if ( !shouldStop )
+      setTimeout(routine, 5000)    
 
   }
 
 }
 
-// Endpoint to start an interval to get messages every 5 seconds
-app.get('/start', async ( { headers: { authorization } }, res ) => {
+// Function to start the routine
+async function startRoutine() {
 
-  // if ( authorization != process.env.NOTION_AUTH ) {
-  //   return res.status(403).send("Invalid token")
-  // }
-  // TODO: change to post and check token
+  routineStarted = new Date()
+  routineStopped = null
+  console.log({ routineStarted })
 
-  let alreadyDone = routineStarted
+  routine()
 
-  if ( !routineStarted ) {
+  return routineStarted
 
-    routineStarted = new Date()
-    routineStopped = null
-    routine()
+}
 
-  }
+// Function to stop the routine
+async function stopRoutine() {
 
-  res.send({ routineStarted, alreadyDone })
+  routineStopped = new Date()
+  routineStarted = null
+  console.log({ routineStopped })
 
-})
+  return routineStopped
 
-// Endpoint to stop the interval
-app.get('/stop', async ( { headers: { authorization } }, res ) => {
-
-  // if ( authorization != process.env.NOTION_AUTH ) {
-  //   return res.status(403).send("Invalid token")
-  // }
-  // TODO: change to post and check token
-
-  console.log('Stopping routine...')
-  let alreadyDone = routineStopped
-
-  if ( !routineStopped ) {
-    routineStopped = new Date()
-    console.log('Routine stopped at', routineStopped)
-    routineStarted = null
-  }
-
-  res.send({ routineStopped, alreadyDone })
-
-})
+}
 
 async function generateReply(messages) {
 
