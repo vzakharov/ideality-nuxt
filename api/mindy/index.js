@@ -19,16 +19,7 @@ const notion = new Notion.default()
 
 const _ = require('lodash')
 
-const serverStarted = new Date()
-console.log({ serverStarted })
-
-let oldLastMessageTime = null
-
-let routineStarted = null
-let routineStopped = null
-
 const onlineUsers = []
-
 
 // Endpoint to get users online
 app.get('/onlineUsers', async (req, res) => 
@@ -39,27 +30,44 @@ app.get('/onlineUsers', async (req, res) =>
 function nudgeUser({ name, raw: { id } }) {
 
   console.log('Nudging user:', name)
-  console.log('Online users:', onlineUsers)
   let onlineUser = _.find(onlineUsers, { name })
-  console.log('User online?', !!onlineUser)
+  // console.log('User online?', !!onlineUser)
 
   if ( !onlineUser ) {
 
-    console.log('User not online, adding to onlineUsers')
-    postMessage(id, 'joined', { special: true })
+    console.log('User wasn\'t online, adding to onlineUsers')
+
+    // Check if this user's last message was "left" (special). If yes, post "joined" message
+    getMessages().then(messages => {
+
+      let message = _(messages).filter({ user: { name } }).reverse().first()
+      console.log('User\'s last message:', message.content)
+      if ( message && message.content === 'left' && message.special ) {
+        console.log('User\'s last message was "left", posting "joined" message')
+        postMessage(id, 'joined', { special: true })
+      }
+
+    })
+
     onlineUser = { name, raw: { id } }
     onlineUsers.push(onlineUser)
 
   }
 
-  onlineUser.lastSeen = new Date()
+  let lastSeen = new Date()
+  onlineUser.lastSeen = lastSeen
 
-  console.log('User nudged:', name)
-  console.log('Online users:', onlineUsers)
+  // console.log('User nudged:', name)
 
-  // If routine is not running, start it
-  if ( !routineStarted )
-    startRoutine()
+  clearTimeout(onlineUser.timeout)
+
+  // Remove from onlineUsers in a minute
+  onlineUser.timeout = setTimeout(() => {
+
+    console.log('User timed out:', name)
+    onlineUsers.splice(onlineUsers.indexOf(onlineUser), 1)
+    
+  }, 60000)
 
 }
 
@@ -78,10 +86,15 @@ app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
 
     // console.log('messages:', messages)
     if ( req.user ) {
+
       nudgeUser(req.user)
+
     }
 
-    res.send(messages)
+    if ( generatingReply )
+      console.log('Returning messages while generating reply')
+
+    res.send({ messages, generatingReply })
 
   } catch (e) {
 
@@ -89,6 +102,36 @@ app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
     res.status(500).send(e)
 
   }
+
+})
+
+let lastChecked = null        // When the bot last checked for new messages
+let lastMessageTime = null    // When the last message was posted the last time it was checked
+let generatingReply = false   // Whether the bot is currently generating a reply
+
+// Endpoint to post message
+app.post('/postMessage', auth, async ( { user, body: { content }}, res ) => {
+
+  let message = await postMessage( user.raw.id, content )
+  console.log('Message sent:', message)
+
+  // If the last check was more than five seconds ago, check for new messages
+  if ( !lastChecked || (new Date() - lastChecked) > 5000 ) {
+    lastChecked = new Date()
+    console.log('Checking for new messages')
+    getMessages().then(messages => {
+
+      let message = _.last(messages)
+      if ( message.time != lastMessageTime && message.user.name != botName && !generatingReply ) {
+        console.log('New message:', message)
+        lastMessageTime = message.time
+        generateReply(messages)
+      }
+
+    })
+  }
+
+  res.send(message)
 
 })
 
@@ -112,94 +155,14 @@ async function getMessages() {
   return messages
 }
 
-async function routine() {
-
-  let shouldStop = routineStopped || ( serverStarted > routineStarted )
-  // ^^ If routine has been stopped, or if the server has been restarted since the routine started
-  console.log({ routineStarted, routineStopped, serverStarted })
-
-  try {
-
-
-    if ( shouldStop ) {
-      console.log('Routine stopped')
-      return
-    }
-
-    console.log('Running routine...')
-
-    // Purge online users older than 1 minute
-    console.log('Purging users online')
-    for ( let user of onlineUsers ) {
-
-      if ( Date.now() - user.lastSeen > 60000 ) {
-        console.log('Purging user:', user.name)
-        onlineUsers.splice(onlineUsers.indexOf(user), 1)
-      }
-    
-    }
-    console.log('Online users:', onlineUsers)
-
-    // If no online users, stop routine
-    if ( !onlineUsers.length ) {
-      shouldStop = true
-      stopRoutine()
-      return
-    }
-
-    // Check messages
-    console.log('Checking messages...')
-    let messages = await getMessages()
-    let lastMessage = _.last(messages)
-
-    // If there are new messages and the last one isn't from the bot
-    if ( lastMessage.time != oldLastMessageTime && lastMessage.user.name != botName ) {
-
-      console.log('New messages:', messages)
-      await generateReply(messages)
-
-    }
-
-  } catch (e) {
-
-    console.error('Error during routine:', e.response ? e.response.data : e)
-    
-  } finally {
-    
-    if ( !shouldStop )
-      setTimeout(routine, 5000)    
-
-  }
-
-}
-
-// Function to start the routine
-async function startRoutine() {
-
-  routineStarted = new Date()
-  routineStopped = null
-  console.log({ routineStarted })
-
-  routine()
-
-  return routineStarted
-
-}
-
-// Function to stop the routine
-async function stopRoutine() {
-
-  routineStopped = new Date()
-  routineStarted = null
-  console.log({ routineStopped })
-
-  return routineStopped
-
-}
-
 async function generateReply(messages) {
 
-  console.log('Generating reply, messages:', messages)
+  if ( generatingReply )
+    throw new Error('Already generating reply')
+
+  generatingReply = true
+
+  console.log('Generating reply; last message:', _.last(messages))
 
   let prompt = messages.map(
     ({
@@ -214,7 +177,7 @@ async function generateReply(messages) {
 
   let engine = 'text-davinci-002'
 
-  while ( !routineStopped ) {
+  while ( true ) {
 
     try {
 
@@ -241,7 +204,7 @@ async function generateReply(messages) {
         continue
       
       // Remove all lines but the first one
-      text = lines[0]
+      text = lines[0].trim()
 
       console.log('text after removing multiline:', text)
 
@@ -266,6 +229,10 @@ async function generateReply(messages) {
         continue
 
       throw e
+
+    } finally {
+      
+      generatingReply = false
 
     }
 
@@ -403,15 +370,6 @@ async function auth(req, res, next) {
   }
 
 }
-
-// Endpoint to send message
-app.post('/messages', auth, async ( { user, body: { content }}, res ) => {
-
-  let message = await postMessage( user.raw.id, content )
-  console.log('Message sent:', message)
-  res.send(message)
-
-})
 
 // Endpoint to get current user
 app.get('/me', auth, ( { user }, res ) => {
