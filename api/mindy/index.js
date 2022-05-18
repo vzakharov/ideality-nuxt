@@ -78,6 +78,10 @@ app.use((req, res, next) => {
   next()
 })
 
+let lastChecked = null        // When the bot last checked for new messages
+let lastMessageTime = null    // When the last message was posted the last time it was checked
+let generatingReply = false   // Whether the bot is currently generating a reply
+
 // Endpoint to get chat messages
 app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
 
@@ -89,6 +93,20 @@ app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
     if ( req.user ) {
 
       nudgeUser(req.user)
+
+      // If the last check was more than five seconds ago, check for new messages
+      if ( !lastChecked || (new Date() - lastChecked) > 5000 ) {
+        lastChecked = new Date()
+        console.log('Checking for new messages')
+
+        let message = _.last(messages)
+        if ( message.time != lastMessageTime && message.user.name != botName && !generatingReply ) {
+          console.log('New message:', message)
+          lastMessageTime = message.time
+          generateReply(messages)
+        }
+
+      }
 
     }
 
@@ -106,31 +124,11 @@ app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
 
 })
 
-let lastChecked = null        // When the bot last checked for new messages
-let lastMessageTime = null    // When the last message was posted the last time it was checked
-let generatingReply = false   // Whether the bot is currently generating a reply
-
 // Endpoint to post message
 app.post('/postMessage', auth, async ( { user, body: { content }}, res ) => {
 
   let message = await postMessage( user.raw.id, content )
   console.log('Message sent:', message)
-
-  // If the last check was more than five seconds ago, check for new messages
-  if ( !lastChecked || (new Date() - lastChecked) > 5000 ) {
-    lastChecked = new Date()
-    console.log('Checking for new messages')
-    getMessages().then(messages => {
-
-      let message = _.last(messages)
-      if ( message.time != lastMessageTime && message.user.name != botName && !generatingReply ) {
-        console.log('New message:', message)
-        lastMessageTime = message.time
-        generateReply(messages)
-      }
-
-    })
-  }
 
   res.send(message)
 
