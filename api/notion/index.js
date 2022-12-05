@@ -33,24 +33,17 @@ async function proxy({
 
       let idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING
 
-      // console.log({ id, idsExposedForPosting })
+      let url = 'https://api.notion.com/v1/' + endpoint
 
-      if ( 
-        !idsExposedForPosting.includes(id)
-        && authorization != process.env.NOTION_AUTH
-      ) {
-        return res.status(403).send("Invalid token or page not exposed for posting")
-      }
-      // disable ^^ and enable vv to allow calls from other people. We'll just check the if the id is exposed for posting and, if yes, replace the authorization token with the one stored in the env.
-      // if ( idsExposedForPosting.includes(id) ) {
-      //   authorization = process.env.NOTION_AUTH
-      // }
+      let headers = { ...defaultHeaders }
+
+      // If id is NOT exposed for posting, user the authorization header instead of the one in defaultHeaders
+      if ( !idsExposedForPosting.includes(id) )
+        Object.assign(headers, { authorization })
 
     }
 
-    let url = 'https://api.notion.com/v1/' + endpoint
 
-    let headers = { ...defaultHeaders }
 
     // send respective axios request depending on method
     let { data } = ['get', 'delete'].includes(method)

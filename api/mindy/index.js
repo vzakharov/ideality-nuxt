@@ -14,7 +14,6 @@ const app = express()
 app.set('trust proxy', true)
 
 const Notion = require('vovas-notion')
-// console.log(Notion)
 const notion = new Notion.default()
 
 const _ = require('lodash')
@@ -38,11 +37,10 @@ function nudgeUser({ name, raw: { id } }) {
     console.log('User wasn\'t online, adding to onlineUsers')
 
     // Check if this user's last message was "left" (special). If yes, post "joined" message
-    getMessages().then(messages => {
+    getMessages({ lazy: true }).then(messages => {
 
       let message = _(messages).filter({ user: { name } }).reverse().first()
-      console.log('User\'s last message:', message.content)
-      if ( message && message.content === 'left' && message.special ) {
+      if ( message?.content === 'left' && message.special ) {
         console.log('User\'s last message was "left", posting "joined" message')
         postMessage(id, 'joined', { special: true })
       }
@@ -78,51 +76,81 @@ app.use((req, res, next) => {
   next()
 })
 
-let lastChecked = null        // When the bot last checked for new messages
 let lastMessageTime = null    // When the last message was posted the last time it was checked
-let generatingReply = false   // Whether the bot is currently generating a reply
+let lastCheckedByBot = null   // When the bot last checked for new messages
+// let resolveNewMessage         // A function to resolve the promise that resolves when a new message is posted
+// let newMessagePromise         // A promise that resolves when a new message is posted
+
+// const resetNewMessagePromise = () => {
+//   // Reset the promise that resolves when a new message is posted
+//   newMessagePromise = new Promise(resolve => {
+//     resolveNewMessage = resolve
+//   })
+// }
+
+// resetNewMessagePromise()
+
+let messages = null           // Messages (synced from Notion)
 
 // Endpoint to get chat messages
-app.get('/messages', allowUnauthorized, auth, async ( req, res ) => {
+app.post('/fetchMessages', allowUnauthorized, auth, async (
+  { 
+    body: { 
+      lastChecked: lastCheckedByUser,
+    }
+  }, res) => {
 
-  try {
+      try {
 
-    let messages = await getMessages()
-
-    // console.log('messages:', messages)
-    if ( req.user ) {
-
-      nudgeUser(req.user)
-
-      // If the last check was more than five seconds ago, check for new messages
-      if ( !lastChecked || (new Date() - lastChecked) > 5000 ) {
-        lastChecked = new Date()
-        console.log('Checking for new messages')
-
-        let message = _.last(messages)
-        if ( message.time != lastMessageTime && message.user.name != botName && !generatingReply ) {
-          console.log('New message:', message)
-          lastMessageTime = message.time
-          generateReply(messages)
+        await getMessages()
+        
+        // If no new messages have been posted since the last time the user checked, wait for a new message
+        if ( lastMessageTime && lastCheckedByUser && lastMessageTime < lastCheckedByUser ) {
+          // console.log('Waiting for a new message')
+          await gettingMessagesPromise
         }
+
+        res.send({ messages })
+
+        // // console.log('messages:', messages)
+        // if ( req.user ) {
+
+        //   nudgeUser(req.user)
+
+        //   // If the last check was more than five seconds ago, check for new messages
+        //   if ( !lastChecked || (new Date() - lastChecked) > 5000 ) {
+        //     lastChecked = new Date()
+        //     console.log('Checking for new messages')
+
+        //     let message = _.last(messages)
+        //     if ( message.time != lastMessageTime && message.user.name != botName && !generatingReply ) {
+        //       console.log('New message:', message)
+        //       lastMessageTime = message.time
+        //       generateReply(messages)
+        //     }
+
+        //   }
+
+        // }
+
+        // if ( generatingReply )
+        //   console.log('Returning messages while generating reply')
+
+        // res.send({ messages, generatingReply })
+
+      } catch (e) {
+
+        console.error('error:', e)
+        res.status(500).send(e)
 
       }
 
-    }
-
-    if ( generatingReply )
-      console.log('Returning messages while generating reply')
-
-    res.send({ messages, generatingReply })
-
-  } catch (e) {
-
-    console.error('error:', e)
-    res.status(500).send(e)
-
   }
 
-})
+)
+
+let generatingReply = false   // Whether the bot is currently generating a reply
+let replyTimeout              // A timeout after which the bot will start generating a reply
 
 // Endpoint to post message
 app.post('/postMessage', auth, async ( { user, body: { content }}, res ) => {
@@ -130,34 +158,74 @@ app.post('/postMessage', auth, async ( { user, body: { content }}, res ) => {
   let message = await postMessage( user.raw.id, content )
   console.log('Message sent:', message)
 
-  res.send(message)
+  // If no reply timeout is set, set one so that the time between last check and the reply is 5 seconds
+  let botWillStartReplyingIn = Math.max(0, 5000 - ( new Date() - lastCheckedByBot ))
+  if ( !replyTimeout ) {
+    replyTimeout = setTimeout( generateReply, botWillStartReplyingIn )
+  }
+
+  res.send({ message, botWillStartReplyingIn })
 
 })
 
-async function getMessages() {
-  let messages = await notion.queryDatabase(
-    process.env.MINDY_CHAT_DB_ID, {
-      sorts: [
-        {
-          property: 'Time',
-          direction: 'descending'
-        }
-      ]
-    }, {
-      unwrap: {
-        user: {}
-      }
-    }
-  )
+let gettingMessagesPromise = null
 
-  messages = messages.reverse()
-  return messages
+async function getMessages({ lazy, resolve } = {}) {
+
+  if ( lazy && messages )
+    return messages
+
+  if ( gettingMessagesPromise ) {
+    console.log('Already getting messages, waiting for promise to resolve')
+    return gettingMessagesPromise
+  }
+
+  if ( !resolve )  
+    gettingMessagesPromise = new Promise(r => resolve = r)
+
+  try {
+
+    messages = (
+      await notion.queryDatabase(
+        process.env.MINDY_CHAT_DB_ID, {
+          sorts: [
+            {
+              property: 'Time',
+              direction: 'descending'
+            }
+          ]
+        }, {
+          unwrap: {
+            user: {}
+          }
+        }
+      )
+    ).reverse()
+
+    lastMessageTime = _.last(messages)?.time
+
+    resolve(messages)
+    gettingMessagesPromise = null
+  
+    return messages
+    
+  } catch (e) {
+
+    console.error('Error getting messages:', e)
+    console.error('Retrying...')
+    return getMessages({ resolve })
+
+  }
+
 }
 
-async function generateReply(messages) {
+async function generateReply() {
 
   if ( generatingReply )
     throw new Error('Already generating reply')
+
+  // Wait until messages are fetched
+  await getMessages()
 
   generatingReply = true
 
@@ -174,7 +242,7 @@ async function generateReply(messages) {
 
   console.log('input:\n', prompt)
 
-  let engine = 'text-davinci-002'
+  let engine = 'text-davinci-003'
 
   while ( true ) {
 
@@ -243,9 +311,9 @@ async function generateReply(messages) {
 
 async function postMessage( id, content, { special } = {} ) {
 
-  let time = Date.now().toString()
+  let time = Date.now().toString() // TODO: Change to ISO string format
 
-  await notion.createPage( {
+  let message = await notion.createPage( {
     parent: {
       database_id: process.env.MINDY_CHAT_DB_ID
     },
@@ -261,6 +329,11 @@ async function postMessage( id, content, { special } = {} ) {
     },
     titleProp: 'time'
   } )
+
+  // Reload messages
+  getMessages()
+
+  return message
 
 }
 
@@ -324,11 +397,14 @@ async function allowUnauthorized(req, res, next) {
   next()
 }
 
+const usersByToken = {}
+
 // Authentication middleware
 async function auth(req, res, next) {
 
   try {
     
+    // console.time('auth')
     let { headers: { authorization }, allowUnauthorized } = req
 
     if ( !authorization && !allowUnauthorized ) {
@@ -349,11 +425,14 @@ async function auth(req, res, next) {
         if ( !token )
           return res.status(401).send("No token in authorization header")
 
-        user = await getUserByToken(token, { includeRaw: true })
+        user = usersByToken[token] || await getUserByToken(token, { includeRaw: true })
 
         if ( !user || user.hash != createHash(token) )
           return res.status(401).send("Invalid token or no user found")
+        
+        usersByToken[token] = user
 
+        // console.timeEnd('auth')
         console.log('User authenticated:', user.name)
 
       }

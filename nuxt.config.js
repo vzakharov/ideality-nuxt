@@ -1,3 +1,11 @@
+const coffeeLoader = require('coffee-loader')
+
+if (!global.coffeeScriptRegistered) {
+  require('coffeescript/register')
+  global.coffeeScriptRegistered = true
+}
+
+
 export default {
 
   env: {
@@ -55,7 +63,9 @@ export default {
     '@nuxt/content',
     // 'vue-async-computed'
     '@nuxtjs/markdownit',
-    ['nuxt-clipboard', { autoSetContainer: true }]
+    ['nuxt-clipboard', { autoSetContainer: true }],
+    // coffee script
+    'nuxt-coffeescript-module'
   ],
 
   markdownit: {
@@ -114,27 +124,24 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    
     loaders: {
       vue: {
         compilerOptions: {
           preserveWhitespace: false
         }
       }
-    }
-    // extend(config, ctx) {
-    //   if (ctx.isDev && ctx.isClient) {
-    //     config.module.rules.push({
-    //       enforce: 'pre',
-    //       test: /\.(js|vue)$/,
-    //       loader: 'eslint-loader',
-    //       exclude: /(node_modules)/
-    //     })
-    //   }
+    },
 
-    //   if (ctx.isDev) {
-    //     config.devtool = ctx.isClient ? 'source-map' : 'inline-source-map'
-    //   }
-    // }
+    // Use coffee-loader for .coffee files
+
+    extend (config) {
+      config.module.rules.push({
+        test: /\.coffee$/,
+        loader: coffeeLoader
+      })
+    }
+
   },
 
   server: {
@@ -145,7 +152,8 @@ export default {
     '/api/': '~/api/',
     '/api/notion/': '~/api/notion/',
     '/api/eli5': '~/api/eli5/',
-    '/api/mindy': '~/api/mindy'
+    '/api/mindy': '~/api/mindy',
+    '/api/polygon': '~/api/polygon/index.coffee',
   },
 
   script: [

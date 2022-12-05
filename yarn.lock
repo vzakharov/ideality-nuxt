@@ -2980,6 +2980,23 @@ coa@^2.0.2:
     chalk "^2.4.1"
     q "^1.1.2"
 
+coffee-loader@^0.9:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/coffee-loader/-/coffee-loader-0.9.0.tgz#6deabd336062ddc6d773da4dfd16367fc7107bd6"
+  integrity sha512-VSoQ5kWr6Yfjn4RDpVbba2XMs3XG1ZXtLakPRt8dNfUcNU9h+1pocpdUUEd7NK9rLDwrju4yonhxrL8aMr5tww==
+  dependencies:
+    loader-utils "^1.0.2"
+
+coffee-loader@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/coffee-loader/-/coffee-loader-4.0.0.tgz#85284b489b0a63963da2b52e372111edf0565617"
+  integrity sha512-RvgC8c0JwRew5lq3x2J+P4z9Cvan/v91muEvV90VJXcTuJbJQN20taZxfj6/XC4yysA8PInPGpxdB1J9LphLuQ==
+
+coffeescript@^2, coffeescript@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.7.0.tgz#a43ec03be6885d6d1454850ea70b9409c391279c"
+  integrity sha512-hzWp6TUE2d/jCcN67LrW1eh5b/rSDKQK6oD6VMLlggYVUUFexgTH9z3dNYihzX4RMhze5FTUsUmOXViJKFQR/A==
+
 collection-visit@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/collection-visit/-/collection-visit-1.0.0.tgz#4bc0373c164bc3291b4d368c829cf1a80a59dca0"
@@ -6408,6 +6425,14 @@ nuxt-clipboard@^0.0.6:
   integrity sha512-KlfBWhQMVh9qcZGE7I0B0lhxYrcgrDwSXBtWCQIJKPOLQYEmZm3uJj8EDdLKXhpXfo8PeylaEo/6eL0u0wkgYQ==
   dependencies:
     vue-clipboard2 "^0.3.1"
+
+nuxt-coffeescript-module@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/nuxt-coffeescript-module/-/nuxt-coffeescript-module-2.3.0.tgz#08d879f88ae951df63b0e9b6ac1c03f30f811ec7"
+  integrity sha512-54Wo2xn6EiXu2+ITBOM9/HhmKyfuSq33XCnyVuOL8NPZQHwKt+CX16BC//88TofigNctKBaY7NvSLFtDBhQ27g==
+  dependencies:
+    coffee-loader "^0.9"
+    coffeescript "^2"
 
 nuxt@^2.15.7:
   version "2.15.8"
