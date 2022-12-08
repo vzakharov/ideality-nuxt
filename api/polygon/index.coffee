@@ -6,10 +6,11 @@ console.log "Starting polygon API server..."
 express = require 'express'
 axios = require 'axios'
 Notion = require('vovas-notion').default
+_ = require 'lodash'
 console.log Notion
 
 # Take POLYGON_TOKEN, OPENAI_KEY, and POLYGON_DB_ID from environment variables
-{ POLYGON_TOKEN, OPENAI_KEY } = process.env
+{ POLYGON_TOKEN } = process.env
 
 # Create a new express app
 app = express()
@@ -18,10 +19,6 @@ app = express()
 notion = new Notion(POLYGON_TOKEN)
 
 # Create an axios instance for calls to OpenAI
-
-model = axios.create
-  headers:
-    Authorization: "Bearer #{OPENAI_KEY}"
 
 # Health check endpoint
 app.get '/health', ( req, res ) => res.send 'ok'
@@ -40,23 +37,29 @@ app.get '/prompt/:id', ({ params: { id } }, res) ->
     console.error err
     res.status(500).send err
 
+promptsBySlug = {}
+
 # Get all slug->id mappings for a database
-app.get '/prompt-ids/:databaseId', ({ params: { databaseId }, query = {} }, res) ->
+app.get '/prompt-ids/:databaseId', ({ params: { databaseId }, query: { reload }}, res) ->
 
   try
 
     console.log "Getting prompt IDs... for database #{databaseId}"
-    if query
-      console.log "Query: #{JSON.stringify(query)}"
 
-    results = await notion.queryDatabase(databaseId, query)
-    console.log "Found #{results.length} prompts."
+    if reload or not promptsBySlug[databaseId]
+      console.log "Reloading prompts..."
 
-    # Create an object with slugs as keys and ids as values
-    idsBySlug = results.reduce ((acc, { slug, raw: { id }}) ->
-      acc[slug] = id
-      acc
-    ), {}
+      results = await notion.queryDatabase(databaseId, {})
+      console.log "Found #{results.length} prompts."
+
+      promptsBySlug[databaseId] = _(results)
+        .map ({ slug, raw: { id }, ...properties }) -> [ slug, { id, ...properties } ]
+        .fromPairs()
+        .value()
+      
+      console.log "Found prompts: #{JSON.stringify(promptsBySlug[databaseId])}"
+    
+    idsBySlug = _.mapValues promptsBySlug, 'id'
 
     console.log "Mapping: #{JSON.stringify(idsBySlug)}"
 
@@ -69,11 +72,15 @@ app.get '/prompt-ids/:databaseId', ({ params: { databaseId }, query = {} }, res)
 
 
 # Run a prompt
-app.post '/run', ({ body: { promptId: id, engine, parameters = {}, variables = {} } } = {}, res) ->
+app.post '/run', ({ body: { openAIkey, promptId: id, engine, parameters = {}, variables = {} } } = {}, res) ->
 
   try
 
-    console.log "Running prompt #{id} with engine #{engine} and parameters #{parameters} and variables #{variables}"
+    # If no openAIkey is provided, return a 401
+    if not openAIkey
+      res.status(401).send "Missing OpenAI key"
+
+    console.log "Running prompt #{id} with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
 
     { text: prompt } = await notion.getPage(id)
 
@@ -86,23 +93,40 @@ app.post '/run', ({ body: { promptId: id, engine, parameters = {}, variables = {
         variables[key]
       else
         throw new Error "Missing input #{key}" 
+
     Object.assign parameters, { prompt }
 
-    url = "https://api.openai.com/v1/engines/#{engine ? 'text-davinci-003'}/completions"
+    console.log "Prompt after variable substitution: #{prompt}"
+
+    engine ?= 'text-davinci-003'
+
+    url = "https://api.openai.com/v1/engines/#{engine}/completions"
 
     try
-      { data: { choices } } = await model.post url, parameters
-      console.log "Got response from OpenAI: #{choices}"
+
+      { data: { choices } } = await axios.post url, parameters,
+        headers:
+          Authorization: "Bearer #{openAIkey}"
+      console.log "Got response from OpenAI: #{JSON.stringify(choices)}"
+
+      choices = choices.map ({ text }) -> text: text.trim()
+
+      # Count the approximate cost of tokens spent: count characters in prompt + all choices and divide by 4,
+      # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
+      characterCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], 'length'
+      approximateCost = characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 )
+
+      res.send {
+        choices
+        characterCount
+        approximateCost
+      }
+
     catch err
       if err.response.status is 401
         res.status(401).send err
       else
         throw err
-
-
-    res.send {
-      choices
-    }
 
   catch err
     console.error err
