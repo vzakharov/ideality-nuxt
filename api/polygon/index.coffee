@@ -72,7 +72,7 @@ app.get '/prompt-ids/:databaseId', ({ params: { databaseId }, query: { reload }}
 
 
 # Run a prompt
-app.post '/run', ({ body: { openAIkey, promptId: id, engine, parameters = {}, variables = {} } } = {}, res) ->
+app.post '/run', ({ body: { openAIkey, databaseId, slug, promptId: id, engine, parameters = {}, variables = {} } } = {}, res) ->
 
   try
 
@@ -82,9 +82,44 @@ app.post '/run', ({ body: { openAIkey, promptId: id, engine, parameters = {}, va
 
     console.log "Running prompt #{id} with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
 
+    # If no prompt ID is provided, get the prompt ID from the slug
+    if not id
+      if slug
+        # Make sure databaseId is provided, otherwise we can't get the prompt ID
+        if not databaseId
+          res.status(400).send "Missing body parameter databaseId"
+        # Make sure we have the prompt IDs for the database
+        id = promptsBySlug[databaseId][slug].id
+        if not id
+          res.status(400).send "No prompt with slug #{slug} in database #{databaseId}"
+      else
+        res.status(400).send "Missing body parameter promptId or slug"
+
     { text: prompt } = await notion.getPage(id)
 
-    console.log "Found prompt: #{prompt}"
+    console.log "Found prompt:\n#{prompt}"
+
+    # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
+    replaceSlugs = ( prompt, slugsUsed = [] ) ->
+
+      prompt.replace /%(\w+)%/g, ( _, subSlug ) ->
+
+        console.log "Replacing %#{subSlug}% in prompt '#{slug}'..."
+
+        # Make sure databaseId is provided, otherwise we can't get the prompt ID for a referenced prompt
+        if not databaseId
+          throw new Error "Missing body parameter databaseId (required for referenced prompts)"
+
+        if slugsUsed.includes subSlug
+          throw new Error "Circular reference in prompts: #{slugsUsed.join ' -> '} -> #{subSlug}"
+        
+        { text } = await notion.getPage promptsBySlug[databaseId][subSlug].id
+
+        referencedPrompt = replaceSlugs text, [ ...slugsUsed, subSlug ]
+
+    if prompt.match /%(\w+)%/
+      prompt = replaceSlugs prompt
+      console.log "Prompt after slug replacement:\n#{prompt}"
 
     # Replace {{...}} in prompt with variables
     # Make sure the key is in the variables object
@@ -95,8 +130,7 @@ app.post '/run', ({ body: { openAIkey, promptId: id, engine, parameters = {}, va
         throw new Error "Missing input #{key}" 
 
     Object.assign parameters, { prompt }
-
-    console.log "Prompt after variable substitution: #{prompt}"
+    console.log "Prompt after variable substitution:\n#{prompt}"
 
     engine ?= 'text-davinci-003'
 
