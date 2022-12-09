@@ -118,7 +118,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameter
           ( await getTemplate( databaseId, reffedSlug ) ).prompt
         ), [ ...slugsUsed, reffedSlug ]
 
-        prompt = prompt.replace reffedSlug, reffedPrompt
+        prompt = prompt.replace "%#{reffedSlug}%", reffedPrompt
       
       prompt
 
@@ -153,7 +153,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameter
 
       # Count the approximate cost of tokens spent: count characters in template + all choices and divide by 4,
       # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
-      characterCount = _.sumBy [ template, ..._.map(choices, 'text') ], 'length'
+      characterCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], 'length'
       approximateCost = characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 )
 
       res.send {
