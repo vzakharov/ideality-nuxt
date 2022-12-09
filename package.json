@@ -34,7 +34,7 @@
     "nuxt-clipboard": "^0.0.6",
     "nuxt-coffeescript-module": "^2.3.0",
     "pluralize": "^8.0.0",
-    "vovas-notion": "^1.0.0",
+    "vovas-notion": "^1.1.1",
     "vue-async-computed": "^3.9.0",
     "vue-lodash": "^2.1.2",
     "vue-reactive-refs": "^0.0.2",
