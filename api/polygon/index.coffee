@@ -16,7 +16,7 @@ console.log Notion
 app = express()
 
 # Create a new notion client with env.POLYGON_TOKEN as the token
-notion = new Notion(POLYGON_TOKEN)
+notion = new Notion(POLYGON_TOKEN, { debug: true })
 
 log = (...args) ->
   console.log ...args
