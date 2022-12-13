@@ -77,6 +77,28 @@ app.get '/template-ids/:databaseId', ({ params: { databaseId }, query: { reload 
     console.error err
     res.status(500).send err
 
+generations = []
+
+# Upvote a generation
+app.post '/upvote', ({ body: { generationId, databaseId }, res }) ->
+
+  try
+
+    console.log "Upvoting prompt/response pair #{generationId}:"
+    request = _.find generations, { id: generationId }
+    if not request
+      console.log "No such prompt/response pair #{generationId}"
+      res.send false
+    else
+      console.log request
+      { prompt, response, template } = request
+
+      await notion.createPage(
+        parent: database_id: databaseId
+        properties: { template, prompt, response }
+      )
+
+      res.send true
 
 # Run a template
 app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
@@ -149,7 +171,26 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { eng
           Authorization: "Bearer #{openAIkey}"
       console.log "Got response from OpenAI: #{JSON.stringify(choices)}"
 
-      choices = choices.map ({ text }) -> text: text.trim()
+      choices = choices.map ({ text }) ->
+
+        generation = {
+          id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+          template: slug
+          prompt
+          response: text
+        }
+        generations.push generation
+
+        # Remove the request after 24 hours
+        setTimeout ->
+          _.remove generations, generation
+          console.log "Removed request #{generation.id} from generations: #{JSON.stringify(generation)}"
+        , 24 * 60 * 60 * 1000
+      
+        console.log "Added request #{generation.id} to generations: #{JSON.stringify(generation)}"
+
+        text: text.trim()
+        generationId: generation.id
 
       # Count the approximate cost of tokens spent: count characters in template + all choices and divide by 4,
       # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
