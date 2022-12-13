@@ -11,13 +11,18 @@ const defaultHeaders = {
 // Generic function to send a request to Notion
 async function proxy({ 
   params: { endpoint }, 
-  headers: { authorization },
+  headers,
   query,
   method,
   body
 }, res, next ) {
+
   console.log({ method, endpoint })
+  let url = 'https://api.notion.com/v1/' + endpoint
+  let { authorization } = headers
+
   try {
+
     method = method.toLowerCase()
 
     // Non-authenticated requests are only allowed for 'get pages'
@@ -33,17 +38,13 @@ async function proxy({
 
       let idsExposedForPosting = process.env.NOTION_IDS_EXPOSED_FOR_POSTING
 
-      let url = 'https://api.notion.com/v1/' + endpoint
-
-      let headers = { ...defaultHeaders }
+      headers = defaultHeaders
 
       // If id is NOT exposed for posting, user the authorization header instead of the one in defaultHeaders
       if ( !idsExposedForPosting.includes(id) )
         Object.assign(headers, { authorization })
 
     }
-
-
 
     // send respective axios request depending on method
     let { data } = ['get', 'delete'].includes(method)

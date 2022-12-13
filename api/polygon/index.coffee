@@ -79,7 +79,7 @@ app.get '/template-ids/:databaseId', ({ params: { databaseId }, query: { reload 
 
 
 # Run a template
-app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameters = {}, variables = {} } } = {}, res) ->
+app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
 
   try
 
@@ -103,7 +103,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameter
     { prompt } = template
 
     # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
-    getRefs = ( prompt ) -> prompt.match(/(?<=\%)(\w+)(?=\%)/g) ? []
+    getRefs = ( prompt ) -> prompt.match(/(?<=\%)([\w-]+)(?=\%)/g) ? []
 
     replaceRefs = ( prompt, slugsUsed = [ slug ] ) ->
 
@@ -128,7 +128,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameter
 
     # Replace {{...}} in template with variables
     # Make sure the key is in the variables object
-    prompt = prompt.replace /\{\{(\w+)\}\}/g, ( _, key ) ->
+    prompt = prompt.replace /\{\{([\w-]+)\}\}/g, ( _, key ) ->
       if variables[key]
         variables[key]
       else
@@ -154,7 +154,10 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, engine, parameter
       # Count the approximate cost of tokens spent: count characters in template + all choices and divide by 4,
       # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
       characterCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], 'length'
+      # console.log [ prompt, ..._.map(choices, 'text') ]
+      console.log "Character count: #{characterCount}"
       approximateCost = characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 )
+      console.log "Approximate cost: #{approximateCost}"
 
       res.send {
         choices
