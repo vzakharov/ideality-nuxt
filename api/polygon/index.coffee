@@ -100,8 +100,51 @@ app.post '/upvote', ({ body: { generationId, databaseId }, res }) ->
 
       res.send true
 
+makePrompt = ({ template, variables, slug, databaseId }) ->
+
+  { prompt } = template
+
+  # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
+  getRefs = ( prompt ) -> prompt.match(/(?<=\%)([\w-]+)(?=\%)/g) ? []
+
+  replaceRefs = ( prompt, slugsUsed = if slug then [ slug ] else [] ) ->
+
+    for reffedSlug in refs = getRefs(prompt)
+
+      if not databaseId
+        throw new Error "Missing database ID (required for slug replacement)"
+
+      console.log "Replacing %#{reffedSlug}% in template '#{_.last(slugsUsed)}'; refs: #{refs}"
+
+      if slugsUsed.includes reffedSlug
+        throw new Error "Circular reference in templates: #{slugsUsed.join ' -> '} -> #{reffedSlug}"
+      
+      reffedPrompt = await replaceRefs (
+        ( await getTemplate( databaseId, reffedSlug ) ).prompt
+      ), [ ...slugsUsed, reffedSlug ]
+
+      prompt = prompt.replace "%#{reffedSlug}%", reffedPrompt
+    
+    prompt
+
+  if getRefs(prompt)
+    prompt = await replaceRefs prompt
+    console.log "Prompt after slug replacement:\n#{prompt}"
+
+  # Replace {{...}} in template with variables
+  # Make sure the key is in the variables object
+  prompt = prompt.replace /\{\{([\w-]+)\}\}/g, ( _, key ) ->
+    if variables[key]
+      variables[key]
+    else
+      throw new Error "Missing input #{key}" 
+
+  console.log "Prompt after variable substitution:\n#{prompt}"
+
+  prompt
+
 # Run a template
-app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
+app.post '/run', run = ({ body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
 
   try
 
@@ -109,54 +152,26 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { eng
     if not openAIkey
       throw new Error "Missing OpenAI key"
 
-    console.log "Running template #{slug} for database #{databaseId} with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
+    if not template 
 
-    [ 'slug', 'databaseId' ].forEach ( param ) ->
-      if not body[param]
-        throw new Error  "Missing required body parameter #{param}"
+      console.log "Running template #{slug} for database #{databaseId} with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
 
-    # Make sure we have the template IDs for the database
-    template = await getTemplate(databaseId, slug)
-    if not template
-      throw new Error  "No template with slug '#{slug}' in database #{databaseId}; available slugs: #{_.keys(await getTemplates(databaseId)).join ', '}"
+      [ 'slug', 'databaseId' ].forEach ( param ) ->
+        if not body[param]
+          throw new Error  "Missing required body parameter #{param}"
 
-    console.log "Found template:\n#{template}"
+      # Make sure we have the template IDs for the database
+      template = await getTemplate(databaseId, slug)
+      if not template
+        throw new Error  "No template with slug '#{slug}' in database #{databaseId}; available slugs: #{_.keys(await getTemplates(databaseId)).join ', '}"
 
-    { prompt } = template
+      console.log "Found template:\n#{template}"
+    
+    else
 
-    # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
-    getRefs = ( prompt ) -> prompt.match(/(?<=\%)([\w-]+)(?=\%)/g) ? []
+      console.log "Running user-provided template with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
 
-    replaceRefs = ( prompt, slugsUsed = [ slug ] ) ->
-
-      for reffedSlug in refs = getRefs(prompt)
-
-        console.log "Replacing %#{reffedSlug}% in template '#{_.last(slugsUsed)}'; refs: #{refs}"
-
-        if slugsUsed.includes reffedSlug
-          throw new Error "Circular reference in templates: #{slugsUsed.join ' -> '} -> #{reffedSlug}"
-        
-        reffedPrompt = await replaceRefs (
-          ( await getTemplate( databaseId, reffedSlug ) ).prompt
-        ), [ ...slugsUsed, reffedSlug ]
-
-        prompt = prompt.replace "%#{reffedSlug}%", reffedPrompt
-      
-      prompt
-
-    if getRefs(prompt)
-      prompt = await replaceRefs prompt
-      console.log "Prompt after slug replacement:\n#{prompt}"
-
-    # Replace {{...}} in template with variables
-    # Make sure the key is in the variables object
-    prompt = prompt.replace /\{\{([\w-]+)\}\}/g, ( _, key ) ->
-      if variables[key]
-        variables[key]
-      else
-        throw new Error "Missing input #{key}" 
-
-    console.log "Prompt after variable substitution:\n#{prompt}"
+    prompt = await makePrompt({ template, variables, slug, databaseId })
 
     Object.assign parameters, { prompt }
 
@@ -171,7 +186,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { eng
           Authorization: "Bearer #{openAIkey}"
       console.log "Got response from OpenAI: #{JSON.stringify(choices)}"
 
-      choices = choices.map ({ text }) ->
+      choices = choices.map ({ text, finish_reason }) ->
 
         generation = {
           id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
@@ -191,6 +206,7 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { eng
 
         text: text.trim()
         generationId: generation.id
+        finishReason: finish_reason
 
       # Count the approximate cost of tokens spent: count characters in template + all choices and divide by 4,
       # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
@@ -199,22 +215,104 @@ app.post '/run', ({ body, body: { openAIkey, databaseId, slug, parameters: { eng
       console.log "Character count: #{characterCount}"
       approximateCost = characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 )
       console.log "Approximate cost: #{approximateCost}"
-
-      res.send {
+      
+      output = {
         choices
         characterCount
         approximateCost
       }
+      
+      res?.send output
+
+      console.log(output)
+      output
 
     catch err
-      if err.response.status is 401
+      if res && err.response?.status is 401
         res.status(401).send err
       else
         throw err
 
   catch err
     console.error err
-    res.status(500).send err
+    if res
+      res.status(500).send err
+    else
+      throw err
+
+# Run a universal, hardcoded "generate anything" prompt
+app.post '/generate', generate = ({ body: { openAIkey, parameters, what: keys, for: args } = {} }, res) ->
+
+  databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
+  slug = 'default'
+
+  keys = keys.map _.camelCase
+  feeder = "{\"#{keys[0]}\":"
+  output = await run
+    body: {
+      openAIkey
+      databaseId
+      slug
+      parameters: {
+        max_tokens: 100
+        stop: "}'"
+        ...parameters
+      }
+      variables: {
+        keys: JSON.stringify keys
+        args: JSON.stringify args
+        feeder
+      }
+    }
+    local: true
+  
+  console.log "Got output: #{JSON.stringify(output)}"
+  { choices: [{ text }], approximateCost } = output
+
+  text = feeder + text
+
+  # Go backwards, adding either `` (nothing), `}`, `]}`, `"}`, or `"]}` to the end of the string until we have a valid JSON object
+  tryParse = ( text ) -> try JSON.parse text
+
+  output = do getObject = ( text ) ->
+    object = null
+    _.find [ '', '}', ']}', '"}', '"]}' ], ( suffix ) ->
+      object = tryParse text + suffix
+    if object 
+      object
+    else if text.length > 0
+      getObject text.slice 0, -1
+    else
+      return res.status(500).send "Could not parse generated text: #{text}"
+  
+  res.send { ...output, _: { approximateCost } }
+
+# Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
+
+if process.env.NODE_ENV is 'development'
+
+  app.get '/run/:databaseId/:slug', ({ params: { databaseId, slug }, query: { parameters = "{}", ...query } }, res) ->
+    console.log "Running template #{slug} for database #{databaseId} with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
+    run
+      body: {
+        openAIkey: process.env.OPENAI_KEY
+        databaseId
+        slug
+        parameters: JSON.parse parameters
+        variables: query
+      }
+      res
+  
+  app.get '/generate/:what/for/:for', ({ params: { what, for: firstArg }, query: { parameters = "{}", ...query } }, res) ->
+    console.log "Running generate with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
+    generate
+      body: {
+        openAIkey: process.env.OPENAI_KEY
+        what: what.split ','
+        for: [ firstArg, query ]
+        parameters: JSON.parse parameters
+      }
+      res
 
 module.exports =
   path: '/api/polygon'
