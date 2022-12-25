@@ -9,14 +9,22 @@ Notion = require('vovas-notion').default
 _ = require 'lodash'
 console.log Notion
 
-# Take POLYGON_TOKEN, OPENAI_KEY, and POLYGON_DB_ID from environment variables
-{ POLYGON_TOKEN } = process.env
+{ POLYGON_TOKEN, NODE_ENV, OPENAI_KEY, MIXPANEL_TOKEN } = process.env
 
 # Create a new express app
 app = express()
 
+# Get IP in request
+app.set 'trust proxy', ( ip ) ->
+  console.log "Got IP #{ip}"
+  true
+
 # Create a new notion client with env.POLYGON_TOKEN as the token
 notion = new Notion(POLYGON_TOKEN, { debug: true })
+
+mixpanel = require('mixpanel').init(MIXPANEL_TOKEN)
+
+crypto = require 'crypto'
 
 log = (...args) ->
   console.log ...args
@@ -144,13 +152,36 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
   prompt
 
 # Run a template
-app.post '/run', run = ({ body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
+app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
 
   try
 
     # If no openAIkey is provided, return a 401
     if not openAIkey
       throw new Error "Missing OpenAI key"
+    
+    console.log {arguments}
+
+    keyHash = crypto.createHash('sha256').update(openAIkey).digest('hex')
+
+    mixpanelParams = {
+      environment: NODE_ENV
+      ip
+      n: parameters.n ? 1
+      # Sha of openAIkey as distinct_id
+      distinct_id: keyHash
+      keyHash
+      slug
+      databaseId
+      engine
+      ...parameters
+      # If no slug, use hash of template
+      ...( if slug then {} else
+        template_hash: crypto.createHash('sha256').update(template).digest('hex')
+      )
+    }
+
+    mixpanel.track 'run', mixpanelParams, -> console.log "Tracked run", ...arguments
 
     if not template 
 
@@ -213,7 +244,7 @@ app.post '/run', run = ({ body, body: { template, openAIkey, databaseId, slug, p
       characterCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], 'length'
       # console.log [ prompt, ..._.map(choices, 'text') ]
       console.log "Character count: #{characterCount}"
-      approximateCost = characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 )
+      approximateCost = Math.round( characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 ) * 1e7 ) / 1e7
       console.log "Approximate cost: #{approximateCost}"
       
       output = {
@@ -221,6 +252,14 @@ app.post '/run', run = ({ body, body: { template, openAIkey, databaseId, slug, p
         characterCount
         approximateCost
       }
+
+      mixpanel.track 'completed', {
+        ...mixpanelParams,
+        generationIds: _.map(choices, 'generationId').join ','
+        finishReasons: _.map(choices, 'finishReason').join ','
+        characterCount
+        approximateCost
+      }, -> console.log "Tracked completed", ...arguments
       
       res?.send output
 
@@ -235,20 +274,25 @@ app.post '/run', run = ({ body, body: { template, openAIkey, databaseId, slug, p
 
   catch err
     console.error err
+    mixpanel.track 'error', {
+      ...mixpanelParams
+      error: err.message or err
+    }, -> console.log "Tracked error", ...arguments
     if res
       res.status(500).send err
     else
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ body: { openAIkey, parameters, what: keys, for: args } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, what: keys, for: args } = {} }, res) ->
 
   databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
   slug = 'default'
 
   keys = keys.map _.camelCase
   feeder = "{\"#{keys[0]}\":"
-  output = await run
+  output = await run {
+    ip
     body: {
       openAIkey
       databaseId
@@ -264,10 +308,10 @@ app.post '/generate', generate = ({ body: { openAIkey, parameters, what: keys, f
         feeder
       }
     }
-    local: true
+  }
   
   console.log "Got output: #{JSON.stringify(output)}"
-  { choices: [{ text }], approximateCost } = output
+  { choices: [{ text, generationId, finishReason }], approximateCost, characterCount } = output
 
   text = feeder + text
 
@@ -285,17 +329,20 @@ app.post '/generate', generate = ({ body: { openAIkey, parameters, what: keys, f
     else
       return res.status(500).send "Could not parse generated text: #{text}"
   
-  res.send { ...output, _: { approximateCost } }
+  res.send { ...output, _meta: {
+    approximateCost, characterCount, generationId,
+    incomplete: finishReason is 'length' or undefined
+  } }
 
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
-if process.env.NODE_ENV is 'development'
+if NODE_ENV is 'development'
 
   app.get '/run/:databaseId/:slug', ({ params: { databaseId, slug }, query: { parameters = "{}", ...query } }, res) ->
     console.log "Running template #{slug} for database #{databaseId} with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
     run
       body: {
-        openAIkey: process.env.OPENAI_KEY
+        openAIkey: OPENAI_KEY
         databaseId
         slug
         parameters: JSON.parse parameters
@@ -307,7 +354,7 @@ if process.env.NODE_ENV is 'development'
     console.log "Running generate with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
     generate
       body: {
-        openAIkey: process.env.OPENAI_KEY
+        openAIkey: OPENAI_KEY
         what: what.split ','
         for: [ firstArg, query ]
         parameters: JSON.parse parameters
