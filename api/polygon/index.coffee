@@ -284,13 +284,13 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, what: keys, for: args } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input } = {} }, res) ->
 
   databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
   slug = 'default'
 
-  keys = keys.map _.camelCase
-  feeder = "{\"#{keys[0]}\":"
+  outputKeys = outputKeys.map _.camelCase
+  feeder = "{\"#{outputKeys[0]}\":"
   output = await run {
     ip
     body: {
@@ -303,8 +303,8 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, what: key
         ...parameters
       }
       variables: {
-        keys: JSON.stringify keys
-        args: JSON.stringify args
+        outputKeys: JSON.stringify outputKeys
+        input: JSON.stringify input
         feeder
       }
     }
