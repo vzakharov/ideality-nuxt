@@ -144,9 +144,9 @@ export default {
 
   },
 
-  server: {
-    port: process.env.PORT || 3700,
-  },
+  // server: {
+  //   port: process.env.PORT || 3700,
+  // },
   
   serverMiddleware: {
     '/api/': '~/api/',
