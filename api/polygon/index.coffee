@@ -284,9 +284,9 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
         parseAsJson = ( text, feeder ) ->    
           text = feeder + text if feeder
-          text = text.replace /\n/g, '\\n'
+          # text = text.replace /\n/g, '\\n'
           do tryParse = ( text ) ->
-            # log 'Trying', text
+            log 'Trying', text
             for suffix in [ parameters.stop, '', '}', ']}', '"}', '"]}' ]
               # log '...with suffix', suffix
               if ( object = try JSON.parse text + suffix )
