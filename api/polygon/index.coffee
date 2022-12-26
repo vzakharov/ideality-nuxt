@@ -1,15 +1,19 @@
 # API server for polygon, a framework for serving and executing GPT-3 templates
+log = (...args) ->
+  console.log ...args
+  args[args.length - 1]
 
-console.log "Starting polygon API server..."
+log "Starting polygon API server..."
 
 # Imports: express, axios, and vovas-notion
 express = require 'express'
 axios = require 'axios'
 Notion = require('vovas-notion').default
 _ = require 'lodash'
-console.log Notion
+# log Notion
 
 { POLYGON_TOKEN, NODE_ENV, OPENAI_KEY, MIXPANEL_TOKEN } = process.env
+SECRET = POLYGON_TOKEN.slice(-8)
 
 # Create a new express app
 app = express()
@@ -26,9 +30,9 @@ mixpanel = require('mixpanel').init(MIXPANEL_TOKEN)
 
 crypto = require 'crypto'
 
-log = (...args) ->
-  console.log ...args
-  args[args.length - 1]
+{ default: GPT3Tokenizer } = require 'gpt3-tokenizer'
+log GPT3Tokenizer
+tokenizer = new GPT3Tokenizer type: 'gpt3'
 
 # Health check endpoint
 app.get '/health', ( req, res ) => res.send 'ok'
@@ -71,6 +75,35 @@ getTemplate =  ( databaseId, slug ) ->
   console.log "Getting template #{slug} for database #{databaseId}..."
   {[ slug ]: template} = await getTemplates(databaseId)
   log template
+
+# Create a get prompt endpoint that requires an 8-character "secret" as a query parameter and checks it against SECRET
+app.get '/prompt/:databaseId/:slug', ({ params: { databaseId, slug }, query: { html, secret } }, res) ->
+
+  try
+
+    if secret != SECRET
+      return res.status(401).send "Invalid token"
+    
+    { prompt } = await getTemplate(databaseId, slug)
+
+    if html isnt undefined
+      prompt = prompt.replace /\n/g, '<br>'
+
+    res.send prompt
+
+  catch err
+
+    console.error err
+    res.status(500).send err
+
+# Clear all cached templates (takes a secret as a query parameter, same as above)
+app.get '/clear-cache', ({ query: { secret } }, res) ->
+
+  if secret != SECRET
+    return res.status(401).send "Invalid token"
+
+  templatesBySlug = {}
+  res.send "Cleared cache."
 
 # Get all slug->id mappings for a database
 app.get '/template-ids/:databaseId', ({ params: { databaseId }, query: { reload }}, res) ->
@@ -204,6 +237,8 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
     prompt = await makePrompt({ template, variables, slug, databaseId })
 
+    { outputFormat } = template
+
     Object.assign parameters, { prompt }
 
     engine ?= 'text-davinci-003'
@@ -239,31 +274,48 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
         generationId: generation.id
         finishReason: finish_reason
 
-      # Count the approximate cost of tokens spent: count characters in template + all choices and divide by 4,
-      # then multiply by 0.02/1000 if engine contains 'davinci' or 0.002/1000 otherwise (we assume they won't be using ada or babbage)
-      characterCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], 'length'
-      # console.log [ prompt, ..._.map(choices, 'text') ]
-      console.log "Character count: #{characterCount}"
-      approximateCost = Math.round( characterCount / 4 / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 ) * 1e7 ) / 1e7
-      console.log "Approximate cost: #{approximateCost}"
+      log 'Token count',
+      tokenCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], (text) -> log tokenizer.encode(text).bpe.length
+
+      log 'Cost',
+      approximateCost = Math.round( tokenCount / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 ) * 1e7 ) / 1e7
       
-      output = {
-        choices
-        characterCount
-        approximateCost
-      }
+      if outputFormat is 'json'
+
+        parseAsJson = ( text, feeder ) ->    
+          text = feeder + text if feeder
+          text = text.replace /\n/g, '\\n'
+          do tryParse = ( text ) ->
+            for suffix in [ '', '}', ']}', '"}', '"]}' ]
+              if ( object = try JSON.parse text + suffix )
+                return object
+            if text.length
+              tryParse text.slice 0, -1
+            else
+              throw new Error "Could not parse generated text: #{text}"
+
+        choices = choices.map (choice) -> {
+          ...choice
+          dict: parseAsJson choice.text, variables.feeder
+        }          
 
       mixpanel.track 'completed', {
         ...mixpanelParams,
         generationIds: _.map(choices, 'generationId').join ','
         finishReasons: _.map(choices, 'finishReason').join ','
-        characterCount
+        tokenCount
         approximateCost
       }, -> console.log "Tracked completed", ...arguments
       
+      output = {
+        choices
+        tokenCount
+        approximateCost
+      }
+      
       res?.send output
 
-      console.log(output)
+      log 'Output',
       output
 
     catch err
@@ -286,53 +338,44 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 # Run a universal, hardcoded "generate anything" prompt
 app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input } = {} }, res) ->
 
-  databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
-  slug = 'default'
+  try
 
-  outputKeys = outputKeys.map _.camelCase
-  feeder = "{\"#{outputKeys[0]}\":"
-  output = await run {
-    ip
-    body: {
-      openAIkey
-      databaseId
-      slug
-      parameters: {
-        max_tokens: 100
-        stop: "}'"
-        ...parameters
-      }
-      variables: {
-        outputKeys: JSON.stringify outputKeys
-        input: JSON.stringify input
-        feeder
+    databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
+    slug = 'default-v2'
+
+    outputKeys = outputKeys.map _.camelCase
+    feeder = "{\"#{outputKeys[0]}\":"
+    output = await run {
+      ip
+      body: {
+        openAIkey
+        databaseId
+        slug
+        parameters: {
+          max_tokens: 1000
+          stop: "}'"
+          ...parameters
+        }
+        variables: {
+          outputKeys: JSON.stringify outputKeys
+          input: JSON.stringify input
+          feeder
+        }
       }
     }
-  }
+    
+    log "Got output:",
+    { choices: [{ dict, generationId, finishReason }], approximateCost, tokenCount } = output
+
+    res.send { ...dict, _meta: {
+      approximateCost, tokenCount, generationId,
+      incomplete: finishReason is 'length' or undefined
+    } }
   
-  console.log "Got output: #{JSON.stringify(output)}"
-  { choices: [{ text, generationId, finishReason }], approximateCost, characterCount } = output
+  catch err
 
-  text = feeder + text
-
-  # Go backwards, adding either `` (nothing), `}`, `]}`, `"}`, or `"]}` to the end of the string until we have a valid JSON object
-  tryParse = ( text ) -> try JSON.parse text
-
-  output = do getObject = ( text ) ->
-    object = null
-    _.find [ '', '}', ']}', '"}', '"]}' ], ( suffix ) ->
-      object = tryParse text + suffix
-    if object 
-      object
-    else if text.length > 0
-      getObject text.slice 0, -1
-    else
-      return res.status(500).send "Could not parse generated text: #{text}"
-  
-  res.send { ...output, _meta: {
-    approximateCost, characterCount, generationId,
-    incomplete: finishReason is 'length' or undefined
-  } }
+    console.error err
+    res.status(500).send err
 
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
