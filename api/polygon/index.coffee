@@ -250,7 +250,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       { data: { choices } } = await axios.post url, parameters,
         headers:
           Authorization: "Bearer #{openAIkey}"
-      console.log "Got response from OpenAI: #{JSON.stringify(choices)}"
+      log "Got response from OpenAI", choices
 
       choices = choices.map ({ text, finish_reason }) ->
 
@@ -286,17 +286,19 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
           text = feeder + text if feeder
           text = text.replace /\n/g, '\\n'
           do tryParse = ( text ) ->
-            for suffix in [ '', '}', ']}', '"}', '"]}' ]
+            # log 'Trying', text
+            for suffix in [ parameters.stop, '', '}', ']}', '"}', '"]}' ]
+              # log '...with suffix', suffix
               if ( object = try JSON.parse text + suffix )
-                return object
+                return log "Parsed JSON", object
             if text.length
               tryParse text.slice 0, -1
             else
               throw new Error "Could not parse generated text: #{text}"
 
         choices = choices.map (choice) -> {
-          ...choice
-          dict: parseAsJson choice.text, variables.feeder
+          ...(parseAsJson choice.text, variables.feeder),
+          _meta: choice
         }          
 
       mixpanel.track 'completed', {
@@ -365,9 +367,9 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
     }
     
     log "Got output:",
-    { choices: [{ dict, generationId, finishReason }], approximateCost, tokenCount } = output
+    { choices: [{ _meta: { generationId, finishReason }, ...data }], approximateCost, tokenCount } = output
 
-    res.send { ...dict, _meta: {
+    res.send { ...data, _meta: {
       approximateCost, tokenCount, generationId,
       incomplete: finishReason is 'length' or undefined
     } }
