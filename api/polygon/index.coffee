@@ -121,7 +121,8 @@ app.get '/template-ids/:databaseId', ({ params: { databaseId }, query: { reload 
 generations = []
 
 # Upvote a generation
-app.post '/upvote', ({ body: { generationId, databaseId }, res }) ->
+app.post '/upvote', ({ body: { generationId, databaseId = 'd688be53d62145f6b880639d49cc706f'}, res }) ->
+# TODO: move databaseId to env var
 
   try
 
@@ -210,7 +211,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       ...parameters
       # If no slug, use hash of template
       ...( if slug then {} else
-        template_hash: crypto.createHash('sha256').update(template).digest('hex')
+        templateHash: crypto.createHash('sha256').update(template).digest('hex')
       )
     }
 
@@ -284,10 +285,10 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
         parseAsJson = ( text, feeder ) ->    
           text = feeder + text if feeder
-          # text = text.replace /\n/g, '\\n'
+          text = text.replace /\n/g, '\\n'
           do tryParse = ( text ) ->
             log 'Trying', text
-            for suffix in [ parameters.stop, '', '}', ']}', '"}', '"]}' ]
+            for suffix in [ '', '}', ']}' ]
               # log '...with suffix', suffix
               if ( object = try JSON.parse text + suffix )
                 return log "Parsed JSON", object
@@ -297,7 +298,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
               throw new Error "Could not parse generated text: #{text}"
 
         choices = choices.map (choice) -> {
-          ...(parseAsJson choice.text, variables.feeder),
+          ...(parseAsJson choice.text.slice(0, -1), variables.feeder),
           _meta: choice
         }          
 
@@ -343,6 +344,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
   try
 
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
+    # TODO: Move this to environment variable
     slug = 'default-v2'
 
     outputKeys = outputKeys.map _.camelCase
@@ -354,8 +356,8 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
         databaseId
         slug
         parameters: {
-          max_tokens: 1000
-          stop: "}'"
+          max_tokens: 3000
+          stop: ["\n>", "\n\n"]
           ...parameters
         }
         variables: {
