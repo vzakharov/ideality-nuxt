@@ -339,13 +339,27 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, output, outputKeys, input, keyForGuidelines = 'guidelines' } = {} }, res) ->
 
   try
 
+    log "Running generate with parameters #{JSON.stringify(parameters)}, output #{output}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}, keyForGuidelines #{keyForGuidelines}"
+
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
-    slug = 'default-v2'
+    slug = if input then 'default-v3' else 'default-noinput'
+
+    # If output is a string, convert to array
+    outputKeys ?= if typeof output is 'string'
+      [ output ]
+    else if _.isObject(output)
+      if _.isArray output
+        output
+      else
+        if input[keyForGuidelines]
+          throw new Error "You cannot use the key '#{keyForGuidelines}' in your input object when using the object format for outputKeys. Either rename the key or use the `keyForGuidelines` parameter to specify a different key for the guidelines."
+        input[keyForGuidelines] = output
+        _.keys output
 
     outputKeys = outputKeys.map _.camelCase
     feeder = "{\"#{outputKeys[0]}\":"
