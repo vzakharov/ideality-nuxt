@@ -146,6 +146,52 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
 
   { prompt } = template
 
+  replaceVariables = ( text, variables ) ->
+    text.replace /\{\{([\w-]+)(\?)?\}\}/g, ( _, key, optional ) ->
+      if variable = variables[key]
+        # if object, stringify
+        if typeof variable is 'object'
+          JSON.stringify variable
+        else
+          variable
+      else
+        if optional
+          ''
+        else
+          throw new Error "Missing input #{key}" 
+
+  # Process conditionals, formatted as [[<variable>?]]:each[[<text>]] with "conditionals", where
+  # <variable> is a variable name, which, if it exists, triggers the conditional
+  # <text> is the text to be inserted or, if the variable is an array, repeated for each value (replacing {{variable}}'s where needed)
+  prompt = do parseConditionals = ( prompt ) ->
+
+    log "Parsing conditionals"
+    regex = /\[\[(\w-+)(\?)\]\]:\[\[(.+?)\]\]/g
+
+    while match = regex.exec(prompt)
+
+      log "Found a conditional:",
+      [ fullMatch, variable, optional, text ] = match
+
+      prompt =
+      if variable = variables[variable]
+          
+        if _.isArray variable
+          # Use a merge of all variables and the current variable as a basis for inserting variables into the text (because we want to use "global" variables but also the ones specific to this iteration, which should have priority)
+          variable
+            .map ( variable ) -> replaceVariables text, { ...variables, ...variable }
+            .join ''
+        else
+          replaceVariables text, variables
+
+      else
+        if optional
+          ''
+        else
+          throw new Error "Missing input #{variable}"
+
+    prompt
+
   # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
   getRefs = ( prompt ) -> prompt.match(/(?<=\%)([\w-]+)(?=\%)/g) ? []
 
@@ -172,18 +218,10 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
   if getRefs(prompt)
     prompt = await replaceRefs prompt
     console.log "Prompt after slug replacement:\n#{prompt}"
-
-  # Replace {{...}} in template with variables
-  # Make sure the key is in the variables object
-  prompt = prompt.replace /\{\{([\w-]+)\}\}/g, ( _, key ) ->
-    if variables[key]
-      variables[key]
-    else
-      throw new Error "Missing input #{key}" 
-
-  console.log "Prompt after variable substitution:\n#{prompt}"
-
-  prompt
+  
+  # Replace {{...}} in template with variables. Optional variables are formatted as {{var?}}.
+  log "Prompt after variable substitution:",
+  prompt = replaceVariables prompt, variables
 
 # Run a template
 app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
@@ -339,27 +377,29 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, output, outputKeys, input, keyForGuidelines = 'guidelines' } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specifications, examples, keyForGuidelines = 'guidelines' } = {} }, res) ->
 
   try
 
-    log "Running generate with parameters #{JSON.stringify(parameters)}, output #{output}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}, keyForGuidelines #{keyForGuidelines}"
+    log "Running generate with parameters #{JSON.stringify(parameters)}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}, keyForGuidelines #{keyForGuidelines}"
 
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
-    slug = if input then 'default-v3' else 'default-noinput'
+    slug = 'generate'
+    if not input
+      slug += '-no-input'
 
     # If output is a string, convert to array
-    outputKeys ?= if typeof output is 'string'
-      [ output ]
-    else if _.isObject(output)
-      if _.isArray output
-        output
+    outputKeys = if typeof outputKeys is 'string'
+      [ outputKeys ]
+    else if _.isObject(outputKeys)
+      if _.isArray outputKeys
+        outputKeys
       else
         if input[keyForGuidelines]
           throw new Error "You cannot use the key '#{keyForGuidelines}' in your input object when using the object format for outputKeys. Either rename the key or use the `keyForGuidelines` parameter to specify a different key for the guidelines."
-        input[keyForGuidelines] = output
-        _.keys output
+        input[keyForGuidelines] = outputKeys
+        _.keys outputKeys
 
     outputKeys = outputKeys.map _.camelCase
     feeder = "{\"#{outputKeys[0]}\":"
@@ -375,8 +415,10 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, output, o
           ...parameters
         }
         variables: {
-          outputKeys: JSON.stringify outputKeys
-          input: JSON.stringify input
+          outputKeys
+          input
+          specifications
+          examples
           feeder
         }
       }
