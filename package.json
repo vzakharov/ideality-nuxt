@@ -33,6 +33,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "mixpanel": "^0.17.0",
+    "node-html-parser": "^6.1.4",
     "nuxt": "^2.15.7",
     "nuxt-clipboard": "^0.0.6",
     "nuxt-coffeescript-module": "^2.3.0",
@@ -43,6 +44,7 @@
     "vue-async-computed": "^3.9.0",
     "vue-lodash": "^2.1.2",
     "vue-reactive-refs": "^0.0.2",
+    "vue-server-renderer": "2.6.14",
     "vue-textarea-autosize": "^1.1.1",
     "watchpack-chokidar2": "^2.0.1"
   }

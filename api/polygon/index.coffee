@@ -34,6 +34,10 @@ crypto = require 'crypto'
 log GPT3Tokenizer
 tokenizer = new GPT3Tokenizer type: 'gpt3'
 
+Vue = require 'vue'
+renderer = require('vue-server-renderer').createRenderer()
+{ parse } = require 'node-html-parser'
+
 # Health check endpoint
 app.get '/health', ( req, res ) => res.send 'ok'
 
@@ -160,38 +164,6 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
         else
           throw new Error "Missing input #{key}" 
 
-  # Process conditionals, formatted as [[<variable>?]]:each[[<text>]] with "conditionals", where
-  # <variable> is a variable name, which, if it exists, triggers the conditional
-  # <text> is the text to be inserted or, if the variable is an array, repeated for each value (replacing {{variable}}'s where needed)
-  prompt = do parseConditionals = ( prompt ) ->
-
-    log "Parsing conditionals"
-    regex = /\[\[(\w-+)(\?)\]\]:\[\[(.+?)\]\]/g
-
-    while match = regex.exec(prompt)
-
-      log "Found a conditional:",
-      [ fullMatch, variable, optional, text ] = match
-
-      prompt =
-      if variable = variables[variable]
-          
-        if _.isArray variable
-          # Use a merge of all variables and the current variable as a basis for inserting variables into the text (because we want to use "global" variables but also the ones specific to this iteration, which should have priority)
-          variable
-            .map ( variable ) -> replaceVariables text, { ...variables, ...variable }
-            .join ''
-        else
-          replaceVariables text, variables
-
-      else
-        if optional
-          ''
-        else
-          throw new Error "Missing input #{variable}"
-
-    prompt
-
   # Replace %...% in prompt with prompts with the same slug (recursively, but make sure we don't get stuck in a loop)
   getRefs = ( prompt ) -> prompt.match(/(?<=\%)([\w-]+)(?=\%)/g) ? []
 
@@ -218,13 +190,27 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
   if getRefs(prompt)
     prompt = await replaceRefs prompt
     console.log "Prompt after slug replacement:\n#{prompt}"
-  
+
   # Replace {{...}} in template with variables. Optional variables are formatted as {{var?}}.
   log "Prompt after variable substitution:",
   prompt = replaceVariables prompt, variables
 
+makePromptFromVueTemplate = ({ prompt, variables }) ->
+
+  # Replace all `<\w+ (if|for|else)` with v-... respectively (to make )
+  prompt = prompt.replace /<(\w+) (if|for|else)/g, '<$1 v-$2'
+
+  log "rendered HTML:",
+  html = await renderer.renderToString new Vue
+    data: -> variables
+    methods: json: (value) -> if value then JSON.stringify value else ''
+    template: "<div style=\"white-space: pre-wrap;\">#{prompt}</div>"
+
+  log "Text content:",
+  (parse html).textContent
+
 # Run a template
-app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, variables = {} } } = {}, res) ->
+app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
 
   try
 
@@ -274,9 +260,14 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
       console.log "Running user-provided template with engine #{engine} and parameters #{JSON.stringify(parameters)} and variables #{JSON.stringify(variables)}..."
 
-    prompt = await makePrompt({ template, variables, slug, databaseId })
+    { outputFormat, promptFormat, prompt } = template
 
-    { outputFormat } = template
+    prompt = await if promptFormat is 'vue'
+      makePromptFromVueTemplate { prompt, variables }
+    else
+      makePrompt { template, variables, slug, databaseId }
+    
+    prompt += feeder
 
     Object.assign parameters, { prompt }
 
@@ -336,8 +327,8 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
               throw new Error "Could not parse generated text: #{text}"
 
         choices = choices.map (choice) -> {
-          ...(parseAsJson choice.text.slice(0, -1), variables.feeder),
-          _meta: choice
+          ...(parseAsJson choice.text.slice(0, -1), feeder),
+          _meta: _.omit choice, 'text'
         }          
 
       mixpanel.track 'completed', {
@@ -386,8 +377,6 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
     slug = 'generate'
-    if not input
-      slug += '-no-input'
 
     # If output is a string, convert to array
     outputKeys = if typeof outputKeys is 'string'
@@ -419,18 +408,29 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
           input
           specifications
           examples
-          feeder
         }
+        feeder
       }
     }
     
     log "Got output:",
-    { choices: [{ _meta: { generationId, finishReason }, ...data }], approximateCost, tokenCount } = output
+    # { choices: [{ _meta: { generationId, finishReason }, ...data }], approximateCost, tokenCount } = output
+    # 
+    # res.send { ...data, _meta: {
+    #   approximateCost, tokenCount, generationId,
+    #   incomplete: finishReason is 'length' or undefined
+    # } }
+    { choices, approximateCost, tokenCount } = output
 
-    res.send { ...data, _meta: {
-      approximateCost, tokenCount, generationId,
-      incomplete: finishReason is 'length' or undefined
-    } }
+    if choices.length is 1
+      { _meta: { generationId, finishReason }, ...data } = choices[0]
+      res.send { ...data, _meta: {
+        approximateCost, tokenCount, generationId,
+        incomplete: finishReason is 'length' or undefined
+      } }
+    else
+      res.send { choices, approximateCost, tokenCount }
+
   
   catch err
 
