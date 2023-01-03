@@ -197,16 +197,21 @@ makePrompt = ({ template, variables, slug, databaseId }) ->
 
 makePromptFromVueTemplate = ({ prompt, variables }) ->
 
-  # Replace all `<\w+ (if|for|else)` with v-... respectively (to make )
-  prompt = prompt.replace /<(\w+) (if|for|else)/g, '<$1 v-$2'
+  # Replace all `<(if|for|else-if) .*?>` with <span v-...="..."> to make Vue happy
+  # Also replace <else> with <span v-else> and all respective closing tags
+  log "Prompt converted to Vue template:",
+    prompt = prompt
+      .replace /<(if|for|else-if)\s+(.*?)>/g, '<span v-$1="$2">'
+      .replace /<else>/g, '<span v-else>'
+      .replace /<\/(if|for|else-if|else)>/g, '</span>'
 
-  log "rendered HTML:",
+  # log "rendered HTML:",
   html = await renderer.renderToString new Vue
     data: -> variables
     methods: json: (value) -> if value then JSON.stringify value else ''
     template: "<div style=\"white-space: pre-wrap;\">#{prompt}</div>"
 
-  log "Text content:",
+  log "Text content:\n",
   (parse html).textContent
 
 # Run a template
