@@ -199,11 +199,16 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
 
   # Replace all `<(if|for|else-if) .*?>` with <span v-...="..."> to make Vue happy
   # Also replace <else> with <span v-else> and all respective closing tags
-  log "Prompt converted to Vue template:",
-    prompt = prompt
-      .replace /<(if|for|else-if)\s+(.*?)>/g, '<span v-$1="$2">'
-      .replace /<else>/g, '<span v-else>'
-      .replace /<\/(if|for|else-if|else)>/g, '</span>'
+  # Also remove all indentation
+  # Also replace empty lines with <br/> to turn them into line breaks once we do innerText
+  prompt = prompt
+    .replace /<(if|for|else-if)\s+(.*?)>/g, '<span v-$1="$2">'
+    .replace /<else>/g, '<span v-else>'
+    .replace /<\/(if|for|else-if|else)>/g, '</span>'
+    .replace /^\s+/gm, ''
+    .replace /^\s*$/gm, '<br/>'
+  
+  log "Vue template:\n#{prompt}"
 
   # log "rendered HTML:",
   html = await renderer.renderToString new Vue
@@ -212,7 +217,7 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
     template: "<div style=\"white-space: pre-wrap;\">#{prompt}</div>"
 
   log "Text content:\n",
-  (parse html).textContent
+  _.unescape (parse html).innerText.trim()
 
 # Run a template
 app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
@@ -373,7 +378,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specifications, examples, keyForGuidelines = 'guidelines' } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, keyForGuidelines = 'guidelines' } = {} }, res) ->
 
   try
 
@@ -411,7 +416,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
         variables: {
           outputKeys
           input
-          specifications
+          specs
           examples
         }
         feeder
