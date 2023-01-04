@@ -378,7 +378,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, keyForGuidelines = 'guidelines' } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, retries = 2, keyForGuidelines = 'guidelines' } = {} }, res) ->
 
   try
 
@@ -388,51 +388,70 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
     # TODO: Move this to environment variable
     slug = 'generate'
 
+    if not outputKeys
+      { outputKeys } = specs
+
     # If output is a string, convert to array
-    outputKeys = if typeof outputKeys is 'string'
+    outputKeys = if _.isString outputKeys
       [ outputKeys ]
     else if _.isObject(outputKeys)
       if _.isArray outputKeys
         outputKeys
       else
-        if input[keyForGuidelines]
-          throw new Error "You cannot use the key '#{keyForGuidelines}' in your input object when using the object format for outputKeys. Either rename the key or use the `keyForGuidelines` parameter to specify a different key for the guidelines."
-        input[keyForGuidelines] = outputKeys
         _.keys outputKeys
 
     outputKeys = outputKeys.map _.camelCase
     feeder = "{\"#{outputKeys[0]}\":"
-    output = await run {
-      ip
-      body: {
-        openAIkey
-        databaseId
-        slug
-        parameters: {
-          max_tokens: 3000
-          stop: ["\n>", "\n\n"]
-          ...parameters
-        }
-        variables: {
-          outputKeys
-          input
-          specs
-          examples
-        }
-        feeder
-      }
-    }
-    
-    log "Got output:",
-    # { choices: [{ _meta: { generationId, finishReason }, ...data }], approximateCost, tokenCount } = output
-    # 
-    # res.send { ...data, _meta: {
-    #   approximateCost, tokenCount, generationId,
-    #   incomplete: finishReason is 'length' or undefined
-    # } }
-    { choices, approximateCost, tokenCount } = output
 
-    if choices.length is 1
+    { n } = parameters
+    n ||= 1
+
+    choices = []
+    approximateCost = 0
+    tokenCount = 0
+
+    for attempt in [ 1 .. retries+1 ]
+
+      log 'Got output:',
+      output = await run {
+        ip
+        body: {
+          openAIkey
+          databaseId
+          slug
+          parameters: {
+            max_tokens: 3000
+            stop: ["\n>", "\n\n"]
+            ...parameters
+          }
+          variables: {
+            outputKeys
+            input
+            specs
+            examples
+          }
+          feeder
+        }
+      }
+
+      # Remove choices that don't have all the output keys
+      output.choices = output.choices.filter (choice) ->
+        _.every outputKeys, (key) -> choice[key] isnt undefined
+
+      choices.push ...output.choices
+      approximateCost += output.approximateCost
+      tokenCount += output.tokenCount
+
+      if choices.length >= n
+        break
+      
+      # If it was the last attempt, and not even one choice has all the output keys, throw an error
+      if attempt is retries+1 and choices.length is 0
+        throw new Error "Could not generate an output with all the output keys (#{outputKeys.join ', '})"
+      
+      log "Not enough choices (#{choices.length} < #{n}), retrying (attempt #{attempt})"
+
+    if n is 1
       { _meta: { generationId, finishReason }, ...data } = choices[0]
       res.send { ...data, _meta: {
         approximateCost, tokenCount, generationId,
