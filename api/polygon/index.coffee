@@ -378,11 +378,11 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, retries = 2, keyForGuidelines = 'guidelines' } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, retries = 2 } = {} }, res) ->
 
   try
 
-    log "Running generate with parameters #{JSON.stringify(parameters)}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}, keyForGuidelines #{keyForGuidelines}"
+    log "Running generate with parameters #{JSON.stringify(parameters)}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}"
 
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
@@ -401,9 +401,11 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
         _.keys outputKeys
 
     outputKeys = outputKeys.map _.camelCase
-    feeder = "{\"#{outputKeys[0]}\":"
+    feeder = "{\"#{outputKeys[0]}"
 
     { n } = parameters
+    # If n is defined, we will be returning an array, even if n is 1
+    returnArray = n isnt undefined
     n ||= 1
 
     choices = []
@@ -451,7 +453,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       
       log "Not enough choices (#{choices.length} < #{n}), retrying (attempt #{attempt})"
 
-    if n is 1
+    if not returnArray
       { _meta: { generationId, finishReason }, ...data } = choices[0]
       res.send { ...data, _meta: {
         approximateCost, tokenCount, generationId,
@@ -463,8 +465,13 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
   
   catch err
 
-    console.error err
-    res.status(500).send err
+    # If it's an http error, log it and send it to the client
+    if err.response
+      console.error err.response.status, err.response.data
+      res.status(err.response.status).send { openaiError: err.response.data?.error }
+    else
+      console.error err
+      res.status(500).send err
 
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
