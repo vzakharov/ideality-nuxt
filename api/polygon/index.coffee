@@ -324,9 +324,9 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
         parseAsJson = ( text, feeder ) ->    
           text = feeder + text if feeder
-          text = text.replace /\n/g, '\\n'
+          # text = text.replace /\n/g, '\\n'
           do tryParse = ( text ) ->
-            log 'Trying', text
+            # log 'Trying', text
             for suffix in [ '', '}', ']}' ]
               # log '...with suffix', suffix
               if ( object = try JSON.parse text + suffix )
@@ -378,30 +378,34 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, input, specs, examples, retries = 2 } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, returns, input, specs, examples, retries = 2 } = {} }, res) ->
 
   try
 
-    log "Running generate with parameters #{JSON.stringify(parameters)}, outputKeys #{outputKeys}, input #{JSON.stringify(input)}"
+    if outputKeys
+      returns = outputKeys
+      # (For backwards compatibility)
+
+    log "Running generate with parameters #{JSON.stringify(parameters)}, returns #{returns}, input #{JSON.stringify(input)}"
 
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
     slug = 'generate'
 
-    if not outputKeys
-      { outputKeys } = specs
+    if not returns
+      { returns } = specs
 
     # If output is a string, convert to array
-    outputKeys = if _.isString outputKeys
-      [ outputKeys ]
-    else if _.isObject(outputKeys)
-      if _.isArray outputKeys
-        outputKeys
+    returns = if _.isString returns
+      [ returns ]
+    else if _.isObject(returns)
+      if _.isArray returns
+        returns
       else
-        _.keys outputKeys
+        _.keys returns
 
-    outputKeys = outputKeys.map _.camelCase
-    feeder = "{\"#{outputKeys[0]}"
+    returns = returns.map _.camelCase
+    feeder = "{\"#{returns[0]}"
 
     { n } = parameters
     # If n is defined, we will be returning an array, even if n is 1
@@ -427,7 +431,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
             ...parameters
           }
           variables: {
-            outputKeys
+            returns
             input
             specs
             examples
@@ -438,7 +442,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
 
       # Remove choices that don't have all the output keys
       output.choices = output.choices.filter (choice) ->
-        _.every outputKeys, (key) -> choice[key] isnt undefined
+        _.every returns, (key) -> choice[key] isnt undefined
 
       choices.push ...output.choices
       approximateCost += output.approximateCost
@@ -449,7 +453,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       
       # If it was the last attempt, and not even one choice has all the output keys, throw an error
       if attempt is retries+1 and choices.length is 0
-        throw new Error "Could not generate an output with all the output keys (#{outputKeys.join ', '})"
+        throw new Error "Could not generate an output with all the output keys (#{returns.join ', '})"
       
       log "Not enough choices (#{choices.length} < #{n}), retrying (attempt #{attempt})"
 
