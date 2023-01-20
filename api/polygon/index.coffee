@@ -76,9 +76,9 @@ getTemplates = ( databaseId, reload ) ->
 
 getTemplate =  ( databaseId, slug ) ->
 
-  console.log "Getting template #{slug} for database #{databaseId}..."
+  # console.log "Getting template #{slug} for database #{databaseId}..."
   {[ slug ]: template} = await getTemplates(databaseId)
-  log template
+  template
 
 # Create a get prompt endpoint that requires an 8-character "secret" as a query parameter and checks it against SECRET
 app.get '/prompt/:databaseId/:slug', ({ params: { databaseId, slug }, query: { html, secret } }, res) ->
@@ -219,6 +219,8 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
   log "Text content:\n",
   _.unescape (parse html).innerText.trim()
 
+waitUntilByKeyHash = {}
+
 # Run a template
 app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
 
@@ -281,11 +283,28 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
     Object.assign parameters, { prompt }
 
+    # If max_tokens is set and the number of tokens in prompt + max_tokens is greater than 4000 (2000 for curie), reduce max_tokens to stay below 4000 (2000)
+    promptTokens = tokenizer.encode(prompt).bpe.length
+    tokenLimit = if engine?.includes 'curie' then 2000 else 4000
+    if parameters.max_tokens and parameters.max_tokens + promptTokens > tokenLimit
+      parameters.max_tokens = tokenLimit - tokenizer.encode(prompt).bpe.length
+      console.warn "Reduced max_tokens to #{parameters.max_tokens} to stay below #{tokenLimit} tokens"
+
     engine ?= 'text-davinci-003'
 
     url = "https://api.openai.com/v1/engines/#{engine}/completions"
 
     try
+
+      # Wait until waitUntilByKeyHash[keyHash] (which is a timestamp)
+      if waitUntilByKeyHash[keyHash]
+        timeToWait = waitUntilByKeyHash[keyHash] - Date.now()
+        if timeToWait > 0          
+          console.log "Waiting for #{timeToWait}ms before sending request to OpenAI"
+          await new Promise (resolve) -> setTimeout resolve, timeToWait
+          console.log "Done waiting"
+        delete waitUntilByKeyHash[keyHash]
+
 
       { data: { choices } } = await axios.post url, parameters,
         headers:
@@ -316,6 +335,11 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
       log 'Token count',
       tokenCount = _.sumBy [ prompt, ..._.map(choices, 'text') ], (text) -> log tokenizer.encode(text).bpe.length
+
+      # An API key is allowed 250000 tokens per minute, i.e. ~4000 tokens per second, so we'll wait 0.25 seconds for every 1000 tokens, or 0.25 milliseconds per token next time we use this key
+      # waitUntilByKeyHash[keyHash] = Date.now() + tokenCount * 0.25
+      # Seems like openAI is taking into account max_tokens instead of the actual number of tokens, so we'll just wait 0.25 seconds for every 1000 max_tokens (plus promptTokens)
+      waitUntilByKeyHash[keyHash] = Date.now() + ( ( parameters.max_tokens || 10 ) + promptTokens ) * 0.25
 
       log 'Cost',
       approximateCost = Math.round( tokenCount / 1000 * ( if engine.includes 'davinci' then 0.02 else 0.002 ) * 1e7 ) / 1e7
@@ -378,7 +402,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, returns, input, specs, examples, retries = 2 } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, returns, optionalReturns, input, specs, examples, retries = 2 } = {} }, res) ->
 
   try
 
@@ -418,7 +442,14 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
 
     for attempt in [ 1 .. retries+1 ]
 
-      log 'Got output:',
+      variables = {
+        outputKeys: returns
+        input
+        specs
+        examples
+      }
+
+      # log 'Got output:',
       output = await run {
         ip
         body: {
@@ -426,23 +457,20 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
           databaseId
           slug
           parameters: {
-            max_tokens: 3000
+            # max_tokens: 3000
+            max_tokens: 500
             stop: ["\n>", "\n\n"]
             ...parameters
           }
-          variables: {
-            returns
-            input
-            specs
-            examples
-          }
+          variables
           feeder
         }
       }
 
-      # Remove choices that don't have all the output keys
+      requiredReturns = _.difference returns, ( optionalReturns or [] )
+      # Remove choices that don't have all the required returns
       output.choices = output.choices.filter (choice) ->
-        _.every returns, (key) -> choice[key] isnt undefined
+        _.every requiredReturns, (key) -> choice[key] isnt undefined
 
       choices.push ...output.choices
       approximateCost += output.approximateCost
@@ -453,7 +481,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       
       # If it was the last attempt, and not even one choice has all the output keys, throw an error
       if attempt is retries+1 and choices.length is 0
-        throw new Error "Could not generate an output with all the output keys (#{returns.join ', '})"
+        throw new Error "Could not generate an output with all the output keys (#{requiredReturns.join ', '}). If you want to make some of these keys optional, send them as an array of strings in the `optionalReturns` parameter."
       
       log "Not enough choices (#{choices.length} < #{n}), retrying (attempt #{attempt})"
 
@@ -475,7 +503,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       res.status(err.response.status).send { openaiError: err.response.data?.error }
     else
       console.error err
-      res.status(500).send err
+      res.status(500).send err.message or err
 
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
