@@ -222,23 +222,23 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
 waitUntilByKeyHash = {}
 
 # Run a template
-app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
+app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
 
   try
 
-    # If no openAIkey is provided, return a 401
-    if not openAIkey
+    # If no openaiKey is provided, return a 401
+    if not openaiKey
       throw new Error "Missing OpenAI key"
     
     console.log {arguments}
 
-    keyHash = crypto.createHash('sha256').update(openAIkey).digest('hex')
+    keyHash = crypto.createHash('sha256').update(openaiKey).digest('hex')
 
     mixpanelParams = {
       environment: NODE_ENV
       ip
       n: parameters.n ? 1
-      # Sha of openAIkey as distinct_id
+      # Sha of openaiKey as distinct_id
       distinct_id: keyHash
       keyHash
       slug
@@ -308,7 +308,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
 
       { data: { choices } } = await axios.post url, parameters,
         headers:
-          Authorization: "Bearer #{openAIkey}"
+          Authorization: "Bearer #{openaiKey}"
       log "Got response from OpenAI", choices
 
       choices = choices.map ({ text, finish_reason }) ->
@@ -324,10 +324,10 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
         # Remove the request after 24 hours
         setTimeout ->
           _.remove generations, generation
-          console.log "Removed request #{generation.id} from generations: #{JSON.stringify(generation)}"
+          # console.log "Removed request #{generation.id} from generations: #{JSON.stringify(generation)}"
         , 24 * 60 * 60 * 1000
       
-        console.log "Added request #{generation.id} to generations: #{JSON.stringify(generation)}"
+        # console.log "Added request #{generation.id} to generations: #{JSON.stringify(generation)}"
 
         text: text.trim()
         generationId: generation.id
@@ -402,9 +402,13 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKeys, returns, optionalReturns, input, specs, examples, retries = 2 } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters, outputKeys, returns, optionalReturns, input, specs, examples, retries = 2 } = {} }, res) ->
 
   try
+
+    if openAIkey
+      openaiKey = openAIkey
+      # (For backwards compatibility)
 
     if outputKeys
       returns = outputKeys
@@ -453,7 +457,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       output = await run {
         ip
         body: {
-          openAIkey
+          openaiKey
           databaseId
           slug
           parameters: {
@@ -476,7 +480,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       approximateCost += output.approximateCost
       tokenCount += output.tokenCount
 
-      if choices.length >= n
+      if choices.length >= Math.min(n, 2)
         break
       
       # If it was the last attempt, and not even one choice has all the output keys, throw an error
@@ -505,6 +509,12 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, parameters, outputKey
       console.error err
       res.status(500).send err.message or err
 
+# A POST /generate/:descriptor endpoint that currently does the same as /generate. The purpose is for it to look more descriptively in the browser console's Network tab.
+# TODO: Think if this can be implemented in the actual prompt somehow
+app.post '/generate/:descriptor', ({ params: { descriptor }, ...req }, ...args) ->
+  log "Running generate for #{descriptor}..."
+  generate req, ...args
+
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
 if NODE_ENV is 'development'
@@ -513,7 +523,7 @@ if NODE_ENV is 'development'
     console.log "Running template #{slug} for database #{databaseId} with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
     run
       body: {
-        openAIkey: OPENAI_KEY
+        openaiKey: OPENAI_KEY
         databaseId
         slug
         parameters: JSON.parse parameters
@@ -525,7 +535,7 @@ if NODE_ENV is 'development'
     console.log "Running generate with variables #{JSON.stringify(query)} and parameters #{parameters}..." 
     generate
       body: {
-        openAIkey: OPENAI_KEY
+        openaiKey: OPENAI_KEY
         what: what.split ','
         for: [ firstArg, query ]
         parameters: JSON.parse parameters
