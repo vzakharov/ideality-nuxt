@@ -360,10 +360,15 @@ app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slu
             else
               throw new Error "Could not parse generated text: #{text}"
 
-        choices = choices.map (choice) -> {
-          ...(parseAsJson choice.text.slice(0, -1), feeder),
-          _meta: _.omit choice, 'text'
-        }          
+        # choices = choices.map (choice) -> {
+        choices = choices.map ({ text, ...choice }) ->
+          text = text.slice 0, -1
+          # Convert \n to \\n
+          text = text.replace /\n/g, '\\n'
+          {
+            ...(parseAsJson text, feeder),
+            _meta: choice
+          }          
 
       mixpanel.track 'completed', {
         ...mixpanelParams,
@@ -471,7 +476,10 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
         }
       }
 
-      requiredReturns = _.difference returns, ( optionalReturns or [] )
+      requiredReturns = if optionalReturns == true
+        []
+      else
+        _.difference returns, ( optionalReturns or [] )
       # Remove choices that don't have all the required returns
       output.choices = output.choices.filter (choice) ->
         _.every requiredReturns, (key) -> choice[key] isnt undefined
