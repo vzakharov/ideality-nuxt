@@ -449,7 +449,13 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
     approximateCost = 0
     tokenCount = 0
 
+    retries = 5 if retries > 5
+    # (Just to be safe)
+    
     for attempt in [ 1 .. retries+1 ]
+
+      if attempt > 1
+        log "Retrying (attempt #{attempt})"
 
       variables = {
         outputKeys: returns
