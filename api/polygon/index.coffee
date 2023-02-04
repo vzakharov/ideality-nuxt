@@ -212,8 +212,19 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
 
   # log "rendered HTML:",
   html = await renderer.renderToString new Vue
-    data: -> variables
-    methods: json: (value) -> if value then JSON.stringify value else ''
+    data: -> {
+      ...variables
+      seedsUsed: []
+    }
+    methods:
+      json: (value) -> if value then JSON.stringify value else ''
+      # randomSeed: -> @json({seed: _.random(100, 999)})
+      randomSeed: ->
+        loop
+          seed = _.random(100, 999)
+          if not @seedsUsed.includes seed
+            @seedsUsed.push seed
+            return @json({seed})
     template: "<div style=\"white-space: pre-wrap;\">#{prompt}</div>"
 
   log "Text content:\n",
@@ -407,7 +418,7 @@ app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slu
       throw err
 
 # Run a universal, hardcoded "generate anything" prompt
-app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters, outputKeys, returns, optionalReturns, input, specs, examples, retries = 2 } = {} }, res) ->
+app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters, descriptor, outputKeys, returns, optionalReturns, input, specs, examples, retries = 2 } = {} }, res) ->
 
   try
 
@@ -423,7 +434,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
 
     databaseId = '068baa7841324cc682aa3eb7cad4bd8c'
     # TODO: Move this to environment variable
-    slug = 'generate'
+    slug = 'generate-v2'
 
     if not returns
       { returns } = specs
@@ -451,14 +462,15 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
 
     retries = 5 if retries > 5
     # (Just to be safe)
-    
+
     for attempt in [ 1 .. retries+1 ]
 
       if attempt > 1
         log "Retrying (attempt #{attempt})"
 
       variables = {
-        outputKeys: returns
+        returns
+        descriptor
         input
         specs
         examples
@@ -523,11 +535,9 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
       console.error err
       res.status(500).send err.message or err
 
-# A POST /generate/:descriptor endpoint that currently does the same as /generate. The purpose is for it to look more descriptively in the browser console's Network tab.
-# TODO: Think if this can be implemented in the actual prompt somehow
 app.post '/generate/:descriptor', ({ params: { descriptor }, ...req }, ...args) ->
   log "Running generate for #{descriptor}..."
-  generate req, ...args
+  generate { ...req, body: { ...req.body, descriptor } }, ...args
 
 # Enable methods via GET (only for DEV environment) using env.OPENAI_KEY. Variables are taken directly from the query string.
 
