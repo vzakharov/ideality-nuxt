@@ -451,7 +451,7 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
     returns = returns.map _.camelCase
     feeder = "{\"#{returns[0]}"
 
-    { n } = parameters
+    { n } = parameters || {}
     # If n is defined, we will be returning an array, even if n is 1
     returnArray = n isnt undefined
     n ||= 1
@@ -476,31 +476,44 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
         examples
       }
 
-      # log 'Got output:',
-      output = await run {
-        ip
-        body: {
-          openaiKey
-          databaseId
-          slug
-          parameters: {
-            # max_tokens: 3000
-            max_tokens: 500
-            stop: ["\n>", "\n\n"]
-            ...parameters
+      try
+        # log 'Got output:',
+        output = await run {
+          ip
+          body: {
+            openaiKey
+            databaseId
+            slug
+            parameters: {
+              # max_tokens: 3000
+              max_tokens: 500
+              stop: ["\n>", "\n\n"]
+              ...parameters
+            }
+            variables
+            feeder
           }
-          variables
-          feeder
         }
-      }
+      catch err
+        # If 429 or 503, try again after a second
+        if err.response?.status in [ 429, 503 ]
+          log "Got #{err.response.status} error, retrying in 1 second"
+          await new Promise (resolve) -> setTimeout resolve, 1000
+          continue
+        else
+          throw err
 
+      log 'Required returns',
       requiredReturns = if optionalReturns == true
         []
       else
         _.difference returns, ( optionalReturns or [] )
       # Remove choices that don't have all the required returns
       output.choices = output.choices.filter (choice) ->
-        _.every requiredReturns, (key) -> choice[key] isnt undefined
+        log "Checking if #{JSON.stringify choice} has all the required returns",
+        _.every requiredReturns, (key) ->
+          log "Checking if #{key} is in the choice",
+          choice[key] isnt undefined
 
       choices.push ...output.choices
       approximateCost += output.approximateCost
