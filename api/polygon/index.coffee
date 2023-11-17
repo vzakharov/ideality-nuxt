@@ -208,7 +208,7 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
     .replace /^\s+/gm, ''
     .replace /^\s*$/gm, '<br/>'
   
-  log "Vue template:\n#{prompt}"
+  # log "Vue template:\n#{prompt}"
 
   # log "rendered HTML:",
   html = await renderer.renderToString new Vue
@@ -227,16 +227,20 @@ makePromptFromVueTemplate = ({ prompt, variables }) ->
             return @json({seed})
     template: "<div style=\"white-space: pre-wrap;\">#{prompt}</div>"
 
-  log "Text content:\n",
+  log "Rendered prompt:\n",
   _.unescape (parse html).innerText.trim()
 
 waitUntilByKeyHash = {}
 
 # Run a template
-app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
+app.post '/run', run = ({ ip, body, body: { template, openAIkey, openaiKey, databaseId, slug, parameters: { engine, ...parameters }, feeder = '', variables = {} } } = {}, res) ->
 
   try
 
+    if openAIkey
+      openaiKey = openAIkey
+      # (For backwards compatibility)
+      
     # If no openaiKey is provided, return a 401
     if not openaiKey
       throw new Error "Missing OpenAI key"
@@ -292,7 +296,9 @@ app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slu
     
     prompt += feeder
 
-    Object.assign parameters, { prompt }
+    engine ?= 'text-davinci-003'
+
+    Object.assign parameters, { prompt, model: engine }
 
     # If max_tokens is set and the number of tokens in prompt + max_tokens is greater than 4000 (2000 for curie), reduce max_tokens to stay below 4000 (2000)
     promptTokens = tokenizer.encode(prompt).bpe.length
@@ -301,9 +307,7 @@ app.post '/run', run = ({ ip, body, body: { template, openaiKey, databaseId, slu
       parameters.max_tokens = tokenLimit - tokenizer.encode(prompt).bpe.length
       console.warn "Reduced max_tokens to #{parameters.max_tokens} to stay below #{tokenLimit} tokens"
 
-    engine ?= 'text-davinci-003'
-
-    url = "https://api.openai.com/v1/engines/#{engine}/completions"
+    url = "https://api.openai.com/v1/completions"
 
     try
 
@@ -496,8 +500,9 @@ app.post '/generate', generate = ({ ip, body: { openAIkey, openaiKey, parameters
         }
       catch err
         # If 429 or 503, try again after a second
-        if err.response?.status in [ 429, 503 ]
+        if err.response?.status in [ 429, 503 ] and attempt <= retries
           log "Got #{err.response.status} error, retrying in 1 second"
+          log "Error details:", err.response.data
           await new Promise (resolve) -> setTimeout resolve, 1000
           continue
         else
