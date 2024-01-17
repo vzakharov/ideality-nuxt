@@ -6,7 +6,7 @@
       :key="ai"
       :fields="{
         apiKey: { caption: 'API key', type: 'password'},
-        engine: { choices: ['davinci', 'curie'] },
+        engine: { choices: ['gpt-3.5-turbo-instruct'] },
         temperature: { choices: [0, 0.25, 0.5, 0.75] }
       }"
     />

@@ -34,12 +34,7 @@ data:
     openAIEngine:
       caption: OpenAI engine
       choices:
-      - davinci
-      - curie
-      - babbage
-      - ada
-      - text-davinci-001
-      - text-curie-001
+      - gpt-3.5-turbo-instruct
     ai21Engine:
       caption: AI21 engine
       choices:
@@ -51,9 +46,9 @@ data:
   providers:
   - name: GPT-3
     config:
-      url: https://api.openai.com/v1/engines/<openAIEngine>/completions
+      url: https://api.openai.com/v1/completions
       axios:
-        body: '{ "prompt": "<prompt>", "temperature": <temperature>, "max_tokens": <maxTokens>, 
+        body: '{ "prompt": "<prompt>", "model": "<openAIEngine>", "temperature": <temperature>, "max_tokens": <maxTokens>, 
           "frequency_penalty": <frequencyPenalty>, "presence_penalty": <presencePenalty>, 
           "n": <numOutputs> }'
         headers:
@@ -83,7 +78,7 @@ data:
   profiles:
   - name: Fixed MAX
     values:
-      openAIEngine: davinci
+      openAIEngine: gpt-3.5-turbo-instruct
       ai21Engine: jumbo
       temperature: 0
       maxTokens: 50
@@ -92,7 +87,7 @@ data:
       numOutputs: 1
   - name: Fixed MID
     values:
-      openAIEngine: curie
+      openAIEngine: gpt-3.5-turbo-instruct
       ai21Engine: large
       temperature: 0
       maxTokens: 50
@@ -101,7 +96,7 @@ data:
       numOutputs: 1
   - name: Variable MAX
     values:
-      openAIEngine: davinci
+      openAIEngine: gpt-3.5-turbo-instruct
       ai21Engine: jumbo
       temperature: 0.5
       maxTokens: 50
@@ -110,7 +105,7 @@ data:
       numOutputs: 3
   - name: Variable MID
     values:
-      openAIEngine: curie
+      openAIEngine: gpt-3.5-turbo-instruct
       ai21Engine: large
       temperature: 0.5
       maxTokens: 50

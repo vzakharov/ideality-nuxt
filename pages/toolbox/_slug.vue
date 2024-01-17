@@ -59,7 +59,7 @@
 
     data() {
       let ai = {
-        engine: 'curie',
+        engine: 'gpt-3.5-turbo-instruct',
         temperature: 0.5,
         apiKey: ''
       }

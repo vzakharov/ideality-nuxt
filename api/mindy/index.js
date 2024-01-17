@@ -242,15 +242,16 @@ async function generateReply() {
 
   console.log('input:\n', prompt)
 
-  let engine = 'text-davinci-003'
+  let engine = 'gpt-3.5-turbo-instruct'
 
   while ( true ) {
 
     try {
 
       let { data } = await axios.post(
-        `https://api.openai.com/v1/engines/${engine}/completions`, {
+        `https://api.openai.com/v1/completions`, {
           prompt,
+          model: engine,
           temperature: 0.5,
           max_tokens: 100,
           frequency_penalty: 1.5,

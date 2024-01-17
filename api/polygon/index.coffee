@@ -296,7 +296,7 @@ app.post '/run', run = ({ ip, body, body: { template, openAIkey, openaiKey, data
     
     prompt += feeder
 
-    engine ?= 'text-davinci-003'
+    engine ?= 'gpt-3.5-turbo-instruct'
 
     Object.assign parameters, { prompt, model: engine }
 

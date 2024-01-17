@@ -92,7 +92,7 @@ app.post('/', async ({ body: { query }}, res) => {
       // console.log({ text, finish_reason })
       let { 
         choices: [{ text: appendix }]
-      } = await complete(prompt + text, 'text-curie-001')
+      } = await complete(prompt + text, 'gpt-3.5-turbo-instruct')
       // console.log({ appendix })
       text += appendix
     }
@@ -114,11 +114,12 @@ app.post('/', async ({ body: { query }}, res) => {
   }
 
 
-  async function complete(prompt, engine='text-davinci-002') {
+  async function complete(prompt, engine='gpt-3.5-turbo-instruct') {
     let { data } = await axios.post(
-      `https://api.openai.com/v1/engines/${engine}/completions`,
+      `https://api.openai.com/v1/completions`,
       {
         prompt,
+        model: engine,
         max_tokens: 150,
         temperature: 0,
         n: 1,

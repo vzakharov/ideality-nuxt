@@ -81,10 +81,11 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
   }
   
   // console.log({temperature})
-  engine = engine || 'curie'
+  engine = engine || 'gpt-3.5-turbo-instruct'
   if (typeof temperature === 'undefined') temperature = 0.5
 
   let payload = {
+    model: engine,
     prompt,
     temperature,
     max_tokens: 300,
@@ -111,7 +112,7 @@ function complete({ prompt, engine, temperature, n, stop, apiKey, logprobs }) {
 
   // Send request
   let request = [
-    `https://api.openai.com/v1/engines/${engine}/completions`,
+    `https://api.openai.com/v1/completions`,
     payload, { headers }
   ]
 
